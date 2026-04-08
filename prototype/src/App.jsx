@@ -240,7 +240,7 @@ const ANNOTATIONS = {
   'WF2': "Prénom avant Nom. Checkbox citerne = domicile cochée par défaut (85 % des cas). Préférence d'appel facultative. RGPD wording validé par Pierre-Louis du Chazaud.",
   'WF2-sortie': "Le prospect locataire ne peut pas légalement changer de fournisseur. Ton orienté solution. Numéro dédié 09 70 81 80 65 (ligne contrats locataires).",
   'WF3': "Pas de filtre à cette étape. La checkbox adresse citerne a été déplacée en WF2 pour grouper toutes les informations de localisation.",
-  'WF4': "Les 3 factures sont toutes obligatoires (hard block). Mode B : sous-étapes par facture pour guider les profils peu digitaux. Biopropane = option payante. RGPD placé après le CTA Continuer.",
+  'WF4': "WF4 Mode B — Parcours guidé en sous-étapes pour l'upload de chaque facture.\n\nÉtape A : Préparation avant caméra. L'illustration de main + facture posée sur table impose mentalement le geste. Le CTA « Ma facture est prête » donne le contrôle au prospect : c'est lui qui décide quand il est prêt, pas le système.\n\nÉtape B1 : Cadrage caméra. L'illustration du viseur prépare ce que le prospect va voir. Les conseils (flash, ombres, orientation) réduisent les prises ratées.\n\nÉtape C1 : « Bien reçu ! » clôture la micro-tâche. Le CTA vert encourage directement à uploader la facture suivante sans retour au menu.\n\nÉtape C2 : L'illustration facture floue + croix rouge identifie le problème sans texte d'erreur technique. Deux sorties : réessayer ou passer au PDF.",
   'WF4-sortie': "Sortie 3 (hard block). Orienté vers rappel. Lien de retour pour reprendre quand le prospect aura ses factures. Formulaire pré-rempli.",
   'WF5': "Chaque section est modifiable. Lien Modifier renvoie à l'étape, puis retour auto à WF5. Section Installation affiche l'adresse citerne si différente. Wording « proposition de contrat » (pas « devis »).",
   'WF5b': "Lead dans Salesforce. Contacts locaux nommés (Sabrina/Éric). Bloc offre 200 € conditionnel à la citerne apparente. Bloc enrichissement dossier supprimé : mauvais timing mobile.",
@@ -396,131 +396,36 @@ function CheckboxField({ checked, onChange, children }) {
 }
 
 // ─── UPLOAD ITEM (Mode B) ─────────────────────────────────────────────────────
-function UploadItem({ index, uploadState, onStateChange }) {
-  const fileRef = useRef(null);
-  const [progress, setProgress] = useState(0);
-  const { phase, file } = uploadState;
-
-  const label = index === 0 ? 'Facture 1/3' : index === 1 ? 'Facture 2/3' : 'Facture 3/3';
-
-  function handleZoneClick() {
-    if (phase === 'empty') onStateChange(index, { phase: 'stepA', file: null });
-  }
-
-  function handleReadyClick() {
-    onStateChange(index, { phase: 'stepB', file: null });
-  }
-
-  function handleFileInput(e) {
-    const f = e.target.files[0];
-    if (!f) return;
-    const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-    if (!validTypes.includes(f.type)) {
-      onStateChange(index, { phase: 'error', file: null, errorMsg: 'Seuls les fichiers PDF, JPG et PNG sont acceptés.' });
-      return;
-    }
-    if (f.size > 10 * 1024 * 1024) {
-      onStateChange(index, { phase: 'error', file: null, errorMsg: 'Ce fichier dépasse la taille maximum de 10 Mo.' });
-      return;
-    }
-    onStateChange(index, { phase: 'loading', file: { name: f.name, size: Math.round(f.size / 1024) + ' Ko' } });
-    setProgress(0);
-    let p = 0;
-    const iv = setInterval(() => {
-      p += 5;
-      setProgress(p);
-      if (p >= 100) {
-        clearInterval(iv);
-        onStateChange(index, { phase: 'success', file: { name: f.name, size: Math.round(f.size / 1024) + ' Ko' } });
-      }
-    }, 100);
-  }
-
-  function handleReplace() {
-    fileRef.current && fileRef.current.click();
-  }
-  function handleDelete() {
-    onStateChange(index, { phase: 'empty', file: null });
-    setProgress(0);
-  }
-  function handleRetry() {
-    onStateChange(index, { phase: 'empty', file: null });
-    setProgress(0);
-  }
-
+// UploadItem simplifié — Mode B gère les sous-écrans.
+// Phases supportées : 'empty' | 'loading' | 'success'
+function UploadItem({ index, file, progress, phase, onZoneClick, onDelete }) {
+  const label = ['Facture 1/3', 'Facture 2/3', 'Facture 3/3'][index];
   return (
     <div style={{ marginBottom:14 }}>
       <div style={{ fontSize:12, fontWeight:600, color:'#999', marginBottom:6 }}>{label}</div>
-
       {phase === 'empty' && (
-        <div className="upload-empty" onClick={handleZoneClick}>
+        <div className="upload-empty" onClick={() => onZoneClick(index)}>
           <div style={{ fontSize:28, marginBottom:6, color:'#CCC' }}>↑</div>
           <div style={{ fontSize:14, color:'#666', fontWeight:500 }}>Appuyez pour choisir un fichier ou prendre une photo</div>
           <div style={{ fontSize:12, color:'#999', marginTop:4 }}>PDF, JPG ou PNG · 10 Mo max</div>
         </div>
       )}
-
-      {phase === 'stepA' && (
-        <div style={{ border:'1px solid #E0E0E0', borderRadius:10, padding:16 }}>
-          <div style={{ fontWeight:600, fontSize:14, marginBottom:8 }}>Préparez votre facture</div>
-          <WarningBlock>
-            <strong>Où trouver votre facture ?</strong><br />
-            · Dans votre boîte aux lettres<br />
-            · Dans votre espace client en ligne (Primagaz, Antargaz, Vitogaz)<br />
-            · Sur l'appli de votre fournisseur
-          </WarningBlock>
-          <button className="btn-primary" onClick={handleReadyClick}>Ma facture est prête →</button>
-          <button className="btn-secondary" style={{ marginTop:8 }} onClick={handleDelete}>Annuler</button>
-        </div>
-      )}
-
-      {phase === 'stepB' && (
-        <div style={{ border:'1px solid #E0E0E0', borderRadius:10, padding:16 }}>
-          <div style={{ fontWeight:600, fontSize:14, marginBottom:12 }}>Comment souhaitez-vous l'envoyer ?</div>
-          <button className="btn-primary" style={{ marginBottom:8 }} onClick={() => fileRef.current && fileRef.current.click()}>
-            📷 Prendre une photo
-          </button>
-          <button className="btn-secondary" onClick={() => fileRef.current && fileRef.current.click()}>
-            📁 Choisir un fichier
-          </button>
-          <button className="btn-sm" style={{ marginTop:10, width:'100%', justifyContent:'center' }} onClick={handleDelete}>Annuler</button>
-          <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={handleFileInput} />
-        </div>
-      )}
-
       {phase === 'loading' && (
         <div style={{ border:'1px solid #E0E0E0', borderRadius:10, padding:16, background:'#F5F5F5' }}>
           <div style={{ fontSize:14, color:'#666', marginBottom:4 }}>Envoi en cours…</div>
-          <div style={{ fontSize:13, color:'#999', marginBottom:6 }}>{file?.name}</div>
-          <div className="upbar-track">
-            <div className="upbar-fill" style={{ width: progress + '%' }} />
-          </div>
+          <div style={{ fontSize:13, color:'#999', marginBottom:8 }}>{file?.name}</div>
+          <div className="upbar-track"><div className="upbar-fill" style={{ width: progress + '%' }} /></div>
         </div>
       )}
-
       {phase === 'success' && (
         <div style={{ background:'#F0FFF0', border:'1px solid #22C55E', borderRadius:10, padding:14 }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:6 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:600, color:'#166534' }}>✓ {file?.name}</div>
-              <div style={{ fontSize:12, color:'#666', marginTop:2 }}>{file?.size}</div>
-            </div>
+          <div style={{ fontSize:14, fontWeight:600, color:'#166534', marginBottom:2 }}>✓ {file?.name}</div>
+          <div style={{ fontSize:12, color:'#666', marginBottom:8 }}>{file?.size}</div>
+          <div style={{ display:'flex', gap:8 }}>
+            <button className="btn-sm">Voir l'aperçu</button>
+            <button className="btn-sm" onClick={() => onZoneClick(index)}>Remplacer</button>
+            <button className="btn-sm" onClick={() => onDelete(index)}>Supprimer</button>
           </div>
-          <div style={{ display:'flex', gap:8, marginTop:8 }}>
-            <button className="btn-sm">Voir</button>
-            <button className="btn-sm" onClick={handleReplace}>Remplacer</button>
-            <button className="btn-sm" onClick={handleDelete}>Supprimer</button>
-          </div>
-          <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={handleFileInput} />
-        </div>
-      )}
-
-      {phase === 'error' && (
-        <div style={{ background:'#FFF0F0', border:'1px solid #CC0000', borderRadius:10, padding:14 }}>
-          <div style={{ fontSize:14, color:'#CC0000', marginBottom:8 }}>
-            Ce fichier ne peut pas être envoyé. {uploadState.errorMsg}
-          </div>
-          <button className="btn-sm" onClick={handleRetry}>Réessayer avec un autre fichier</button>
         </div>
       )}
     </div>
@@ -1172,29 +1077,291 @@ function ScreenWF3({ formData, setFormData, navigate, showRecall, returnTo, setR
   );
 }
 
-// ─── SCREEN: WF4 — FACTURES + BIOPROPANE ─────────────────────────────────────
-function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setReturnTo, stepHistory, onHome }) {
-  const initUpload = (idx) => {
-    if (formData.factures && formData.factures[idx]) return { phase: 'success', file: formData.factures[idx] };
-    return { phase: 'empty', file: null };
-  };
-  const [uploads, setUploads] = useState([initUpload(0), initUpload(1), initUpload(2)]);
+// ─── WF4 MODE B — ILLUSTRATIONS SVG ──────────────────────────────────────────
+function IllustrationFactureMain() {
+  return (
+    <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" style={{ width:200, height:140 }}>
+      <rect x="0" y="110" width="200" height="30" fill="#F0F0F0"/>
+      <g transform="rotate(-3, 100, 70)">
+        <rect x="50" y="20" width="100" height="130" fill="white" stroke="#D0D0D0" strokeWidth="1.5" rx="2"/>
+        <rect x="62" y="32" width="76" height="4" fill="#E0E0E0" rx="1"/>
+        <rect x="62" y="42" width="60" height="3" fill="#E8E8E8" rx="1"/>
+        <rect x="62" y="50" width="70" height="3" fill="#E8E8E8" rx="1"/>
+        <rect x="62" y="60" width="50" height="3" fill="#E8E8E8" rx="1"/>
+        <rect x="62" y="68" width="80" height="3" fill="#E8E8E8" rx="1"/>
+      </g>
+      <rect x="72" y="108" width="14" height="28" fill="#999" rx="4"/>
+      <rect x="90" y="112" width="14" height="24" fill="#999" rx="4"/>
+      <rect x="108" y="110" width="14" height="26" fill="#999" rx="4"/>
+    </svg>
+  );
+}
+function IllustrationViseur() {
+  return (
+    <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" style={{ width:200, height:160 }}>
+      <rect x="0" y="0" width="200" height="160" fill="#1A1A1A" rx="4"/>
+      <rect x="50" y="20" width="100" height="120" fill="white" fillOpacity="0.08" stroke="white" strokeOpacity="0.2" strokeWidth="1"/>
+      <rect x="40" y="15" width="120" height="130" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="6 3" rx="2"/>
+      <path d="M40,35 L40,15 L60,15" fill="none" stroke="white" strokeWidth="3"/>
+      <path d="M160,35 L160,15 L140,15" fill="none" stroke="white" strokeWidth="3"/>
+      <path d="M40,125 L40,145 L60,145" fill="none" stroke="white" strokeWidth="3"/>
+      <path d="M160,125 L160,145 L140,145" fill="none" stroke="white" strokeWidth="3"/>
+      <circle cx="100" cy="152" r="6" fill="white" fillOpacity="0.7"/>
+    </svg>
+  );
+}
+function IllustrationViseurPleinEcran() {
+  return (
+    <svg viewBox="0 0 280 320" xmlns="http://www.w3.org/2000/svg" style={{ width:240, height:274 }}>
+      <rect x="20" y="20" width="240" height="280" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="8 4" rx="3" opacity="0.6"/>
+      <path d="M20,60 L20,20 L60,20" fill="none" stroke="white" strokeWidth="4"/>
+      <path d="M260,60 L260,20 L220,20" fill="none" stroke="white" strokeWidth="4"/>
+      <path d="M20,260 L20,300 L60,300" fill="none" stroke="white" strokeWidth="4"/>
+      <path d="M260,260 L260,300 L220,300" fill="none" stroke="white" strokeWidth="4"/>
+      <rect x="60" y="70" width="160" height="180" fill="white" fillOpacity="0.06"/>
+    </svg>
+  );
+}
+function IllustrationFactureFloue() {
+  return (
+    <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" style={{ width:200, height:140 }}>
+      <rect x="20" y="10" width="160" height="120" fill="#FFF0F0" stroke="#CC0000" strokeWidth="2" rx="4"/>
+      <rect x="30" y="22" width="90" height="5" fill="#D0D0D0" rx="1" opacity="0.7"/>
+      <rect x="30" y="32" width="70" height="4" fill="#C8C8C8" rx="1" opacity="0.6"/>
+      <rect x="30" y="41" width="110" height="5" fill="#D8D8D8" rx="1" opacity="0.7"/>
+      <rect x="30" y="51" width="60" height="4" fill="#C0C0C0" rx="1" opacity="0.5"/>
+      <rect x="30" y="60" width="95" height="5" fill="#D0D0D0" rx="1" opacity="0.6"/>
+      <rect x="30" y="70" width="75" height="4" fill="#C8C8C8" rx="1" opacity="0.7"/>
+      <rect x="30" y="80" width="100" height="5" fill="#D0D0D0" rx="1" opacity="0.6"/>
+      <line x1="65" y1="45" x2="135" y2="105" stroke="#CC0000" strokeWidth="5" strokeLinecap="round"/>
+      <line x1="135" y1="45" x2="65" y2="105" stroke="#CC0000" strokeWidth="5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+// ─── WF4 MODE B — HEADER ─────────────────────────────────────────────────────
+function WF4ModeBHeader({ factureNum, handleBack }) {
+  return (
+    <div style={{ display:'flex', alignItems:'center', padding:'12px 16px', borderBottom:'1px solid #E0E0E0', position:'sticky', top:0, background:'#FFF', zIndex:50 }}>
+      <button onClick={handleBack} style={{ background:'none', border:'none', cursor:'pointer', fontSize:14, color:'#1A1A1A', padding:0 }}>← Retour</button>
+      <span style={{ marginLeft:'auto', fontSize:13, color:'#666', fontWeight:500 }}>Ajout facture {factureNum}/3</span>
+    </div>
+  );
+}
+
+// ─── WF4 MODE B — ÉTAPE A ────────────────────────────────────────────────────
+function WF4ModeB_Prepare({ factureNum, onReady, onFileClick, onNoFacture, onBack }) {
+  return (
+    <div style={{ minHeight:'100%' }}>
+      <WF4ModeBHeader factureNum={factureNum} handleBack={onBack} />
+      <div style={{ padding:'20px 16px 80px 16px' }}>
+        <div style={{ fontSize:20, fontWeight:700, marginBottom:16 }}>Préparez votre facture</div>
+        <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><IllustrationFactureMain /></div>
+        <div style={{ background:'#FFF9E6', border:'1px solid #E6D490', borderRadius:8, padding:12, marginBottom:24, fontSize:13, color:'#92400E', lineHeight:1.6 }}>
+          ⓘ Conseils : photo bien éclairée, pas de reflet, facture entièrement visible.
+        </div>
+        <button className="btn-primary" style={{ marginBottom:12 }} onClick={onReady}>Ma facture est prête →</button>
+        <button className="btn-secondary" style={{ marginBottom:24 }} onClick={onFileClick}>↑ Choisir un fichier sur mon appareil</button>
+        <div style={{ textAlign:'center' }}>
+          <button onClick={onNoFacture} style={{ background:'none', border:'none', color:'#999', fontSize:13, cursor:'pointer', textDecoration:'underline' }}>
+            Pas de facture ? Continuer →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── WF4 MODE B — ÉTAPE B1 ───────────────────────────────────────────────────
+function WF4ModeB_Frame({ factureNum, onCapture, onFileClick, onNoFacture, onBack }) {
+  return (
+    <div style={{ minHeight:'100%' }}>
+      <WF4ModeBHeader factureNum={factureNum} handleBack={onBack} />
+      <div style={{ padding:'20px 16px 80px 16px' }}>
+        <div style={{ fontSize:20, fontWeight:700, marginBottom:16 }}>Prenez la photo</div>
+        <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><IllustrationViseur /></div>
+        <div style={{ background:'#FFF9E6', border:'1px solid #E6D490', borderRadius:8, padding:12, marginBottom:24, fontSize:13, color:'#92400E', lineHeight:1.6 }}>
+          ⓘ Conseils : pas de flash, évitez les ombres, tenez le téléphone bien droit.
+        </div>
+        <button className="btn-primary" style={{ marginBottom:12 }} onClick={onCapture}>Prendre la photo</button>
+        <button className="btn-secondary" style={{ marginBottom:24 }} onClick={onFileClick}>↑ Choisir un fichier sur mon appareil</button>
+        <div style={{ textAlign:'center' }}>
+          <button onClick={onNoFacture} style={{ background:'none', border:'none', color:'#999', fontSize:13, cursor:'pointer', textDecoration:'underline' }}>
+            Pas de facture ? Continuer →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── WF4 MODE B — ÉTAPE B2 ───────────────────────────────────────────────────
+function WF4ModeB_Camera({ factureNum, onCapture, onBack }) {
+  return (
+    <div style={{ height:'100%', display:'flex', flexDirection:'column' }}>
+      <WF4ModeBHeader factureNum={factureNum} handleBack={onBack} />
+      <div style={{ flex:1, background:'#1A1A1A', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', position:'relative', minHeight:500 }}>
+        <div style={{ position:'absolute', top:16, left:16, right:16, background:'rgba(255,255,255,0.92)', borderRadius:8, padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:13, zIndex:10 }}>
+          <span>Autorisation d'utiliser l'appareil photo</span>
+          <button onClick={onCapture} style={{ background:'#1A1A1A', color:'white', border:'none', borderRadius:6, padding:'6px 12px', fontSize:12, cursor:'pointer', flexShrink:0, marginLeft:8 }}>
+            Accepter
+          </button>
+        </div>
+        <IllustrationViseurPleinEcran />
+        <div style={{ color:'rgba(255,255,255,0.4)', fontSize:12, marginTop:12 }}>Appareil photo natif — S'ouvre en plein écran</div>
+        <button onClick={onCapture} style={{ position:'absolute', bottom:24, width:56, height:56, borderRadius:'50%', background:'white', border:'3px solid rgba(255,255,255,0.5)', cursor:'pointer' }} />
+      </div>
+    </div>
+  );
+}
+
+// ─── WF4 MODE B — LOADING ────────────────────────────────────────────────────
+function WF4ModeB_Loading({ factureNum, fileName, progress }) {
+  return (
+    <div style={{ minHeight:'100%' }}>
+      <WF4ModeBHeader factureNum={factureNum} handleBack={() => {}} />
+      <div style={{ padding:'60px 24px', textAlign:'center' }}>
+        <div style={{ fontSize:18, fontWeight:600, marginBottom:8 }}>Envoi en cours…</div>
+        <div style={{ fontSize:13, color:'#999', marginBottom:24 }}>{fileName}</div>
+        <div className="upbar-track" style={{ maxWidth:280, margin:'0 auto' }}>
+          <div className="upbar-fill" style={{ width: progress + '%' }} />
+        </div>
+        <div style={{ fontSize:12, color:'#BBB', marginTop:12 }}>{progress} %</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── WF4 MODE B — ÉTAPE C1 ───────────────────────────────────────────────────
+function WF4ModeB_Success({ factureNum, file, factures, onAddNext, onReturn, onFinish, onContinue }) {
+  const uploadedCount = factures.filter(Boolean).length;
+  const allUploaded = uploadedCount === 3;
+  const isLast = factureNum === 3;
+  return (
+    <div style={{ minHeight:'100%' }}>
+      <WF4ModeBHeader factureNum={factureNum} handleBack={onReturn} />
+      <div style={{ padding:'20px 16px 80px 16px' }}>
+        <div style={{ fontSize:22, fontWeight:700, marginBottom:4 }}>Bien reçu !</div>
+        <div style={{ fontSize:14, color:'#666', marginBottom:20 }}>
+          {uploadedCount}/3 facture{uploadedCount > 1 ? 's' : ''} ajoutée{uploadedCount > 1 ? 's' : ''}
+        </div>
+        <div style={{ background:'#F0FFF4', border:'1px solid #22C55E', borderRadius:8, padding:14, marginBottom:24 }}>
+          <div style={{ fontSize:14, fontWeight:600, color:'#166534', marginBottom:6 }}>✓ {file?.name}</div>
+          <div style={{ fontSize:12, color:'#666', marginBottom:10 }}>{file?.size}</div>
+          <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+            <button className="btn-sm">Voir l'aperçu</button>
+            <button className="btn-sm">✓ Remplacer</button>
+            <button className="btn-sm">Supprimer</button>
+          </div>
+        </div>
+        {(isLast || allUploaded) ? (
+          <button className="btn-primary" style={{ marginBottom:12 }} onClick={onContinue}>Continuer →</button>
+        ) : (
+          <button
+            style={{ display:'block', width:'100%', padding:14, background:'#22C55E', color:'white', border:'none', borderRadius:10, fontSize:15, fontWeight:600, cursor:'pointer', marginBottom:12 }}
+            onClick={onAddNext}
+          >
+            Ajouter une {factureNum + 1 === 2 ? '2e' : '3e'} facture
+          </button>
+        )}
+        <button className="btn-secondary" style={{ marginBottom:20 }} onClick={onReturn}>Retour WF4</button>
+        <div style={{ textAlign:'center' }}>
+          <button onClick={onFinish} style={{ background:'none', border:'none', color:'#999', fontSize:13, cursor:'pointer', textDecoration:'underline' }}>
+            Terminer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── WF4 MODE B — ÉTAPE C2 ───────────────────────────────────────────────────
+function WF4ModeB_Error({ factureNum, onRetry, onFileClick, onFinish }) {
+  return (
+    <div style={{ minHeight:'100%' }}>
+      <WF4ModeBHeader factureNum={factureNum} handleBack={onRetry} />
+      <div style={{ padding:'20px 16px 80px 16px' }}>
+        <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><IllustrationFactureFloue /></div>
+        <div style={{ fontSize:15, fontWeight:500, textAlign:'center', color:'#1A1A1A', marginBottom:24 }}>
+          La photo est floue ou le format n'est pas reconnu.
+        </div>
+        <button className="btn-primary" style={{ marginBottom:12 }} onClick={onRetry}>Reprendre la photo</button>
+        <button className="btn-secondary" style={{ marginBottom:24 }} onClick={onFileClick}>Choisir un PDF sur mon appareil</button>
+        <div style={{ textAlign:'center' }}>
+          <button onClick={onFinish} style={{ background:'none', border:'none', color:'#999', fontSize:13, cursor:'pointer', textDecoration:'underline' }}>
+            Terminer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── SCREEN: WF4 — FACTURES + BIOPROPANE (MODE B) ────────────────────────────
+function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setReturnTo, stepHistory, onHome, simulateError, setSimulateError }) {
+  const initFacture = (idx) => formData.factures?.[idx] || null;
+  const [uploadState, setUploadState] = useState({
+    currentFacture: 1,
+    factures: [initFacture(0), initFacture(1), initFacture(2)],
+    subscreen: null,        // null | 'PREPARE'|'FRAME'|'CAMERA'|'LOADING'|'SUCCESS'|'ERROR'
+    pendingFile: null,
+    progress: 0,
+  });
   const [biopropane, setBiopropane] = useState(formData.biopropane || 'non');
   const [openTip, setOpenTip] = useState(null);
-  function toggleTip(id) { setOpenTip(prev => prev === id ? null : id); }
+  const fileRef = useRef(null);
 
-  function handleUploadChange(idx, state) {
-    setUploads(prev => { const n = [...prev]; n[idx] = state; return n; });
+  function setSubscreen(sub, extra = {}) {
+    setUploadState(prev => ({ ...prev, subscreen: sub, ...extra }));
   }
 
-  const allUploaded = uploads.every(u => u.phase === 'success');
+  function openModeB(factureIdx) {
+    setSubscreen('PREPARE', { currentFacture: factureIdx + 1 });
+  }
 
-  function handleContinue() {
-    if (!allUploaded) return;
-    const factures = uploads.map(u => u.file);
-    setFormData({ ...formData, factures, biopropane });
-    navigate(returnTo === 'WF5' ? 'WF5' : 'WF5');
-    if (returnTo === 'WF5') setReturnTo(null);
+  function deleteFacture(factureIdx) {
+    setUploadState(prev => {
+      const f = [...prev.factures]; f[factureIdx] = null;
+      return { ...prev, factures: f };
+    });
+  }
+
+  function handleFileInput(e) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    // Reset input so the same file can be re-selected
+    e.target.value = '';
+    const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    const tooLarge = f.size > 10 * 1024 * 1024;
+    if (!validTypes.includes(f.type) || tooLarge) {
+      setSubscreen('ERROR');
+      return;
+    }
+    const fileData = { name: f.name, size: Math.round(f.size / 1024) + ' Ko' };
+    setUploadState(prev => ({ ...prev, subscreen: 'LOADING', pendingFile: fileData, progress: 0 }));
+    let p = 0;
+    const iv = setInterval(() => {
+      p += 5;
+      setUploadState(prev => ({ ...prev, progress: p }));
+      if (p >= 100) {
+        clearInterval(iv);
+        const shouldError = simulateError;
+        if (shouldError && setSimulateError) setSimulateError(false);
+        if (shouldError) {
+          setUploadState(prev => ({ ...prev, subscreen: 'ERROR', progress: 0 }));
+        } else {
+          setUploadState(prev => {
+            const newFactures = [...prev.factures];
+            newFactures[prev.currentFacture - 1] = prev.pendingFile;
+            return { ...prev, subscreen: 'SUCCESS', factures: newFactures, progress: 0 };
+          });
+        }
+      }
+    }, 100);
+  }
+
+  function triggerFilePicker() {
+    fileRef.current && fileRef.current.click();
   }
 
   function handleStepClick(n) {
@@ -1202,26 +1369,102 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
     if (stepHistory.includes(screens[n-1])) navigate(screens[n-1]);
   }
 
+  function handleContinueToWF5() {
+    setFormData({ ...formData, factures: uploadState.factures, biopropane });
+    if (returnTo === 'WF5') setReturnTo(null);
+    navigate('WF5');
+  }
+
+  const { subscreen, currentFacture, factures, pendingFile, progress } = uploadState;
+  const allUploaded = factures.every(Boolean);
+
+  // ── Sous-écrans Mode B ────────────────────────────────────────────────────
+  if (subscreen === 'PREPARE') {
+    return (
+      <WF4ModeB_Prepare
+        factureNum={currentFacture}
+        onReady={() => setSubscreen('FRAME')}
+        onFileClick={triggerFilePicker}
+        onNoFacture={() => navigate('WF4-sortie')}
+        onBack={() => setSubscreen(null)}
+      />
+    );
+  }
+  if (subscreen === 'FRAME') {
+    return (
+      <WF4ModeB_Frame
+        factureNum={currentFacture}
+        onCapture={() => setSubscreen('CAMERA')}
+        onFileClick={triggerFilePicker}
+        onNoFacture={() => navigate('WF4-sortie')}
+        onBack={() => setSubscreen('PREPARE')}
+      />
+    );
+  }
+  if (subscreen === 'CAMERA') {
+    return (
+      <WF4ModeB_Camera
+        factureNum={currentFacture}
+        onCapture={triggerFilePicker}
+        onBack={() => setSubscreen('FRAME')}
+      />
+    );
+  }
+  if (subscreen === 'LOADING') {
+    return <WF4ModeB_Loading factureNum={currentFacture} fileName={pendingFile?.name} progress={progress} />;
+  }
+  if (subscreen === 'SUCCESS') {
+    return (
+      <WF4ModeB_Success
+        factureNum={currentFacture}
+        file={factures[currentFacture - 1]}
+        factures={factures}
+        onAddNext={() => setSubscreen('PREPARE', { currentFacture: currentFacture + 1 })}
+        onReturn={() => setSubscreen(null)}
+        onFinish={() => setSubscreen(null)}
+        onContinue={handleContinueToWF5}
+      />
+    );
+  }
+  if (subscreen === 'ERROR') {
+    return (
+      <WF4ModeB_Error
+        factureNum={currentFacture}
+        onRetry={() => setSubscreen('FRAME')}
+        onFileClick={triggerFilePicker}
+        onFinish={() => setSubscreen(null)}
+      />
+    );
+  }
+
+  // ── WF4 Principal ─────────────────────────────────────────────────────────
   return (
     <div className="screen-anim">
+      <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png,image/*" onChange={handleFileInput} />
       <TunnelHeader onHome={onHome} />
       <ProgressBar step={4} onStepClick={handleStepClick} />
       <div style={{ padding:'8px 16px 16px 16px' }}>
         <BackLink onClick={() => navigate('WF3')} />
         <div style={{ fontSize:22, fontWeight:700, marginBottom:12 }}>Vos factures de gaz</div>
-
         <InfoBlock>
           Avec vos factures, nous estimons votre consommation réelle et vous proposons le tarif le plus adapté. Les 3 factures sont nécessaires pour finaliser votre demande.
         </InfoBlock>
-
         <WarningBlock>
           <strong>Où trouver vos factures ?</strong><br />
           Chez vous : dans vos courriers. En ligne : espace client de votre fournisseur (Primagaz, Antargaz, Vitogaz) &gt; rubrique « Mes factures ».
         </WarningBlock>
 
-        <UploadItem index={0} uploadState={uploads[0]} onStateChange={handleUploadChange} />
-        <UploadItem index={1} uploadState={uploads[1]} onStateChange={handleUploadChange} />
-        <UploadItem index={2} uploadState={uploads[2]} onStateChange={handleUploadChange} />
+        {[0,1,2].map(idx => (
+          <UploadItem
+            key={idx}
+            index={idx}
+            file={factures[idx]}
+            phase={factures[idx] ? 'success' : 'empty'}
+            progress={0}
+            onZoneClick={openModeB}
+            onDelete={deleteFacture}
+          />
+        ))}
 
         <div style={{ fontSize:13, color:'#666', marginBottom:16, textAlign:'center' }}>
           <span className="lnk-gray" onClick={() => navigate('WF4-sortie')}>
@@ -1231,7 +1474,13 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
 
         <div style={{ height:1, background:'#F0F0F0', margin:'4px 0 16px' }} />
 
-        <FormField id="biopropane" label="Souhaitez-vous souscrire à l'option Biopropane ? (option payante)" tooltipText="Le biopropane est une version du propane issue de ressources renouvelables. Cette option entraîne un coût supplémentaire par rapport au propane standard." openTip={openTip} onToggleTip={toggleTip}>
+        <FormField
+          id="biopropane"
+          label="Souhaitez-vous souscrire à l'option Biopropane ? (option payante)"
+          tooltipText="Le biopropane est une version du propane issue de ressources renouvelables. Cette option entraîne un coût supplémentaire par rapport au propane standard."
+          openTip={openTip}
+          onToggleTip={id => setOpenTip(prev => prev === id ? null : id)}
+        >
           <RadioGroup
             options={[{ value:'non', label:'Non merci' }, { value:'20', label:'Oui, 20 % biopropane' }, { value:'100', label:'Oui, 100 % biopropane' }]}
             value={biopropane}
@@ -1242,7 +1491,7 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
         <button
           className="btn-primary"
           style={{ marginTop:8, opacity: allUploaded ? 1 : 0.5 }}
-          onClick={handleContinue}
+          onClick={allUploaded ? handleContinueToWF5 : undefined}
           title={allUploaded ? '' : 'Veuillez uploader les 3 factures pour continuer'}
         >
           {returnTo === 'WF5' ? 'Enregistrer et retourner à la synthèse' : 'Continuer →'}
@@ -1256,7 +1505,6 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
         <div style={{ marginTop:20, padding:12, background:'#F9F9F9', borderRadius:8, fontSize:11, color:'#999', lineHeight:1.6 }}>
           Les factures transmises sont utilisées exclusivement pour analyser votre consommation énergétique et estimer votre budget, afin de vous proposer une offre adaptée. Ces données sont traitées par Butagaz, dans le cadre de l'étude de votre projet, conformément au RGPD. Seules les informations nécessaires sont collectées et accessibles aux services internes concernés. Elles sont conservées uniquement le temps nécessaire à l'analyse de votre projet. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité de vos données à l'adresse suivante : protectiondesdonnees@butagaz.com. Vous pouvez également introduire une réclamation auprès de la CNIL.
         </div>
-
         <div style={{ height:40 }} />
       </div>
       <FooterBanner onRecall={showRecall} />
@@ -1456,7 +1704,7 @@ function ScreenWF5b({ formData, navigate, returnToSite, onHome }) {
 }
 
 // ─── SCREEN ROUTER ────────────────────────────────────────────────────────────
-function ScreenRouter({ screen, formData, setFormData, navigate, showRecall, returnTo, setReturnTo, stepHistory, offerMode, returnToSite, onHome }) {
+function ScreenRouter({ screen, formData, setFormData, navigate, showRecall, returnTo, setReturnTo, stepHistory, offerMode, returnToSite, onHome, simulateError, setSimulateError }) {
   switch (screen) {
     case 'PAGE0':       return <ScreenPAGE0 offerMode={offerMode} navigate={navigate} showRecall={showRecall} />;
     case 'WF0-step2':   return <ScreenWF0Step2 formData={formData} setFormData={setFormData} navigate={navigate} showRecall={showRecall} onHome={onHome} />;
@@ -1467,7 +1715,7 @@ function ScreenRouter({ screen, formData, setFormData, navigate, showRecall, ret
     case 'WF2':         return <ScreenWF2 formData={formData} setFormData={setFormData} navigate={navigate} showRecall={showRecall} returnTo={returnTo} setReturnTo={setReturnTo} stepHistory={stepHistory} onHome={onHome} />;
     case 'WF2-sortie':  return <ScreenWF2Sortie navigate={navigate} returnToSite={returnToSite} />;
     case 'WF3':         return <ScreenWF3 formData={formData} setFormData={setFormData} navigate={navigate} showRecall={showRecall} returnTo={returnTo} setReturnTo={setReturnTo} stepHistory={stepHistory} onHome={onHome} />;
-    case 'WF4':         return <ScreenWF4 formData={formData} setFormData={setFormData} navigate={navigate} showRecall={showRecall} returnTo={returnTo} setReturnTo={setReturnTo} stepHistory={stepHistory} onHome={onHome} />;
+    case 'WF4':         return <ScreenWF4 formData={formData} setFormData={setFormData} navigate={navigate} showRecall={showRecall} returnTo={returnTo} setReturnTo={setReturnTo} stepHistory={stepHistory} onHome={onHome} simulateError={simulateError} setSimulateError={setSimulateError} />;
     case 'WF4-sortie':  return <ScreenWF4Sortie formData={formData} navigate={navigate} returnToSite={returnToSite} onHome={onHome} />;
     case 'WF5':         return <ScreenWF5 formData={formData} navigate={navigate} showRecall={showRecall} setReturnTo={setReturnTo} stepHistory={stepHistory} onHome={onHome} />;
     case 'WF5b':        return <ScreenWF5b formData={formData} navigate={navigate} returnToSite={returnToSite} onHome={onHome} />;
@@ -1675,6 +1923,7 @@ function NavigationView({
 }) {
   const [showRecallModal, setShowRecallModal] = useState(false);
   const [screenKey, setScreenKey] = useState(0);
+  const [simulateError, setSimulateError] = useState(false);
   const mobileFrameRef = useRef(null);
 
   const sc = scenario && SCENARIOS[scenario];
@@ -1772,7 +2021,7 @@ function NavigationView({
         )}
 
         {/* Mobile frame */}
-        <div className="mobile-frame-wrap" style={{ flexShrink:0 }}>
+        <div className="mobile-frame-wrap" style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
           <div
             key={screenKey}
             ref={mobileFrameRef}
@@ -1791,8 +2040,24 @@ function NavigationView({
               offerMode={offerMode}
               returnToSite={returnToSite}
               onHome={returnToSite}
+              simulateError={simulateError}
+              setSimulateError={setSimulateError}
             />
           </div>
+          {/* Simuler erreur — mode libre uniquement */}
+          {isLibre && (
+            <button
+              onClick={() => setSimulateError(v => !v)}
+              style={{
+                padding:'5px 12px', fontSize:12, cursor:'pointer', borderRadius:6,
+                background: simulateError ? '#FFF0F0' : '#FFF',
+                border: simulateError ? '1px solid #CC0000' : '1px solid #D0D0D0',
+                color: simulateError ? '#CC0000' : '#999',
+              }}
+            >
+              {simulateError ? '✗ Erreur activée — prochain upload → C2' : 'Simuler erreur upload'}
+            </button>
+          )}
         </div>
 
         {/* Context panel */}
