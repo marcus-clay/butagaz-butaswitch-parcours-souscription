@@ -118,11 +118,7 @@ const SCENARIOS = {
       statut: 'proprietaire', citerneMemeDomicile: true, adresseCiterne: '',
       preferenceAppel: 'indifferent', rgpd: true,
       citerneType: 'apparente', conserverType: 'oui',
-      factures: [
-        { name: 'facture_primagaz_jan.pdf', size: '245 Ko' },
-        { name: 'facture_primagaz_avr.pdf', size: '312 Ko' },
-        { name: 'facture_primagaz_juil.pdf', size: '289 Ko' },
-      ],
+      factures: [null, null, null],
       biopropane: '20', messageRappel: '', rgpdRappel: false,
     },
   },
