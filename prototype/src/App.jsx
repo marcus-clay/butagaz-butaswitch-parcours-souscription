@@ -2895,117 +2895,106 @@ function NavigationView({
             {showAnnotations ? 'Masquer' : 'Annotations'}
           </button>
         )}
-        <button className="nav-panels btn-sm"
-          onClick={onSwitchToPanorama}
-        >
+        <button className="nav-panels btn-sm" onClick={onSwitchToPanorama}>
           Tous les écrans
         </button>
-        <button
-          className="btn-sm"
-          style={{ background: showBrowserChrome ? '#439fdb' : '#fff', color: showBrowserChrome ? '#fff' : '#666f7c', borderColor: showBrowserChrome ? '#439fdb' : '#dde6ed' }}
-          onClick={() => setShowBrowserChrome(v => !v)}
-        >
-          {showBrowserChrome ? '🖥 Desktop' : '🖥 Desktop'}
-        </button>
+        {/* Groupe de visualisation — Prototype | Mobile | Desktop */}
+        <div style={{ display:'flex', gap:2, background:'#e8edf2', borderRadius:9, padding:2, flexShrink:0 }}>
+          <button
+            className="btn-sm"
+            style={{ background: !immersiveMode && !showBrowserChrome ? '#fff' : 'transparent', color: !immersiveMode && !showBrowserChrome ? '#439fdb' : '#8b9aa4', border:'none', borderRadius:7, padding:'5px 10px', fontSize:12, fontWeight: !immersiveMode && !showBrowserChrome ? 700 : 500, boxShadow: !immersiveMode && !showBrowserChrome ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}
+            onClick={() => { setImmersiveMode(false); setShowBrowserChrome(false); }}
+          >
+            ⬜ Proto
+          </button>
+          <button
+            className="btn-sm"
+            style={{ background: immersiveMode ? '#fff' : 'transparent', color: immersiveMode ? '#439fdb' : '#8b9aa4', border:'none', borderRadius:7, padding:'5px 10px', fontSize:12, fontWeight: immersiveMode ? 700 : 500, boxShadow: immersiveMode ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}
+            onClick={() => { if (mobileFrameRef.current) mobileFrameRef.current.scrollTop = 0; setImmersiveMode(true); setShowBrowserChrome(false); }}
+          >
+            📱 Mobile
+          </button>
+          <button
+            className="btn-sm"
+            style={{ background: showBrowserChrome ? '#fff' : 'transparent', color: showBrowserChrome ? '#439fdb' : '#8b9aa4', border:'none', borderRadius:7, padding:'5px 10px', fontSize:12, fontWeight: showBrowserChrome ? 700 : 500, boxShadow: showBrowserChrome ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}
+            onClick={() => { setShowBrowserChrome(v => !v); setImmersiveMode(false); }}
+          >
+            🖥 Desktop
+          </button>
+        </div>
       </div>
 
-      {/* Main */}
-      <div className="nav-main-layout" style={{ flex:1, display:'flex', flexDirection: showBrowserChrome ? 'column' : 'row', gap:16, padding:'16px', justifyContent: showBrowserChrome ? 'flex-start' : 'center', alignItems: showBrowserChrome ? 'stretch' : 'flex-start', minHeight:0, overflow:'auto' }}>
+      {/* Main — toujours 3 colonnes : gauche | centre | droite */}
+      <div className="nav-main-layout" style={{ flex:1, display:'flex', gap:16, padding:'16px', justifyContent:'center', alignItems:'flex-start', minHeight:0, overflow:'auto' }}>
 
-        {/* ── MODE MOBILE FRAME : 3 colonnes ─────────────────────────────────── */}
-        {!showBrowserChrome && (
-          <>
-            {/* Panneau gauche — Annotations */}
-            {!isLibre && showAnnotations && (
-              <div className="nav-panels ann-panel" style={{ width:260 }}>
-                <div className="ann-panel-title">Annotations UX</div>
-                <div>{annText || 'Aucune annotation pour cet écran.'}</div>
-              </div>
-            )}
-
-            {/* Frame téléphone */}
-            <div className="nav-frame-wrap-desktop" style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
-              <div key={screenKey} ref={mobileFrameRef} className="nav-frame-desktop mobile-scroll">
-                {screenRouterEl}
-              </div>
-              {isLibre && (
-                <button className="nav-panels"
-                  onClick={() => setSimulateError(v => !v)}
-                  style={{ padding:'5px 12px', fontSize:12, cursor:'pointer', borderRadius:6, background: simulateError ? '#FFF0F0' : '#FFF', border: simulateError ? '1px solid #ec3431' : '1px solid #D0D0D0', color: simulateError ? '#ec3431' : '#999' }}
-                >
-                  {simulateError ? '✗ Erreur activée' : 'Simuler erreur upload'}
-                </button>
-              )}
-            </div>
-
-            {/* Panneau droit — Contexte */}
-            {!isLibre && showAnnotations && (
-              <div className="nav-panels ann-panel" style={{ width:260 }}>
-                <div className="ann-panel-title">Contexte scénario</div>
-                <div style={{ whiteSpace:'pre-wrap' }}>{ctxText || '—'}</div>
-              </div>
-            )}
-          </>
+        {/* Panneau gauche — Annotations UX */}
+        {!isLibre && showAnnotations && (
+          <div className="nav-panels ann-panel" style={{ width:260 }}>
+            <div className="ann-panel-title">Annotations UX</div>
+            <div>{annText || 'Aucune annotation pour cet écran.'}</div>
+          </div>
         )}
 
-        {/* ── MODE BROWSER DESKTOP : plein viewport + panneaux en bas ──────── */}
-        {showBrowserChrome && (
-          <>
-            {/* Chrome navigateur pleine largeur */}
-            <div style={{ background:'#e8eaed', borderRadius:12, overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.1)', flexShrink:0 }}>
-              {/* Décoration : barre de titre macOS */}
+        {/* Centre — Frame téléphone ou Browser chrome (720px) */}
+        <div className="nav-frame-wrap-desktop" style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
+          {showBrowserChrome ? (
+            <div style={{ width:720, background:'#e8eaed', borderRadius:12, overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.1)' }}>
+              {/* Barre de titre macOS */}
               <div style={{ background:'#d4d7db', padding:'10px 14px 0', display:'flex', flexDirection:'column' }}>
-                {/* Traffic lights */}
                 <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:8 }}>
                   {['#ff5f57','#ffbd2e','#28c840'].map((c,i) => (
-                    <div key={i} style={{ width:12, height:12, borderRadius:'50%', background:c, flexShrink:0 }} />
+                    <div key={i} style={{ width:12, height:12, borderRadius:'50%', background:c }} />
                   ))}
                 </div>
-                {/* Barre de tabs */}
                 <div style={{ display:'flex', alignItems:'flex-end', gap:0, paddingLeft:2 }}>
                   <div style={{ background:'#fff', padding:'6px 16px 0', borderRadius:'6px 6px 0 0', fontSize:11, color:'#1a1b20', fontWeight:500, display:'flex', alignItems:'center', gap:6, minWidth:200, maxWidth:280 }}>
                     <img src="/logo-butagaz.png" alt="" style={{ height:12, width:'auto', flexShrink:0 }} />
                     <span style={{ flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>Butagaz — Souscription gaz citerne</span>
-                    <span style={{ fontSize:10, color:'#bbb', cursor:'pointer', marginLeft:4, flexShrink:0 }}>×</span>
+                    <span style={{ fontSize:10, color:'#bbb', cursor:'pointer', marginLeft:4 }}>×</span>
                   </div>
                   <div style={{ width:28, height:26, borderRadius:'4px 4px 0 0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#888', cursor:'pointer' }}>+</div>
                 </div>
-                {/* Barre d'adresse */}
                 <div style={{ background:'#fff', padding:'7px 12px', display:'flex', alignItems:'center', gap:10 }}>
                   <div style={{ display:'flex', gap:8, flexShrink:0 }}>
                     {['←','→','↻'].map((c,i) => <span key={i} style={{ fontSize:15, color: i < 2 ? '#ccc' : '#666', cursor:'pointer', lineHeight:1 }}>{c}</span>)}
                   </div>
                   <div style={{ flex:1, background:'#f1f3f4', borderRadius:20, padding:'5px 14px', display:'flex', alignItems:'center', gap:7 }}>
                     <span style={{ fontSize:12, color:'#2a9d5c', flexShrink:0 }}>🔒</span>
-                    <span style={{ fontSize:13, color:'#3c4043', flex:1, letterSpacing:'-0.1px' }}>butagaz.fr/souscrire-gaz-citerne</span>
+                    <span style={{ fontSize:13, color:'#3c4043', flex:1 }}>butagaz.fr/souscrire-gaz-citerne</span>
                   </div>
                   <div style={{ display:'flex', gap:8, flexShrink:0 }}>
                     {['☆','⋮'].map((c,i) => <span key={i} style={{ fontSize:17, color:'#666', cursor:'pointer' }}>{c}</span>)}
                   </div>
                 </div>
               </div>
-              {/* Contenu du site — centré à 640px, hauteur viewport */}
-              <div key={screenKey} ref={mobileFrameRef} className="mobile-scroll" style={{ maxHeight:'calc(100vh - 240px)', overflowY:'auto', overflowX:'hidden', background:'#f4f6f8' }}>
+              {/* Contenu — centré à 640px */}
+              <div key={screenKey} ref={mobileFrameRef} className="mobile-scroll" style={{ maxHeight:'calc(100vh - 220px)', overflowY:'auto', overflowX:'hidden', background:'#f4f6f8' }}>
                 <div className="browser-inner-content">
                   {screenRouterEl}
                 </div>
               </div>
             </div>
+          ) : (
+            <div key={screenKey} ref={mobileFrameRef} className="nav-frame-desktop mobile-scroll">
+              {screenRouterEl}
+            </div>
+          )}
+          {isLibre && (
+            <button className="nav-panels"
+              onClick={() => setSimulateError(v => !v)}
+              style={{ padding:'5px 12px', fontSize:12, cursor:'pointer', borderRadius:6, background: simulateError ? '#FFF0F0' : '#FFF', border: simulateError ? '1px solid #ec3431' : '1px solid #D0D0D0', color: simulateError ? '#ec3431' : '#999' }}
+            >
+              {simulateError ? '✗ Erreur activée' : 'Simuler erreur upload'}
+            </button>
+          )}
+        </div>
 
-            {/* Panneaux annotations + contexte — en ligne sous le browser */}
-            {!isLibre && showAnnotations && (
-              <div style={{ display:'flex', gap:16, flexShrink:0 }}>
-                <div className="ann-panel" style={{ flex:1 }}>
-                  <div className="ann-panel-title">Annotations UX</div>
-                  <div>{annText || 'Aucune annotation pour cet écran.'}</div>
-                </div>
-                <div className="ann-panel" style={{ flex:1 }}>
-                  <div className="ann-panel-title">Contexte scénario</div>
-                  <div style={{ whiteSpace:'pre-wrap' }}>{ctxText || '—'}</div>
-                </div>
-              </div>
-            )}
-          </>
+        {/* Panneau droit — Contexte scénario */}
+        {!isLibre && showAnnotations && (
+          <div className="nav-panels ann-panel" style={{ width:260 }}>
+            <div className="ann-panel-title">Contexte scénario</div>
+            <div style={{ whiteSpace:'pre-wrap' }}>{ctxText || '—'}</div>
+          </div>
         )}
 
       </div>
@@ -3117,7 +3106,10 @@ export default function App() {
 
       {/* Top mode bar */}
       <div className="shell-topbar">
-        <span className="shell-logo" onClick={() => setIsWelcome(true)}>Butaswitch</span>
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0, cursor:'pointer' }} onClick={() => setIsWelcome(true)}>
+          <img src="/logo-butagaz.png" alt="Butagaz" style={{ height:22, width:'auto', filter:'brightness(0) invert(1)', opacity:0.9, flexShrink:0 }} />
+          <span className="shell-logo">Butaswitch</span>
+        </div>
         <span className="shell-version">v2.1</span>
         <div className="shell-modes">
           {[
@@ -3135,14 +3127,6 @@ export default function App() {
             </button>
           ))}
         </div>
-        <button
-          className={`shell-mobile-btn${immersiveMode ? ' active' : ''}`}
-          onClick={handleImmersiveToggle}
-          title="Voir le prototype comme sur un vrai téléphone, sans le shell démonstrateur"
-        >
-          <svg width="11" height="14" viewBox="0 0 11 14" fill="currentColor"><path d="M9 0H2C.9 0 0 .9 0 2v10c0 1.1.9 2 2 2h7c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zm.5 12c0 .3-.2.5-.5.5H2c-.3 0-.5-.2-.5-.5V2c0-.3.2-.5.5-.5h7c.3 0 .5.2.5.5v10zm-4 .5c-.4 0-.7-.3-.7-.7s.3-.7.7-.7.7.3.7.7-.3.7-.7.7z"/></svg>
-          <span className="mob-label">Mobile</span>
-        </button>
         <button
           className={`shell-offer-chip${offerMode ? ' on' : ''}`}
           onClick={() => setOfferMode(v => !v)}
