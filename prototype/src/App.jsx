@@ -6,11 +6,29 @@ import { useState, useEffect, useRef } from 'react';
 
 // ─── CSS GLOBAL ───────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
+:root {
+  --but-blue: #439fdb;
+  --but-blue-dark: #1a86cc;
+  --but-blue-pastel: #ecf5fb;
+  --but-red: #ec3431;
+  --but-green: #4ac77c;
+  --but-yellow: #ffeb36;
+  --but-grey: #8b9aa4;
+  --but-solid-grey: #666f7c;
+  --but-dark: #1a1b20;
+  --but-grad-green: linear-gradient(143deg,#88e7a3,#2aba5b);
+  --but-grad-yellow: linear-gradient(177deg,#ffed48,#ffc42b);
+  --but-grad-blue: linear-gradient(180deg,#8fd2e1,#1a86cc);
+  --but-grad-red: linear-gradient(180deg,#ff7c44,#ec3431);
+  --font-main: 'Nunito', system-ui, -apple-system, sans-serif;
+  --radius-pill: 999px;
+  --radius-card: 16px;
+}
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background: #D8D8D8;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  color: #1A1A1A;
+  background: #f0f4f8;
+  font-family: var(--font-main);
+  color: #1a1b20;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -31,33 +49,59 @@ button { cursor: pointer; }
 
 /* Upload progress bar */
 .upbar-track { height: 4px; background: #E0E0E0; border-radius: 2px; margin-top: 10px; overflow: hidden; }
-.upbar-fill { height: 100%; background: #1A1A1A; border-radius: 2px; transition: width 0.08s linear; }
+.upbar-fill { height:100%; background:linear-gradient(90deg,#88e7a3,#2aba5b); border-radius:2px; transition:width 0.08s linear; }
 
 /* Choice blocks */
-.choice-block { border: 1px solid #E0E0E0; border-radius: 10px; padding: 16px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.1s, background 0.1s; }
-.choice-block:hover { border-color: #999; }
-.choice-block.selected { border: 2px solid #1A1A1A !important; background: #F5F5F5; }
+.choice-block { border: 1.5px solid #dde6ed; border-radius: 14px; padding: 16px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s, background 0.1s; }
+.choice-block:hover { border-color: #439fdb; background: #f5f9fd; }
+.choice-block.selected { border: 2px solid #439fdb !important; background: #ecf5fb; }
 
 /* Upload zone */
-.upload-empty { border: 2px dashed #D0D0D0; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: border-color 0.1s; }
-.upload-empty:hover { border-color: #999; }
+.upload-empty { border: 2px dashed #439fdb; border-radius: 14px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.1s, background 0.1s; background: #f9fcff; }
+.upload-empty:hover { border-color: #1a86cc; background: #ecf5fb; }
 
 /* Input focus */
-.field-input { width: 100%; min-height: 40px; border: 1px solid #D0D0D0; border-radius: 8px; padding: 0 12px; font-size: 15px; color: #1A1A1A; background: #FFF; transition: border-color 0.1s; outline: none; }
-.field-input:focus { border: 2px solid #1A1A1A; }
-.field-input.err { border-color: #CC0000; }
-textarea.field-input { padding: 10px 12px; resize: vertical; min-height: 80px; }
+.field-input { width: 100%; min-height: 44px; border: 1.5px solid #439fdb; border-radius: 999px; padding: 0 18px; font-size: 14px; color: #1a1b20; background: #fff; transition: border-color 0.1s, box-shadow 0.1s; outline: none; font-family: var(--font-main); }
+.field-input:focus { border-color: #1a86cc; box-shadow: 0 0 0 3px rgba(67,159,219,0.15); }
+.field-input.err { border-color: #ec3431; }
+textarea.field-input { padding: 12px 18px; resize: vertical; min-height: 90px; border-radius: 16px; }
 
 /* Buttons */
-.btn-primary { display: block; width: 100%; padding: 14px; background: #1A1A1A; color: #FFF; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; transition: background 0.1s; }
-.btn-primary:hover { background: #333; }
-.btn-secondary { display: block; width: 100%; padding: 12px; background: transparent; color: #666; border: 1px solid #D0D0D0; border-radius: 10px; font-size: 15px; cursor: pointer; text-align: center; transition: border-color 0.1s; }
-.btn-secondary:hover { border-color: #999; }
-.btn-sm { display: inline-flex; align-items: center; padding: 6px 12px; background: #FFF; color: #666; border: 1px solid #D0D0D0; border-radius: 6px; font-size: 12px; cursor: pointer; transition: border-color 0.1s; gap: 4px; }
-.btn-sm:hover { border-color: #999; }
+.btn-primary { display: block; width: 100%; padding: 14px 24px; background: linear-gradient(143deg,#88e7a3,#2aba5b); color: #0d4a23; border: none; border-radius: 999px; font-size: 15px; font-weight: 700; cursor: pointer; text-align: center; transition: filter 0.15s ease-out, transform 0.12s ease-out; font-family: var(--font-main); }
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-primary:active { transform: scale(0.98); filter: brightness(0.96); }
+.btn-secondary { display: block; width: 100%; padding: 12px 24px; background: transparent; color: #439fdb; border: 1.5px solid #439fdb; border-radius: 999px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; transition: background 0.15s ease-out, transform 0.12s ease-out; font-family: var(--font-main); }
+.btn-secondary:hover { background: #ecf5fb; }
+.btn-secondary:active { transform: scale(0.98); }
+.btn-sm { display: inline-flex; align-items: center; padding: 8px 16px; background: #fff; color: #439fdb; border: 1.5px solid #439fdb; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; gap: 5px; min-height: 36px; transition: background 0.15s ease-out, transform 0.1s ease-out; }
+.btn-sm:hover { background: #ecf5fb; }
+.btn-sm:active { transform: scale(0.97); }
+
+/* Welcome screen */
+.welcome-mode-btn { width:100%; padding:18px 20px; border-radius:14px; cursor:pointer; text-align:left; display:block; background:linear-gradient(135deg,#ecf5fb,#dceefa); color:#0079c0; border:1.5px solid #c2dcf0; transition:border-color 0.15s, transform 0.12s, box-shadow 0.15s; font-family:var(--font-main); }
+.welcome-mode-btn:active { transform:scale(0.98); }
+@media (hover:hover) and (pointer:fine) { .welcome-mode-btn:hover { border-color:#439fdb; box-shadow:0 4px 16px rgba(67,159,219,0.18); } }
+.welcome-scenario-chip { padding:10px 14px; border-radius:10px; cursor:pointer; text-align:left; display:block; background:white; color:#1a1b20; border:1.5px solid #dde6ed; transition:border-color 0.15s, transform 0.1s; width:100%; font-family:var(--font-main); }
+.welcome-scenario-chip:active { transform:scale(0.97); }
+@media (hover:hover) and (pointer:fine) { .welcome-scenario-chip:hover { border-color:#439fdb; background:#f5f9fd; } }
+.welcome-collapse-trigger { width:100%; display:flex; align-items:center; justify-content:space-between; background:none; border:none; cursor:pointer; padding:0; text-align:left; color:inherit; }
+.welcome-collapse-trigger:active { opacity: 0.7; }
+.welcome-collapse-content { overflow:hidden; transition:max-height 0.28s cubic-bezier(0.23,1,0.32,1), opacity 0.22s ease-out; }
+.welcome-collapse-content.wc-open { max-height:800px; opacity:1; }
+.welcome-collapse-content.wc-closed { max-height:0; opacity:0; }
+.welcome-chevron { transition:transform 0.22s cubic-bezier(0.23,1,0.32,1); color:#666; font-size:14px; flex-shrink:0; }
+.welcome-chevron.wc-open { transform:rotate(180deg); }
+@keyframes welcomeCardIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.welcome-card-stagger { animation:welcomeCardIn 0.32s cubic-bezier(0.23,1,0.32,1) both; }
+.welcome-card-stagger:nth-child(1) { animation-delay:0ms; }
+.welcome-card-stagger:nth-child(2) { animation-delay:65ms; }
+.welcome-card-stagger:nth-child(3) { animation-delay:130ms; }
+.welcome-copy-btn { padding:6px 12px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid #c2dcf0; background:#ecf5fb; color:#439fdb; transition:border-color 0.15s, background 0.15s, transform 0.1s; white-space:nowrap; }
+.welcome-copy-btn:active { transform:scale(0.96); }
+@media (hover:hover) and (pointer:fine) { .welcome-copy-btn:hover { border-color:#439fdb; background:#dceefa; } }
 
 /* Radio / Checkbox */
-input[type="radio"], input[type="checkbox"] { accent-color: #1A1A1A; width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
+input[type="radio"], input[type="checkbox"] { accent-color: #439fdb; width: 17px; height: 17px; cursor: pointer; flex-shrink: 0; }
 input[type="file"] { display: none; }
 
 /* Link */
@@ -71,38 +115,258 @@ input[type="file"] { display: none; }
 .mobile-scroll::-webkit-scrollbar { width: 3px; }
 .mobile-scroll::-webkit-scrollbar-thumb { background: #DDD; border-radius: 2px; }
 
-/* Thumbnail hover */
-.screen-thumb:hover .thumb-frame { border-color: #888 !important; box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
+/* Thumbnail */
+.screen-thumb { flex: 1; min-width: 170px; max-width: 240px; flex-shrink: 0; cursor: pointer; padding: 0 2px; }
+.thumb-frame { width:100%; height:270px; background:#fff; border-radius:14px; border:1.5px solid #dde6ed; overflow:hidden; margin-bottom:8px; transition:border-color 0.15s, box-shadow 0.15s; }
+.screen-thumb:hover .thumb-frame { border-color:#439fdb !important; box-shadow:0 4px 20px rgba(67,159,219,0.2); transform:translateY(-2px); }
+.screen-thumb:hover { transition: transform 0.15s ease-out; }
 
 /* Tab active */
-.tab-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.1s, color 0.1s; }
-.tab-btn.active { background: #1A1A1A; color: #FFF; font-weight: 600; }
-.tab-btn:not(.active) { background: #F0F0F0; color: #666; }
-.tab-btn:not(.active):hover { background: #E0E0E0; }
+.tab-btn { padding:6px 14px; border-radius:6px; font-size:13px; border:none; cursor:pointer; white-space:nowrap; flex-shrink:0; transition:background 0.15s, color 0.15s, transform 0.1s; }
+.tab-btn.active { background:#439fdb; color:#fff; font-weight:700; }
+.tab-btn:not(.active) { background:#f0f4f8; color:#666f7c; }
+.tab-btn:not(.active):hover { background:#e2e8ed; }
 
 /* Panorama scenario row */
-.pano-scenario-row { margin-bottom: 24px; background: #FFF; border-radius: 10px; overflow: hidden; }
-.pano-scenario-header { padding: 12px 16px; border-bottom: 1px solid #F0F0F0; display: flex; align-items: center; gap: 12px; }
-.panorama-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; padding: 16px; overflow-x: auto; }
-.panorama-row::-webkit-scrollbar { height: 5px; }
+.pano-scenario-row { margin-bottom: 16px; background: #FFF; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.pano-scenario-header { padding: 14px 20px; border-bottom: 1px solid #F0F0F0; display: flex; align-items: center; gap: 12px; }
+.panorama-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; padding: 20px 16px; overflow-x: auto; }
+.panorama-row::-webkit-scrollbar { height: 6px; }
+.panorama-row::-webkit-scrollbar-track { background: #F0F0F0; border-radius: 3px; }
 .panorama-row::-webkit-scrollbar-thumb { background: #BBB; border-radius: 3px; }
 
-/* Responsive */
-@media (max-width: 700px) {
-  .nav-panels { display: none !important; }
-  .nav-main { padding: 8px !important; }
+/* ── APP SHELL ───────────────────────────────────────────────────────────── */
+/* Desktop : flex column minimal, body scrolls, sticky works naturally */
+.app-shell { display: flex; flex-direction: column; min-height: 100dvh; }
+/* Mobile : hauteur fixe, zéro scroll body */
+@media (max-width: 640px) {
+  .app-shell { height: 100dvh; min-height: unset; overflow: hidden; }
 }
-@media (max-width: 430px) {
-  .mobile-frame-wrap { transform: scale(0.88); transform-origin: top center; }
+
+/* ── MODE DESCRIPTOR BAR ─────────────────────────────────────────────────── */
+.mode-descriptor-bar {
+  background: #ecf5fb; border-bottom: 1px solid #c8dff0;
+  padding: 8px 18px; font-size: 13px; color: #1a6fa3; line-height: 1.5;
+  flex-shrink: 0;
+}
+.mode-descriptor-bar strong { color: #0079c0; font-weight: 700; }
+.mode-descriptor-icon { margin-right: 6px; opacity: 0.5; }
+@media (max-width: 640px) { .mode-descriptor-bar { display: none; } }
+
+/* ── NAV VIEW ────────────────────────────────────────────────────────────── */
+/* Desktop : flux normal, body scrolle, pas d'overflow clip */
+.nav-view { flex: 1; }
+/* Mobile seulement : contenu scrolle en interne */
+@media (max-width: 640px) {
+  .nav-view { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+}
+
+/* Panorama view root — scrollable sur mobile */
+.pano-view-root { background: #f0f4f8; min-height: 100dvh; }
+@media (max-width: 640px) {
+  .pano-view-root { min-height: 0; flex: 1; overflow-y: auto; }
+}
+
+/* ── TOPBAR SHELL ────────────────────────────────────────────────────────── */
+.shell-topbar {
+  background: linear-gradient(180deg,#0079c0,#439fdb);
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 52px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.shell-logo { color:#fff; font-weight:800; font-size:16px; cursor:pointer; white-space:nowrap; letter-spacing:-0.3px; font-family:var(--font-main); }
+.shell-version { color:rgba(255,255,255,0.55); font-size:12px; white-space:nowrap; }
+.shell-modes { display:flex; gap:3px; flex-shrink:0; background:rgba(255,255,255,0.15); border-radius:9px; padding:3px; }
+.shell-mode-btn {
+  padding:6px 12px; border-radius:7px; font-size:13px; border:none;
+  cursor:pointer; white-space:nowrap; background:transparent; color:rgba(255,255,255,0.75); font-weight:500;
+  transition:background 0.15s, color 0.15s, transform 0.1s;
+  min-height:34px; display:flex; align-items:center; font-family:var(--font-main);
+}
+.shell-mode-btn:active { transform: scale(0.96); }
+.shell-mode-btn.active { background:#fff; color:#0079c0; font-weight:700; }
+.shell-offer-chip {
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;
+  border:1px solid rgba(255,255,255,0.4); background:transparent; color:rgba(255,255,255,0.8);
+  cursor:pointer; white-space:nowrap; margin-left:auto; flex-shrink:0;
+  transition:background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+  user-select:none; min-height:30px; min-width:120px;
+}
+.shell-offer-chip.on { background:linear-gradient(177deg,#ffed48,#ffc42b); color:#7a5800; border-color:transparent; }
+.shell-offer-chip:active { transform: scale(0.94); }
+.shell-mobile-btn {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:5px 12px; border-radius:7px; font-size:12px; font-weight:600;
+  border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.85);
+  cursor:pointer; white-space:nowrap; flex-shrink:0;
+  transition:background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+  min-height:30px;
+}
+.shell-mobile-btn:hover { background:rgba(255,255,255,0.2); color:#fff; }
+.shell-mobile-btn.active { background:rgba(255,255,255,0.25); color:#fff; }
+.shell-mobile-btn:active { transform: scale(0.96); }
+@media (max-width: 640px) {
+  .shell-mobile-btn { padding: 5px 9px; }
+  .shell-mobile-btn .mob-label { display: none; }
+}
+@media (max-width: 640px) {
+  .shell-offer-chip { min-width: 80px; }
+}
+@media (max-width: 640px) {
+  .shell-topbar {
+    position: relative; /* plus de sticky — flex item dans app-shell */
+    padding: 0 12px; height: 52px; gap: 6px; flex-shrink: 0;
+  }
+  .shell-logo { font-size: 15px; }
+  .shell-version { display: none; }
+  .shell-modes { gap: 2px; padding: 2px; }
+  .shell-mode-btn { padding: 6px 10px; font-size: 12px; min-height: 34px; }
+  .shell-offer-chip { padding: 5px 10px; font-size: 11px; min-height: 28px; }
+  .shell-label-long { display: none; }
+  .shell-label-short { display: inline !important; }
+}
+@media (min-width: 641px) {
+  .shell-label-short { display: none !important; }
+}
+
+/* ── NAV SCENARIO BAR ────────────────────────────────────────────────────── */
+.nav-scenario-bar {
+  background:#fff; border-bottom:1px solid #e2e8ed;
+  padding:8px 16px; display:flex; align-items:center;
+  gap:10px; position:sticky; top:93px; z-index:200; flex-shrink:0;
+  min-height:48px;
+}
+.nav-scenario-bar select {
+  padding: 6px 10px; border: 1px solid #D8D8D8; border-radius: 8px;
+  font-size: 13px; font-weight: 500; background: #F8F8F8; color: #1A1A1A;
+  cursor: pointer; min-height: 34px; flex-shrink: 0;
+  -webkit-appearance: auto;
+}
+@media (max-width: 640px) {
+  .nav-scenario-bar {
+    position: relative; top: auto; /* plus de sticky — flex item dans nav-view */
+    padding: 8px 12px; gap: 8px; overflow-x: auto; min-height: 52px; flex-shrink: 0;
+  }
+  .nav-scenario-bar::-webkit-scrollbar { display: none; }
+  .nav-scenario-bar select { font-size: 13px; min-height: 36px; max-width: 160px; }
+}
+
+/* ── PANORAMA MOBILE LIST ────────────────────────────────────────────────── */
+.pano-mobile-list { display:none; }
+.pano-desktop-thumbs { display:block; }
+@media (max-width: 640px) {
+  .pano-mobile-list { display:block; }
+  .pano-desktop-thumbs { display:none; }
+  .pano-tabs-bar { top: 52px !important; }
+}
+
+/* ── NAVIGATION FRAME ────────────────────────────────────────────────────── */
+.nav-frame-desktop {
+  width:390px; min-height:812px; background:#fff;
+  border-radius:20px; overflow-y:auto; overflow-x:hidden;
+  box-shadow:0 8px 40px rgba(26,133,204,0.15);
+}
+.nav-frame-wrap-desktop { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+/* ── BOTTOM NAV ─────────────────────────────────────────────────────────── */
+.nav-bottom-bar {
+  background:#fff; border-top:1.5px solid #e2e8ed;
+  padding:10px 16px; display:flex; justify-content:center; gap:16px;
+  flex-shrink:0; align-items:center;
+}
+@media (max-width: 640px) {
+  .nav-frame-desktop { width:100% !important; height:100% !important; border-radius:0 !important; box-shadow:none !important; flex:1; min-height:0; overflow-y:auto; }
+  .nav-frame-wrap-desktop { flex:1; width:100%; display:flex; flex-direction:column; min-height:0; align-items:stretch !important; overflow:hidden; }
+  .nav-main-layout { flex:1; padding:0 !important; display:flex; flex-direction:column; align-items:stretch !important; min-height:0; overflow:hidden; }
+  .nav-panels { display:none !important; }
+  .nav-bottom-bar { padding: 12px 16px; gap: 12px; }
+  .nav-bottom-bar .btn-sm { padding: 10px 18px; font-size: 14px; min-height: 44px; border-radius: 10px; }
+}
+@media (min-width: 641px) and (max-width: 700px) {
+  .nav-panels { display:none !important; }
 }
 
 /* Overlay */
 .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 16px; }
 
+/* ── IMMERSIVE MODE ──────────────────────────────────────────────────────── */
+/* Desktop: full-screen overlay with phone frame */
+.immersive-overlay { position: fixed; inset: 0; background: #0A0A0A; z-index: 500; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+.immersive-phone-shell { display: flex; flex-direction: column; width: 393px; height: 852px; background: #000; border-radius: 52px; overflow: hidden; box-shadow: 0 0 0 2px #333, 0 40px 100px rgba(0,0,0,0.8); position: relative; }
+.immersive-phone-content { flex: 1; overflow-y: auto; overflow-x: hidden; background: #FFF; scroll-behavior: smooth; }
+.immersive-phone-content::-webkit-scrollbar { width: 3px; }
+.immersive-phone-content::-webkit-scrollbar-thumb { background: #CCC; border-radius: 2px; }
+/* iOS Status bar */
+.ios-status { height: 59px; background: #FFF; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 28px 10px; flex-shrink: 0; }
+.ios-status-time { font-size: 15px; font-weight: 700; color: #1A1A1A; letter-spacing: -0.4px; }
+.ios-status-icons { display: flex; align-items: center; gap: 7px; }
+/* iOS Safari address bar */
+.ios-address { height: 52px; background: #FFF; display: flex; align-items: center; padding: 0 16px; gap: 14px; border-bottom: 0.5px solid #E0E0E0; flex-shrink: 0; }
+.ios-url-pill { flex: 1; background: #EBEBEB; border-radius: 12px; height: 36px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.ios-url-text { font-size: 14px; color: #1A1A1A; font-weight: 400; }
+.ios-nav-icon { font-size: 18px; color: #0A84FF; padding: 6px; cursor: default; line-height: 1; }
+.ios-nav-icon.disabled { opacity: 0.28; }
+/* iOS Safari bottom bar */
+.ios-bottom { height: 49px; background: rgba(249,249,249,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid #D1D1D6; display: flex; align-items: center; justify-content: space-around; padding: 0 16px; flex-shrink: 0; }
+.ios-bottom-icon { font-size: 20px; color: #0A84FF; padding: 6px; cursor: default; line-height: 1; }
+.ios-bottom-icon.disabled { opacity: 0.28; }
+/* iOS Dynamic Island */
+.ios-dynamic-island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 126px; height: 37px; background: #000; border-radius: 20px; z-index: 10; }
+/* Exit pill — desktop, visible sous le frame */
+.immersive-exit-pill { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.25); color: #FFF; font-size: 13px; font-weight: 600; padding: 10px 22px; border-radius: 22px; cursor: pointer; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: background 0.18s ease-out, transform 0.12s ease-out; white-space: nowrap; letter-spacing: -0.1px; }
+.immersive-exit-pill:hover { background: rgba(255,255,255,0.28); }
+.immersive-exit-pill:active { transform: scale(0.97); }
+@media (max-width: 640px) { .immersive-exit-pill { display: none; } }
+/* Exit button inside Safari bottom bar — mobile only */
+.ios-exit-btn { background: none; border: none; cursor: pointer; color: #0A84FF; font-size: 11px; font-weight: 700; padding: 4px 6px; line-height: 1.3; white-space: nowrap; letter-spacing: -0.2px; }
+.ios-exit-btn:active { opacity: 0.55; }
+@media (min-width: 641px) { .ios-exit-btn { display: none; } }
+@media (max-width: 640px) {
+  .ios-bottom-desktop { display: none !important; }
+  .ios-bottom { justify-content: center; }
+  .ios-exit-btn { font-size: 13px; padding: 6px 12px; }
+}
+/* Mobile: fixed overlays */
+@media (max-width: 640px) {
+  .immersive-overlay { background: #FFF; align-items: stretch; justify-content: flex-start; }
+  .immersive-phone-shell { width: 100%; height: 100%; border-radius: 0; box-shadow: none; border: none; }
+  .ios-status { height: 52px; position: sticky; top: 0; z-index: 50; }
+  .ios-dynamic-island { display: none; }
+}
+/* Toggle button in nav-scenario-bar */
+.btn-immersive { padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #D0D0D0; background: #FFF; color: #555; transition: border-color 0.15s ease-out, background 0.15s ease-out, transform 0.1s ease-out; white-space: nowrap; display: flex; align-items: center; gap: 5px; min-height: 34px; }
+.btn-immersive:hover { border-color: #999; background: #F8F8F8; }
+.btn-immersive:active { transform: scale(0.97); }
+
 /* Badge */
-.badge-ok { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; background: #DCFCE7; color: #166534; }
-.badge-branch { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; background: #FEF3C7; color: #92400E; }
-.badge-exit { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; background: #FEE2E2; color: #DC2626; }
+.badge-ok { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:rgba(74,199,124,0.15); color:#1c7a46; }
+.badge-branch { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:rgba(255,196,43,0.2); color:#7a5800; }
+.badge-exit { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:rgba(236,52,49,0.1); color:#b02624; }
+
+/* Btn jaune — aide et appel */
+.btn-aide { display:block; width:100%; padding:14px 24px; background:linear-gradient(177deg,#ffed48,#ffc42b); color:#7a5800; border:none; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; text-align:center; text-decoration:none; transition:filter 0.15s, transform 0.12s; font-family:var(--font-main); }
+.btn-aide:hover { filter:brightness(1.05); }
+.btn-aide:active { transform:scale(0.98); }
+
+/* Sélecteur créneau */
+.btn-creneau { flex:1; padding:10px 16px; border-radius:999px; border:1.5px solid #dde6ed; background:white; color:#666f7c; font-size:14px; cursor:pointer; transition:border-color 0.15s, background 0.1s, color 0.1s; font-family:var(--font-main); font-weight:500; }
+.btn-creneau.active { border-color:#439fdb; background:#ecf5fb; color:#439fdb; font-weight:700; }
+
+/* Popover aide */
+.help-popover { position:absolute; top:calc(100% + 8px); right:0; background:white; border:1px solid #e2e8ed; border-radius:14px; padding:14px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.12); z-index:200; font-size:14px; white-space:nowrap; min-width:220px; }
+
+/* Nouvelles keyframes */
+@keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.slide-down-anim { animation:slideDown 200ms ease-out; }
+.fade-in-anim { animation:fadeIn 200ms ease-out; }
 `;
 
 // ─── SCENARIO DATA ─────────────────────────────────────────────────────────────
@@ -254,50 +518,90 @@ const CONTEXT_TEXT = {
 // ─── INJECT CSS ───────────────────────────────────────────────────────────────
 function InjectCSS() {
   useEffect(() => {
+    // Police Nunito
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap';
+    document.head.appendChild(link);
+    // CSS global
     const el = document.createElement('style');
     el.textContent = GLOBAL_CSS;
     document.head.appendChild(el);
-    return () => { try { document.head.removeChild(el); } catch {} };
+    return () => {
+      try { document.head.removeChild(el); } catch {}
+      try { document.head.removeChild(link); } catch {}
+    };
   }, []);
   return null;
 }
 
 // ─── BASE LAYOUT COMPONENTS ───────────────────────────────────────────────────
 function TunnelHeader({ onHome }) {
+  const [showHelp, setShowHelp] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!showHelp) return;
+    function handleClick(e) { if (ref.current && !ref.current.contains(e.target)) setShowHelp(false); }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showHelp]);
+
   return (
-    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 16px', borderBottom:'1px solid #E0E0E0', position:'sticky', top:0, background:'#FFF', zIndex:50 }}>
-      <span
-        style={{ fontWeight:700, fontSize:18, letterSpacing:'-0.3px', cursor: onHome ? 'pointer' : 'default' }}
-        onClick={onHome}
-      >Butagaz</span>
-      <span
-        className="lnk-gray"
-        style={{ fontSize:13, cursor: onHome ? 'pointer' : 'default' }}
-        onClick={onHome}
-      >Retour au site</span>
+    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 16px', borderBottom:'1px solid #e2e8ed', position:'sticky', top:0, background:'#fff', zIndex:50 }}>
+      <div onClick={onHome} style={{ cursor:onHome?'pointer':'default', display:'flex', alignItems:'center', gap:8 }}>
+        {/* Logo Butagaz inline */}
+        <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+          <div style={{ position:'relative', width:26, height:30, flexShrink:0 }}>
+            <div style={{ position:'absolute', bottom:0, left:0, width:17, height:17, borderRadius:'50%', background:'linear-gradient(135deg,#98c8e8,#439fdb)' }} />
+            <div style={{ position:'absolute', top:0, right:0, width:11, height:11, borderRadius:'50%', background:'linear-gradient(135deg,#c8e8f8,#8fc8e8)' }} />
+          </div>
+          <div style={{ lineHeight:1.05 }}>
+            <div style={{ fontWeight:800, fontSize:16, color:'#ec3431', letterSpacing:'-0.3px', fontFamily:'Nunito,system-ui,sans-serif' }}>Butagaz</div>
+            <div style={{ fontSize:8, color:'#0079c0', fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase', fontFamily:'Nunito,system-ui,sans-serif' }}>Gaz & Electricite</div>
+          </div>
+        </div>
+        <span style={{ height:14, width:1, background:'#e2e8ed', flexShrink:0 }} />
+        <span style={{ fontSize:11, color:'#8b9aa4', fontWeight:500 }}>Souscription gaz en citerne</span>
+      </div>
+      <div ref={ref} style={{ position:'relative' }}>
+        <button
+          onClick={() => setShowHelp(v => !v)}
+          style={{ background:'linear-gradient(177deg,#ffed48,#ffc42b)', color:'#7a5800', border:'none', borderRadius:999, padding:'7px 14px', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'Nunito,system-ui,sans-serif' }}
+        >Besoin d'aide ?</button>
+        {showHelp && (
+          <div className="help-popover fade-in-anim">
+            <div style={{ fontWeight:700, color:'#1a1b20', marginBottom:4 }}>01 XX XX XX XX</div>
+            <div style={{ fontSize:12, color:'#8b9aa4' }}>Lun-ven, 9h-17h</div>
+            <div style={{ fontSize:12, color:'#8b9aa4', marginTop:2 }}>Rappel sous 24h ouvres</div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 function ProgressBar({ step, onStepClick }) {
   return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'12px 16px', gap:0 }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'14px 16px', gap:0 }}>
       {[1,2,3,4,5].map((n, i) => {
         const state = n < step ? 'done' : n === step ? 'active' : 'future';
         return (
           <div key={n} style={{ display:'flex', alignItems:'center' }}>
-            {i > 0 && <div style={{ width:24, height:2, background: n <= step ? '#666' : '#E0E0E0', flexShrink:0 }} />}
+            {i > 0 && <div style={{ width:28, height:2, background: n <= step ? '#439fdb' : '#e2e8ed', flexShrink:0, transition:'background 250ms' }} />}
             <div
               style={{
-                width:28, height:28, borderRadius:'50%',
+                width:32, height:32, borderRadius:'50%',
                 display:'flex', alignItems:'center', justifyContent:'center',
-                fontSize:12, fontWeight:600, flexShrink:0,
-                background: state==='active' ? '#1A1A1A' : state==='done' ? '#666' : '#E0E0E0',
-                color: state==='future' ? '#999' : '#FFF',
+                fontSize:13, fontWeight:700, flexShrink:0,
+                background: state==='active' ? '#439fdb' : state==='done' ? '#1a86cc' : '#e2e8ed',
+                color: state==='future' ? '#8b9aa4' : '#fff',
                 cursor: state==='done' ? 'pointer' : 'default',
+                transition:'background 250ms',
+                boxShadow: state==='active' ? '0 0 0 4px rgba(67,159,219,0.2)' : 'none',
               }}
               onClick={() => state === 'done' && onStepClick && onStepClick(n)}
-            >{n}</div>
+            >{state === 'done' ? '\u2713' : n}</div>
           </div>
         );
       })}
@@ -307,64 +611,92 @@ function ProgressBar({ step, onStepClick }) {
 
 function FooterBanner({ onRecall }) {
   return (
-    <div className="footer-fixed" style={{ background:'#F5F5F5', borderTop:'1px solid #E0E0E0', padding:'10px 16px', fontSize:13, color:'#666' }}>
+    <div className="footer-fixed" style={{ background:'#f7f9fa', borderTop:'0.5px solid #e2e8ed', padding:'10px 16px', fontSize:13, color:'#666f7c' }}>
       <span>Besoin d'aide ? </span>
-      <strong>01 XX XX XX XX</strong>
+      <a href="tel:01XXXXXXXX" style={{ color:'#ec3431', fontWeight:700, textDecoration:'none' }}>01 XX XX XX XX</a>
       <span> ou </span>
-      <span className="lnk" onClick={onRecall}>demandez à être rappelé</span>
+      <span style={{ textDecoration:'underline', cursor:'pointer', color:'#439fdb', fontWeight:600 }} onClick={onRecall}>etre rappele</span>
     </div>
   );
 }
 
-function BackLink({ label = '← Précédent', onClick }) {
+function BackLink({ label = '\u2190 Precedent', onClick }) {
   return (
-    <div style={{ display:'flex', alignItems:'center', gap:4, fontSize:13, color:'#666', marginBottom:16 }}>
-      <span className="lnk-gray" onClick={onClick}>{label}</span>
+    <div style={{ display:'flex', alignItems:'center', gap:4, fontSize:13, marginBottom:16 }}>
+      <span style={{ textDecoration:'underline', cursor:'pointer', color:'#439fdb', fontWeight:600 }} onClick={onClick}>{label}</span>
     </div>
   );
 }
 
 // ─── CONTENT BLOCKS ───────────────────────────────────────────────────────────
 function InfoBlock({ children }) {
-  return <div style={{ background:'#EFF6FF', borderRadius:8, padding:12, fontSize:13, color:'#1A4D8C', marginBottom:16, lineHeight:1.6 }}>{children}</div>;
+  return <div style={{ background:'#ecf5fb', borderLeft:'3px solid #439fdb', borderRadius:12, padding:'12px 14px', fontSize:13, color:'#1a6fa3', marginBottom:16, lineHeight:1.6 }}>{children}</div>;
 }
 function OfferBlock({ children }) {
-  return <div style={{ background:'#F0FFF4', border:'1px solid #22C55E', borderRadius:8, padding:12, fontSize:13, color:'#166534', marginBottom:16, lineHeight:1.6 }}>{children}</div>;
+  return <div style={{ background:'rgba(74,199,124,0.08)', border:'1.5px solid #4ac77c', borderRadius:12, padding:'12px 14px', fontSize:13, color:'#1c7a46', marginBottom:16, lineHeight:1.6 }}>{children}</div>;
 }
 function WarningBlock({ children }) {
-  return <div style={{ background:'#FFF9E6', border:'1px solid #E6D490', borderRadius:8, padding:12, fontSize:13, color:'#92400E', marginBottom:16, lineHeight:1.6 }}>{children}</div>;
+  return <div style={{ background:'#fffbe6', border:'1px solid #ffc42b', borderRadius:12, padding:'12px 14px', fontSize:13, color:'#7a5800', marginBottom:16, lineHeight:1.6 }}>{children}</div>;
 }
 function GrayBlock({ children }) {
-  return <div style={{ background:'#F5F5F5', borderRadius:8, padding:12, fontSize:13, color:'#666', marginBottom:16, lineHeight:1.6 }}>{children}</div>;
+  return <div style={{ background:'#f7f9fa', border:'0.5px solid #e2e8ed', borderRadius:12, padding:'12px 14px', fontSize:13, color:'#666f7c', marginBottom:16, lineHeight:1.6 }}>{children}</div>;
 }
 
+// ─── FAKE DATA ─────────────────────────────────────────────────────────────────
+const FAKE_ADDRESSES = [
+  '15 rue des Chênes, 44300 Nantes',
+  '8 chemin du Lavoir, 35000 Rennes',
+  '3 impasse des Vignes, 86000 Poitiers',
+  "2 route de l'Église, 24100 Bergerac",
+  '7 allée des Tilleuls, 33000 Bordeaux',
+  '22 avenue Jean Jaurès, 31000 Toulouse',
+  '14 rue du Moulin, 69100 Villeurbanne',
+  '5 boulevard Victor Hugo, 06000 Nice',
+  '18 chemin des Prés, 67000 Strasbourg',
+  '42 rue de la Fontaine, 63000 Clermont-Ferrand',
+  '6 rue du Port, 56100 Lorient',
+  '11 allée des Roses, 13100 Aix-en-Provence',
+  '30 rue des Marronniers, 76000 Rouen',
+  '9 chemin de la Croix, 37000 Tours',
+  '17 rue Saint-Nicolas, 51100 Reims',
+  '25 avenue du Général de Gaulle, 59000 Lille',
+  '4 impasse du Bois, 47000 Agen',
+  '33 rue des Lilas, 77000 Melun',
+  '16 chemin des Oliviers, 30000 Nîmes',
+  '7 rue de la Paix, 64000 Pau',
+];
+
+const FAKE_FACTURE_NAMES = [
+  { name: 'facture_primagaz_jan.pdf', size: '245 Ko' },
+  { name: 'facture_primagaz_fev.pdf', size: '231 Ko' },
+  { name: 'facture_primagaz_mar.pdf', size: '258 Ko' },
+];
+
 // ─── FORM COMPONENTS ──────────────────────────────────────────────────────────
-function Tooltip({ id, text, open, onToggle }) {
+function TooltipBtn({ id, onToggle }) {
   return (
-    <>
-      <span
-        onClick={() => onToggle(id)}
-        style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:17, height:17, borderRadius:'50%', border:'1px solid #AAA', fontSize:10, color:'#888', cursor:'pointer', marginLeft:5, flexShrink:0, verticalAlign:'middle' }}
-      >i</span>
-      {open && (
-        <div className="tooltip-anim" style={{ background:'#FFF9E6', border:'1px solid #E6D490', borderRadius:8, padding:10, fontSize:13, color:'#92400E', marginTop:6, lineHeight:1.5 }}>
-          {text}
-        </div>
-      )}
-    </>
+    <span
+      onClick={() => onToggle(id)}
+      style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:17, height:17, borderRadius:'50%', border:'1px solid #AAA', fontSize:10, color:'#888', cursor:'pointer', marginLeft:5, flexShrink:0, verticalAlign:'middle' }}
+    >i</span>
   );
 }
 
 function FormField({ id, label, tooltipText, openTip, onToggleTip, error, children }) {
+  const tipOpen = openTip === id;
   return (
     <div style={{ marginBottom:14 }}>
-      <div style={{ display:'flex', alignItems:'center', marginBottom:5 }}>
+      <div style={{ display:'flex', alignItems:'center', marginBottom: tipOpen ? 6 : 5 }}>
         <label style={{ fontSize:13, color:'#666' }}>{label}</label>
-        {tooltipText && <Tooltip id={id} text={tooltipText} open={openTip===id} onToggle={onToggleTip} />}
+        {tooltipText && <TooltipBtn id={id} onToggle={onToggleTip} />}
       </div>
+      {tooltipText && tipOpen && (
+        <div className="tooltip-anim" style={{ background:'#fffbe6', border:'1px solid #ffc42b', borderRadius:12, padding:10, fontSize:13, color:'#7a5800', marginBottom:8, lineHeight:1.5, width:'100%' }}>
+          {tooltipText}
+        </div>
+      )}
       {children}
-      {tooltipText && openTip===id && <div style={{ height:0 }} />}
-      {error && <div style={{ fontSize:12, color:'#CC0000', marginTop:4 }}>{error}</div>}
+      {error && <div style={{ fontSize:12, color:'#ec3431', marginTop:4 }}>{error}</div>}
     </div>
   );
 }
@@ -391,6 +723,93 @@ function CheckboxField({ checked, onChange, children }) {
   );
 }
 
+function AddressInput({ value, onChange, onBlur, hasError, placeholder }) {
+  const [suggestions, setSuggestions] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const debounceRef = useRef(null);
+
+  function showFakeSuggestions(v) {
+    const filtered = v.trim().length === 0
+      ? FAKE_ADDRESSES.slice(0, 5)
+      : FAKE_ADDRESSES.filter(a => a.toLowerCase().includes(v.toLowerCase())).slice(0, 5);
+    setSuggestions(filtered);
+    setOpen(filtered.length > 0);
+  }
+
+  function handleFocus() {
+    if (!open) showFakeSuggestions(value);
+  }
+
+  function handleChange(e) {
+    const v = e.target.value;
+    onChange(v);
+    clearTimeout(debounceRef.current);
+    if (v.trim().length < 3) {
+      showFakeSuggestions(v);
+      return;
+    }
+    debounceRef.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(v)}&limit=5&autocomplete=1`);
+        const json = await res.json();
+        const addrs = (json.features || []).map(f => f.properties.label);
+        if (addrs.length > 0) {
+          setSuggestions(addrs);
+          setOpen(true);
+        } else {
+          showFakeSuggestions(v);
+        }
+      } catch {
+        showFakeSuggestions(v);
+      } finally {
+        setLoading(false);
+      }
+    }, 250);
+  }
+
+  function handleSelect(addr) {
+    onChange(addr);
+    setOpen(false);
+    setSuggestions([]);
+  }
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <input
+        className={`field-input${hasError ? ' err' : ''}`}
+        value={value}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={() => { setTimeout(() => setOpen(false), 200); onBlur && onBlur(); }}
+        placeholder={placeholder || "Commencez à taper votre adresse"}
+        autoComplete="off"
+      />
+      {loading && (
+        <div style={{ fontSize:12, color:'#999', marginTop:4, paddingLeft:4 }}>Recherche…</div>
+      )}
+      {open && suggestions.length > 0 && (
+        <div style={{ position:'absolute', left:0, right:0, zIndex:100, background:'#FFF', border:'1px solid #D0D0D0', borderRadius:8, boxShadow:'0 4px 16px rgba(0,0,0,0.12)', overflow:'hidden', marginTop:4 }}>
+          {suggestions.map((addr, i) => (
+            <div
+              key={i}
+              onMouseDown={() => handleSelect(addr)}
+              onTouchStart={() => handleSelect(addr)}
+              style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 14px', fontSize:14, color:'#1a1b20', cursor:'pointer', borderBottom: i < suggestions.length - 1 ? '1px solid #F0F0F0' : 'none', background:'#FFF', lineHeight:1.4 }}
+              onMouseEnter={e => e.currentTarget.style.background = '#F5F5F5'}
+              onMouseLeave={e => e.currentTarget.style.background = '#FFF'}
+            >
+              <svg width="12" height="16" viewBox="0 0 12 16" fill="none" style={{ flexShrink:0 }}><path d="M6 0C3.24 0 1 2.24 1 5c0 3.75 5 11 5 11s5-7.25 5-11c0-2.76-2.24-5-5-5zm0 7.5C4.62 7.5 3.5 6.38 3.5 5S4.62 2.5 6 2.5 8.5 3.62 8.5 5 7.38 7.5 6 7.5z" fill="#999"/></svg>
+              {addr}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── UPLOAD ITEM (Mode B) ─────────────────────────────────────────────────────
 // UploadItem simplifié — Mode B gère les sous-écrans.
 // Phases supportées : 'empty' | 'loading' | 'success'
@@ -414,8 +833,8 @@ function UploadItem({ index, file, progress, phase, onZoneClick, onDelete }) {
         </div>
       )}
       {phase === 'success' && (
-        <div style={{ background:'#F0FFF0', border:'1px solid #22C55E', borderRadius:10, padding:14 }}>
-          <div style={{ fontSize:14, fontWeight:600, color:'#166534', marginBottom:2 }}>✓ {file?.name}</div>
+        <div style={{ background:'rgba(74,199,124,0.08)', border:'1px solid #4ac77c', borderRadius:10, padding:14 }}>
+          <div style={{ fontSize:14, fontWeight:600, color:'#1c7a46', marginBottom:2 }}>✓ {file?.name}</div>
           <div style={{ fontSize:12, color:'#666', marginBottom:8 }}>{file?.size}</div>
           <div style={{ display:'flex', gap:8 }}>
             <button className="btn-sm">Voir l'aperçu</button>
@@ -432,6 +851,7 @@ function UploadItem({ index, file, progress, phase, onZoneClick, onDelete }) {
 function RecallModal({ formData, onClose }) {
   const [f, setF] = useState({ nom: formData.prenom && formData.nom ? formData.prenom + ' ' + formData.nom : '', telephone: formData.telephone || '', email: formData.email || '', rgpd: false });
   const [sent, setSent] = useState(false);
+  const [creneau, setCreneau] = useState(null);
 
   function handleSend() {
     if (!f.nom || !f.telephone || !f.rgpd) return;
@@ -447,7 +867,7 @@ function RecallModal({ formData, onClose }) {
           <span style={{ fontSize:20, cursor:'pointer', color:'#666', lineHeight:1 }} onClick={onClose}>×</span>
         </div>
         {sent ? (
-          <InfoBlock>Demande envoyée. Un conseiller vous contactera sous 24 h.</InfoBlock>
+          <InfoBlock>Demande envoyée. Un conseiller vous contactera sous 24h ouvres.</InfoBlock>
         ) : (
           <>
             <div style={{ marginBottom:12 }}>
@@ -455,12 +875,21 @@ function RecallModal({ formData, onClose }) {
               <input className="field-input" value={f.nom} onChange={e => setF({...f, nom: e.target.value})} placeholder="Votre nom" />
             </div>
             <div style={{ marginBottom:12 }}>
-              <label style={{ fontSize:13, color:'#666', display:'block', marginBottom:4 }}>Téléphone *</label>
-              <input className="field-input" value={f.telephone} onChange={e => setF({...f, telephone: e.target.value})} placeholder="06 ou 07..." />
+              <label style={{ fontSize:13, color:'#666', display:'block', marginBottom:4 }}>Telephone *</label>
+              <input className="field-input" value={f.telephone} onChange={e => setF({...f, telephone: e.target.value})} placeholder="06 ou 07..." type="tel" inputMode="tel" />
+            </div>
+            <div style={{ marginBottom:14 }}>
+              <label style={{ fontSize:13, color:'#439fdb', fontWeight:600, display:'block', marginBottom:6 }}>Preference d'appel</label>
+              <div style={{ display:'flex', gap:8 }}>
+                {['Matin', 'Apres-midi'].map(opt => (
+                  <button key={opt} type="button" onClick={() => setCreneau(creneau === opt ? null : opt)}
+                    className={`btn-creneau${creneau === opt ? ' active' : ''}`}>{opt}</button>
+                ))}
+              </div>
             </div>
             <div style={{ marginBottom:16 }}>
               <label style={{ fontSize:13, color:'#666', display:'block', marginBottom:4 }}>Email</label>
-              <input className="field-input" value={f.email} onChange={e => setF({...f, email: e.target.value})} placeholder="votre@email.fr" />
+              <input className="field-input" value={f.email} onChange={e => setF({...f, email: e.target.value})} placeholder="votre@email.fr" type="email" inputMode="email" />
             </div>
             <CheckboxField checked={f.rgpd} onChange={v => setF({...f, rgpd:v})}>
               J'accepte que les informations saisies soient utilisées dans le cadre de la relation commerciale avec Butagaz, pour me recontacter.
@@ -475,8 +904,6 @@ function RecallModal({ formData, onClose }) {
 
 // ─── SCREEN: PAGE0 — SITE BUTAGAZ.FR ─────────────────────────────────────────
 function ScreenPAGE0({ offerMode, navigate, showRecall }) {
-  const [showPhone, setShowPhone] = useState(false);
-
   const grayStyle = { opacity: 0.35, pointerEvents: 'none', userSelect: 'none' };
 
   return (
@@ -509,67 +936,42 @@ function ScreenPAGE0({ offerMode, navigate, showRecall }) {
       </div>
 
       {/* ─── ENCART SOUSCRIPTION — ZONE ACTIVE ─── */}
-      <div id="encart-souscription" style={{ margin: '0 12px 12px', background: '#FFF', border: '2px solid #1A1A1A', borderRadius: 12, overflow: 'hidden' }}>
-        {/* Étiquette indicateur */}
-        <div style={{ background: '#FFF9E6', borderBottom: '1px solid #E6D490', padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 11, color: '#92400E', fontWeight: 500 }}>Zone active du prototype</span>
+      <div id="encart-souscription" style={{ margin: '0 12px 12px', background: '#fff', border: '2px solid #439fdb', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 24px rgba(67,159,219,0.15)' }}>
+        {/* Etiquette indicateur */}
+        <div style={{ background: '#ecf5fb', borderBottom: '1px solid #c2dcf0', padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 11, color: '#1a6fa3', fontWeight: 600, letterSpacing: '0.04em' }}>↗ Zone active du prototype</span>
         </div>
 
         <div style={{ padding: '20px 16px' }}>
-          <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, lineHeight: 1.3 }}>
+          <div style={{ fontSize: 19, fontWeight: 700, marginBottom: 16, lineHeight: 1.3, color: '#1a1b20' }}>
             Vous souhaitez changer de fournisseur ?
           </div>
 
           {offerMode && (
-            <div style={{ background: '#F0FFF4', border: '1px solid #22C55E', borderRadius: 8, padding: '10px 14px', marginBottom: 14, fontSize: 13, color: '#166534', lineHeight: 1.5 }}>
-              <strong>Jusqu'à 200 € d'avoir gaz offerts</strong> sur votre première commande*
+            <div style={{ background: 'linear-gradient(135deg,#ecf5fb,#dceefa)', border: '1.5px solid #439fdb', borderRadius: 14, padding: '12px 14px', marginBottom: 14, fontSize: 13, color: '#0079c0', lineHeight: 1.5 }}>
+              <strong>Jusqu'a 200 € d'avoir gaz offerts</strong> sur votre premiere commande*
             </div>
           )}
 
-          {offerMode ? (
-            <>
-              <button className="btn-primary" style={{ marginBottom: 10 }} onClick={() => navigate('WF1')}>
-                <div>Souscrire en ligne</div>
-                <div style={{ fontSize: 12, fontWeight: 400, opacity: 0.8, marginTop: 2 }}>Devis personnalisé sous 48 h</div>
-              </button>
-              <button className="btn-secondary" style={{ marginBottom: 10 }} onClick={() => setShowPhone(!showPhone)}>
-                <div style={{ fontWeight: 500 }}>Appeler un conseiller</div>
-                <div style={{ fontSize: 12, color: '#999', marginTop: 2 }}>01 XX XX XX XX · lun-ven 9h-18h</div>
-              </button>
-              {showPhone && (
-                <div style={{ padding: '10px 14px', background: '#F5F5F5', borderRadius: 8, marginBottom: 10, fontSize: 14, fontWeight: 600 }}>
-                  Appelez le 01 XX XX XX XX, du lundi au vendredi de 9h à 18h
-                </div>
-              )}
-              <button className="btn-secondary" onClick={() => navigate('WF0-step2')}>
-                <div style={{ fontWeight: 500 }}>Être rappelé</div>
-                <div style={{ fontSize: 12, color: '#999', marginTop: 2 }}>Un conseiller vous contacte sous 24 h</div>
-              </button>
+          <>
+            <button className="btn-primary" style={{ marginBottom: 10 }} onClick={() => navigate('WF1')}>
+              <div>Souscrire en ligne</div>
+              <div style={{ fontSize: 12, fontWeight: 400, opacity: 0.8, marginTop: 2 }}>Devis personnalise sous 24h ouvres</div>
+            </button>
+            <a href="tel:01XXXXXXXX" className="btn-aide" style={{ display:'block', marginBottom:10, textDecoration:'none' }}>
+              Appeler un conseiller<br/>
+              <span style={{ fontSize:12, fontWeight:400, opacity:0.8 }}>01 XX XX XX XX, Lun-ven 9h-18h</span>
+            </a>
+            <button className="btn-secondary" onClick={() => navigate('WF0-step2')}>
+              <div style={{ fontWeight: 500 }}>Etre rappele</div>
+              <div style={{ fontSize: 12, color: '#8b9aa4', marginTop: 2 }}>Un conseiller vous contacte sous 24h ouvres</div>
+            </button>
+            {offerMode && (
               <div style={{ fontSize: 11, color: '#999', lineHeight: 1.5, marginTop: 12 }}>
                 *Offre réservée aux clients souscrivant à une citerne apparente. Le montant de l'avoir sera déterminé en fonction de la consommation annuelle estimée.
               </div>
-            </>
-          ) : (
-            <>
-              <button className="btn-secondary" style={{ marginBottom: 10 }} onClick={() => setShowPhone(!showPhone)}>
-                <div style={{ fontWeight: 500 }}>Appeler un conseiller</div>
-                <div style={{ fontSize: 12, color: '#999', marginTop: 2 }}>01 XX XX XX XX · lun-ven 9h-18h</div>
-              </button>
-              {showPhone && (
-                <div style={{ padding: '10px 14px', background: '#F5F5F5', borderRadius: 8, marginBottom: 10, fontSize: 14, fontWeight: 600 }}>
-                  Appelez le 01 XX XX XX XX, du lundi au vendredi de 9h à 18h
-                </div>
-              )}
-              <button className="btn-secondary" style={{ marginBottom: 10 }} onClick={() => navigate('WF0-step2')}>
-                <div style={{ fontWeight: 500 }}>Être rappelé</div>
-                <div style={{ fontSize: 12, color: '#999', marginTop: 2 }}>Un conseiller vous contacte sous 24 h</div>
-              </button>
-              <button className="btn-primary" onClick={() => navigate('WF1')}>
-                <div>Souscrire en ligne</div>
-                <div style={{ fontSize: 12, fontWeight: 400, opacity: 0.8, marginTop: 2 }}>Devis personnalisé sous 48 h</div>
-              </button>
-            </>
-          )}
+            )}
+          </>
         </div>
       </div>
 
@@ -605,6 +1007,7 @@ function ScreenPAGE0({ offerMode, navigate, showRecall }) {
 function ScreenWF0Step2({ formData, setFormData, navigate, showRecall, onHome }) {
   const [f, setF] = useState({ prenom: formData.prenom||'', nom: formData.nom||'', telephone: formData.telephone||'', email: formData.email||'', message: '', rgpd: false });
   const [errors, setErrors] = useState({});
+  const [creneau, setCreneau] = useState(null);
 
   function validate() {
     const e = {};
@@ -634,22 +1037,31 @@ function ScreenWF0Step2({ formData, setFormData, navigate, showRecall, onHome })
         <div style={{ marginBottom:14 }}>
           <label style={{ fontSize:13, color:'#666', display:'block', marginBottom:5 }}>Prénom *</label>
           <input className={`field-input${errors.prenom?' err':''}`} value={f.prenom} onChange={e => setF({...f,prenom:e.target.value})} onBlur={() => { if (!f.prenom.trim()) setErrors({...errors,prenom:'Veuillez saisir votre prénom.'}); else setErrors({...errors,prenom:null}); }} />
-          {errors.prenom && <div style={{ fontSize:12, color:'#CC0000', marginTop:4 }}>{errors.prenom}</div>}
+          {errors.prenom && <div style={{ fontSize:12, color:'#ec3431', marginTop:4 }}>{errors.prenom}</div>}
         </div>
         <div style={{ marginBottom:14 }}>
           <label style={{ fontSize:13, color:'#666', display:'block', marginBottom:5 }}>Nom *</label>
           <input className={`field-input${errors.nom?' err':''}`} value={f.nom} onChange={e => setF({...f,nom:e.target.value})} onBlur={() => { if (!f.nom.trim()) setErrors({...errors,nom:'Veuillez saisir votre nom.'}); else setErrors({...errors,nom:null}); }} />
-          {errors.nom && <div style={{ fontSize:12, color:'#CC0000', marginTop:4 }}>{errors.nom}</div>}
+          {errors.nom && <div style={{ fontSize:12, color:'#ec3431', marginTop:4 }}>{errors.nom}</div>}
         </div>
         <div style={{ marginBottom:14 }}>
           <label style={{ fontSize:13, color:'#666', display:'block', marginBottom:5 }}>Numéro de téléphone *</label>
           <input className={`field-input${errors.telephone?' err':''}`} value={f.telephone} onChange={e => setF({...f,telephone:e.target.value})} placeholder="06 ou 07..." />
-          {errors.telephone && <div style={{ fontSize:12, color:'#CC0000', marginTop:4 }}>{errors.telephone}</div>}
+          {errors.telephone && <div style={{ fontSize:12, color:'#ec3431', marginTop:4 }}>{errors.telephone}</div>}
+        </div>
+        <div style={{ marginBottom:14 }}>
+          <label style={{ fontSize:13, color:'#439fdb', fontWeight:600, display:'block', marginBottom:6 }}>Preference d'appel (facultatif)</label>
+          <div style={{ display:'flex', gap:8 }}>
+            {['Matin', 'Apres-midi'].map(opt => (
+              <button key={opt} type="button" onClick={() => setCreneau(creneau === opt ? null : opt)}
+                className={`btn-creneau${creneau === opt ? ' active' : ''}`}>{opt}</button>
+            ))}
+          </div>
         </div>
         <div style={{ marginBottom:14 }}>
           <label style={{ fontSize:13, color:'#666', display:'block', marginBottom:5 }}>Email *</label>
           <input className={`field-input${errors.email?' err':''}`} value={f.email} onChange={e => setF({...f,email:e.target.value})} placeholder="votre@email.fr" />
-          {errors.email && <div style={{ fontSize:12, color:'#CC0000', marginTop:4 }}>{errors.email}</div>}
+          {errors.email && <div style={{ fontSize:12, color:'#ec3431', marginTop:4 }}>{errors.email}</div>}
         </div>
         <div style={{ marginBottom:14 }}>
           <label style={{ fontSize:13, color:'#666', display:'block', marginBottom:5 }}>Message (facultatif)</label>
@@ -659,7 +1071,7 @@ function ScreenWF0Step2({ formData, setFormData, navigate, showRecall, onHome })
         <CheckboxField checked={f.rgpd} onChange={v => setF({...f,rgpd:v})}>
           J'accepte que les informations saisies soient utilisées dans le cadre de la relation commerciale avec Butagaz, pour me recontacter.
         </CheckboxField>
-        {errors.rgpd && <div style={{ fontSize:12, color:'#CC0000', marginBottom:14 }}>{errors.rgpd}</div>}
+        {errors.rgpd && <div style={{ fontSize:12, color:'#ec3431', marginBottom:14 }}>{errors.rgpd}</div>}
 
         <button className="btn-primary" onClick={handleSubmit}>Envoyer ma demande</button>
       </div>
@@ -674,10 +1086,10 @@ function ScreenWF0Step3({ navigate, returnToSite }) {
     <div className="screen-anim">
       <TunnelHeader onHome={returnToSite} />
       <div style={{ padding:'32px 16px 80px 16px', textAlign:'center' }}>
-        <div style={{ width:60, height:60, borderRadius:'50%', background:'#F0FFF4', border:'2px solid #22C55E', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:26 }}>✓</div>
+        <div style={{ width:60, height:60, borderRadius:'50%', background:'rgba(74,199,124,0.08)', border:'2px solid #4ac77c', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:26 }}>✓</div>
         <div style={{ fontSize:22, fontWeight:700, marginBottom:16 }}>Votre demande est bien reçue</div>
         <InfoBlock>
-          Un conseiller vous contactera sous 24 h. Rappel entre 9h et 17h, du lundi au vendredi.
+          Un conseiller vous contactera sous 24h ouvres. Rappel entre 9h et 17h, du lundi au vendredi.
         </InfoBlock>
         <button className="btn-secondary" onClick={returnToSite}>Retour au site butagaz.fr</button>
       </div>
@@ -691,7 +1103,11 @@ function ScreenWF1({ navigate, showRecall, initChoice, onHome }) {
 
   function handleChoice(c) {
     setChoice(c);
-    if (c === 'succession' || c === 'energie') navigate('WF1-sortie');
+    if (c === 'succession' || c === 'energie') {
+      navigate('WF1-sortie');
+    } else if (c === 'changer') {
+      setTimeout(() => navigate('WF1bis'), 450);
+    }
   }
 
   return (
@@ -710,7 +1126,7 @@ function ScreenWF1({ navigate, showRecall, initChoice, onHome }) {
         </div>
 
         {choice === 'changer' && (
-          <div className="slide-down" style={{ background:'#FFF9E6', border:'1px solid #E6D490', borderRadius:8, padding:12, fontSize:13, color:'#92400E', marginBottom:10, lineHeight:1.5 }}>
+          <div className="slide-down" style={{ background:'#fffbe6', border:'1px solid #ffc42b', borderRadius:12, padding:12, fontSize:13, color:'#7a5800', marginBottom:10, lineHeight:1.5 }}>
             ✓ Ce parcours est réservé aux propriétaires qui souhaitent changer de fournisseur de gaz en citerne.
           </div>
         )}
@@ -729,11 +1145,6 @@ function ScreenWF1({ navigate, showRecall, initChoice, onHome }) {
           <div style={{ fontWeight:600, fontSize:15 }}>Je souhaite passer au gaz en citerne</div>
         </div>
 
-        {choice === 'changer' && (
-          <button className="btn-primary" style={{ marginTop:8 }} onClick={() => navigate('WF1bis')}>
-            Continuer →
-          </button>
-        )}
       </div>
       <FooterBanner onRecall={showRecall} />
     </div>
@@ -758,7 +1169,7 @@ function ScreenWF1bis({ navigate, showRecall, onHome }) {
 
         <WarningBlock>
           <strong>Où trouver vos factures ?</strong><br />
-          · Dans votre boîte aux lettres<br />
+          · Dans votre boîte mail<br />
           · Dans votre espace client en ligne (Primagaz, Antargaz, Vitogaz)<br />
           · Sur l'appli de votre fournisseur
         </WarningBlock>
@@ -771,7 +1182,7 @@ function ScreenWF1bis({ navigate, showRecall, onHome }) {
           C'est parti →
         </button>
         <div style={{ textAlign:'center', fontSize:13, color:'#666' }}>
-          <span className="lnk-gray">Vous préférez être accompagné ? Appelez-nous ou soyez rappelé</span>
+          <span className="lnk-gray" onClick={() => navigate('WF0-step2')}>Vous préférez être accompagné ? Demandez à être rappelé</span>
         </div>
       </div>
       <FooterBanner onRecall={showRecall} />
@@ -780,63 +1191,20 @@ function ScreenWF1bis({ navigate, showRecall, onHome }) {
 }
 
 // ─── SCREEN: WF1-SORTIE — NON ÉLIGIBLE ───────────────────────────────────────
-function ScreenWF1Sortie({ formData, navigate, returnToSite, onHome }) {
-  const [submitted, setSubmitted] = useState(false);
-  const [rgpd, setRgpd] = useState(false);
-
-  const hasData = formData.prenom || formData.telephone;
-
+function ScreenWF1Sortie({ navigate, showRecall, returnToSite, onHome }) {
   return (
     <div className="screen-anim">
       <TunnelHeader onHome={returnToSite || onHome} />
-      <div style={{ padding:'24px 16px 32px 16px' }}>
-        <div style={{ fontSize:22, fontWeight:700, marginBottom:12 }}>Ce parcours ne correspond pas à votre situation</div>
-
-        <div style={{ fontSize:14, color:'#666', marginBottom:8, lineHeight:1.6 }}>
-          Le parcours en ligne est conçu pour les propriétaires souhaitant changer de fournisseur de gaz en citerne.
+      <div style={{ padding:'32px 16px 80px', textAlign:'center' }}>
+        <div style={{ fontSize:40, marginBottom:16 }}>👋</div>
+        <div style={{ fontSize:22, fontWeight:700, color:'#1a1b20', marginBottom:12, lineHeight:1.3 }}>Parlons de votre projet</div>
+        <div style={{ fontSize:14, color:'#666f7c', lineHeight:1.7, marginBottom:28, maxWidth:320, margin:'0 auto 28px' }}>
+          Pour votre situation, nos conseillers vous accompagnent directement. Aucun justificatif de fournisseur actuel n'est necessaire.
         </div>
-        <div style={{ fontSize:14, color:'#666', marginBottom:20, lineHeight:1.6 }}>
-          Votre situation est différente, mais nos conseillers peuvent tout à fait vous accompagner.
-        </div>
-
-        <button className="btn-secondary" style={{ marginBottom:12 }}>
-          Appeler le 01 XX XX XX XX · lun-ven 9h-18h
-        </button>
-
-        <div style={{ border:'1px solid #E0E0E0', borderRadius:10, padding:16, marginBottom:16 }}>
-          <div style={{ fontWeight:600, fontSize:15, marginBottom:4 }}>Demander à être rappelé</div>
-          <div style={{ fontSize:13, color:'#666', marginBottom:12 }}>Un conseiller vous recontactera sous 24 h.</div>
-
-          {hasData && (
-            <div style={{ background:'#F5F5F5', borderRadius:8, padding:12, marginBottom:12, fontSize:13 }}>
-              <div style={{ fontWeight:500, marginBottom:4 }}>Vos informations :</div>
-              {formData.civilite && formData.prenom && <div>{formData.civilite} {formData.prenom} {formData.nom}</div>}
-              {formData.telephone && <div>{formData.telephone}</div>}
-              {formData.email && <div>{formData.email}</div>}
-              <span className="lnk" style={{ fontSize:12, marginTop:6, display:'inline-block' }}>Modifier</span>
-            </div>
-          )}
-          {!hasData && (
-            <div style={{ fontSize:13, color:'#999', marginBottom:12, fontStyle:'italic' }}>
-              Mme Marie Dupont · 06 12 34 56 78 · marie.dupont@email.fr
-              <span className="lnk" style={{ fontSize:12, marginLeft:8 }}>Modifier</span>
-            </div>
-          )}
-
-          {!submitted ? (
-            <>
-              <CheckboxField checked={rgpd} onChange={setRgpd}>
-                J'accepte que les informations saisies soient utilisées dans le cadre de la relation commerciale avec Butagaz, pour me recontacter.
-              </CheckboxField>
-              <button className="btn-primary" onClick={() => setSubmitted(true)}>Confirmer et Envoyer</button>
-            </>
-          ) : (
-            <InfoBlock>Votre demande est bien enregistrée. Un conseiller vous contactera sous 24 h.</InfoBlock>
-          )}
-        </div>
-
-        <div style={{ textAlign:'center' }}>
-          <span className="lnk-gray" style={{ fontSize:13 }} onClick={returnToSite}>Retour au site butagaz.fr</span>
+        <button className="btn-primary" style={{ marginBottom:12 }} onClick={() => showRecall && showRecall()}>Etre rappele →</button>
+        <button className="btn-secondary" onClick={() => navigate('PAGE0')}>← Retour au site butagaz.fr</button>
+        <div style={{ marginTop:20 }}>
+          <a href="tel:01XXXXXXXX" style={{ fontSize:13, color:'#439fdb', fontWeight:600, textDecoration:'none' }}>01 XX XX XX XX, Lun-ven 9h-17h</a>
         </div>
       </div>
     </div>
@@ -909,16 +1277,16 @@ function ScreenWF2({ formData, setFormData, navigate, showRecall, returnTo, setR
 
         {/* Adresse */}
         <FormField id="adresse" label="Adresse du logement *" openTip={openTip} onToggleTip={toggleTip} error={errors.adresse}>
-          <input className={`field-input${errors.adresse?' err':''}`} value={f.adresse} onChange={e => setF({...f,adresse:e.target.value})} onBlur={() => blur('adresse')} placeholder="Commencez à taper votre adresse" />
+          <AddressInput value={f.adresse} onChange={v => setF({...f,adresse:v})} onBlur={() => blur('adresse')} hasError={!!errors.adresse} />
         </FormField>
 
         {/* Téléphone */}
-        <FormField id="telephone" label="Téléphone *" tooltipText="Un conseiller vous appellera pour vous transmettre votre proposition de contrat. Vous serez contacté depuis le 01 XX XX XX XX." openTip={openTip} onToggleTip={toggleTip} error={errors.telephone}>
-          <input className={`field-input${errors.telephone?' err':''}`} value={f.telephone} onChange={e => setF({...f,telephone:e.target.value})} onBlur={() => blur('telephone')} placeholder="06 ou 07..." />
+        <FormField id="telephone" label="Téléphone *" tooltipText="ℹ️ Un conseiller vous appellera pour vous transmettre votre proposition de contrat. Vous serez contacté depuis le 01 XX XX XX XX." openTip={openTip} onToggleTip={toggleTip} error={errors.telephone}>
+          <input className={`field-input${errors.telephone?' err':''}`} value={f.telephone} onChange={e => setF({...f,telephone:e.target.value})} onBlur={() => blur('telephone')} placeholder="06 ou 07..." type="tel" inputMode="tel" />
         </FormField>
 
         {/* Préférence d'appel */}
-        <FormField id="pref" label="Préférence d'appel (facultatif)" tooltipText="Rappel entre 9h et 17h, du lundi au vendredi." openTip={openTip} onToggleTip={toggleTip}>
+        <FormField id="pref" label="Préférence d'appel (facultatif)" tooltipText="ℹ️ Rappel entre 9h et 17h, du lundi au vendredi." openTip={openTip} onToggleTip={toggleTip}>
           <RadioGroup
             options={[{ value:'matin', label:'Matin' }, { value:'aprem', label:'Après-midi' }, { value:'indifferent', label:'Indifférent' }]}
             value={f.preferenceAppel}
@@ -927,8 +1295,8 @@ function ScreenWF2({ formData, setFormData, navigate, showRecall, returnTo, setR
         </FormField>
 
         {/* Email */}
-        <FormField id="email" label="Email *" tooltipText="Votre proposition de contrat sera envoyée à cette adresse. Aucun spam, promis." openTip={openTip} onToggleTip={toggleTip} error={errors.email}>
-          <input className={`field-input${errors.email?' err':''}`} value={f.email} onChange={e => setF({...f,email:e.target.value})} onBlur={() => blur('email')} placeholder="votre@email.fr" />
+        <FormField id="email" label="Email *" tooltipText="ℹ️ Votre proposition de contrat sera envoyée à cette adresse. Aucun spam, promis." openTip={openTip} onToggleTip={toggleTip} error={errors.email}>
+          <input className={`field-input${errors.email?' err':''}`} value={f.email} onChange={e => setF({...f,email:e.target.value})} onBlur={() => blur('email')} placeholder="votre@email.fr" type="email" inputMode="email" />
         </FormField>
 
         {/* Citerne = domicile */}
@@ -937,15 +1305,20 @@ function ScreenWF2({ formData, setFormData, navigate, showRecall, returnTo, setR
         </CheckboxField>
 
         {!f.citerneMemeDomicile && (
-          <div className="slide-down">
-            <FormField id="adresse-citerne" label="Adresse de la citerne *" tooltipText="Résidence secondaire ? Indiquez l'adresse exacte de la citerne." openTip={openTip} onToggleTip={toggleTip}>
-              <input className="field-input" value={f.adresseCiterne} onChange={e => setF({...f,adresseCiterne:e.target.value})} placeholder="Adresse de la citerne" />
-            </FormField>
+          <div className="slide-down-anim" style={{ marginBottom:14 }}>
+            <label style={{ fontSize:13, color:'#439fdb', fontWeight:600, display:'block', marginBottom:5 }}>
+              Adresse de la citerne *
+            </label>
+            <AddressInput
+              value={f.adresseCiterne || ''}
+              onChange={v => setF({...f, adresseCiterne: v})}
+              placeholder="Commencez a taper l'adresse de la citerne"
+            />
           </div>
         )}
 
         {/* Statut */}
-        <FormField id="statut" label="Vous êtes *" tooltipText="Seul le propriétaire peut changer de fournisseur de gaz en citerne." openTip={openTip} onToggleTip={toggleTip} error={errors.statut}>
+        <FormField id="statut" label="Vous êtes *" tooltipText="ℹ️ Seul le propriétaire peut changer de fournisseur de gaz en citerne." openTip={openTip} onToggleTip={toggleTip} error={errors.statut}>
           <RadioGroup
             options={[{ value:'proprietaire', label:'Propriétaire' }, { value:'locataire', label:'Locataire' }]}
             value={f.statut}
@@ -958,7 +1331,7 @@ function ScreenWF2({ formData, setFormData, navigate, showRecall, returnTo, setR
         <CheckboxField checked={f.rgpd} onChange={v => setF({...f,rgpd:v})}>
           J'accepte que les informations saisies soient utilisées dans le cadre de la relation commerciale avec Butagaz, pour me recontacter.
         </CheckboxField>
-        {errors.rgpd && <div style={{ fontSize:12, color:'#CC0000', marginBottom:14 }}>{errors.rgpd}</div>}
+        {errors.rgpd && <div style={{ fontSize:12, color:'#ec3431', marginBottom:14 }}>{errors.rgpd}</div>}
 
         <button className="btn-primary" onClick={handleContinue}>
           {returnTo === 'WF5' ? 'Enregistrer et retourner à la synthèse' : 'Continuer →'}
@@ -971,6 +1344,7 @@ function ScreenWF2({ formData, setFormData, navigate, showRecall, returnTo, setR
 
 // ─── SCREEN: WF2-SORTIE — LOCATAIRE ───────────────────────────────────────────
 function ScreenWF2Sortie({ navigate, returnToSite }) {
+  const [showPhone, setShowPhone] = useState(false);
   return (
     <div className="screen-anim">
       <TunnelHeader onHome={returnToSite} />
@@ -984,10 +1358,15 @@ function ScreenWF2Sortie({ navigate, returnToSite }) {
           <strong>Ce que vous pouvez faire :</strong> Parlez-en à votre propriétaire. Nous pouvons lui envoyer une documentation par email. Si votre propriétaire est intéressé, il peut remplir ce formulaire lui-même.
         </div>
 
-        <button className="btn-secondary" style={{ marginBottom:10 }}>
+        <button className="btn-secondary" style={{ marginBottom:10 }} onClick={() => setShowPhone(v => !v)}>
           Appeler un conseiller au 09 70 81 80 65 · lun-ven 9h-18h
         </button>
-        <button className="btn-secondary" style={{ marginBottom:16 }}>
+        {showPhone && (
+          <div style={{ padding:'10px 14px', background:'#F5F5F5', borderRadius:8, marginBottom:10, fontSize:14, fontWeight:600 }}>
+            Appelez le 09 70 81 80 65, du lundi au vendredi de 9h à 18h
+          </div>
+        )}
+        <button className="btn-secondary" style={{ marginBottom:16 }} onClick={() => navigate('WF0-step2')}>
           Demander à être rappelé
         </button>
 
@@ -1031,7 +1410,7 @@ function ScreenWF3({ formData, setFormData, navigate, showRecall, returnTo, setR
         <BackLink onClick={() => navigate('WF2')} />
         <div style={{ fontSize:22, fontWeight:700, marginBottom:20 }}>Votre installation actuelle</div>
 
-        <FormField id="citerne-type" label="Votre citerne est-elle visible dans votre jardin ?" tooltipText="Apparente : vous la voyez dans votre jardin, posée au sol. Enfouie : enterrée sous terre. Seul un petit capot dépasse du sol." openTip={openTip} onToggleTip={toggleTip} error={errors.citerne}>
+        <FormField id="citerne-type" label="Votre citerne est-elle visible dans votre jardin ?" tooltipText="ℹ️ Apparente : vous la voyez dans votre jardin, posée au sol. Enfouie : enterrée sous terre. Seul un petit capot dépasse du sol." openTip={openTip} onToggleTip={toggleTip} error={errors.citerne}>
           <div style={{ display:'flex', gap:12, marginTop:4 }}>
             <div
               className={`choice-block${citerneType==='apparente'?' selected':''}`}
@@ -1056,7 +1435,7 @@ function ScreenWF3({ formData, setFormData, navigate, showRecall, returnTo, setR
 
         <div style={{ height:1, background:'#F0F0F0', margin:'4px 0 16px' }} />
 
-        <FormField id="conserver" label="Souhaitez-vous garder le même type de citerne ?" tooltipText="C'est votre préférence, pas un engagement. Un technicien vérifiera la faisabilité avant installation. Enfouir une citerne peut entraîner des frais précisés dans le devis." openTip={openTip} onToggleTip={toggleTip} error={errors.conserver}>
+        <FormField id="conserver" label="Souhaitez-vous garder le même type de citerne ?" tooltipText="ℹ️ Votre réponse est indicative, pas définitive. Un technicien vérifie la faisabilité avant l'installation. Si vous souhaitez changer de type, des frais éventuels vous seront communiqués dans votre contrat, avant toute décision." openTip={openTip} onToggleTip={toggleTip} error={errors.conserver}>
           <RadioGroup
             options={[{ value:'oui', label:'Oui' }, { value:'non', label:'Non' }]}
             value={conserverType}
@@ -1121,7 +1500,7 @@ function IllustrationViseurPleinEcran() {
 function IllustrationFactureFloue() {
   return (
     <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" style={{ width:200, height:140 }}>
-      <rect x="20" y="10" width="160" height="120" fill="#FFF0F0" stroke="#CC0000" strokeWidth="2" rx="4"/>
+      <rect x="20" y="10" width="160" height="120" fill="#FFF0F0" stroke="#ec3431" strokeWidth="2" rx="4"/>
       <rect x="30" y="22" width="90" height="5" fill="#D0D0D0" rx="1" opacity="0.7"/>
       <rect x="30" y="32" width="70" height="4" fill="#C8C8C8" rx="1" opacity="0.6"/>
       <rect x="30" y="41" width="110" height="5" fill="#D8D8D8" rx="1" opacity="0.7"/>
@@ -1129,8 +1508,8 @@ function IllustrationFactureFloue() {
       <rect x="30" y="60" width="95" height="5" fill="#D0D0D0" rx="1" opacity="0.6"/>
       <rect x="30" y="70" width="75" height="4" fill="#C8C8C8" rx="1" opacity="0.7"/>
       <rect x="30" y="80" width="100" height="5" fill="#D0D0D0" rx="1" opacity="0.6"/>
-      <line x1="65" y1="45" x2="135" y2="105" stroke="#CC0000" strokeWidth="5" strokeLinecap="round"/>
-      <line x1="135" y1="45" x2="65" y2="105" stroke="#CC0000" strokeWidth="5" strokeLinecap="round"/>
+      <line x1="65" y1="45" x2="135" y2="105" stroke="#ec3431" strokeWidth="5" strokeLinecap="round"/>
+      <line x1="135" y1="45" x2="65" y2="105" stroke="#ec3431" strokeWidth="5" strokeLinecap="round"/>
     </svg>
   );
 }
@@ -1139,25 +1518,44 @@ function IllustrationFactureFloue() {
 function WF4ModeBHeader({ factureNum, handleBack }) {
   return (
     <div style={{ display:'flex', alignItems:'center', padding:'12px 16px', borderBottom:'1px solid #E0E0E0', position:'sticky', top:0, background:'#FFF', zIndex:50 }}>
-      <button onClick={handleBack} style={{ background:'none', border:'none', cursor:'pointer', fontSize:14, color:'#1A1A1A', padding:0 }}>← Retour</button>
+      <button onClick={handleBack} style={{ background:'none', border:'none', cursor:'pointer', fontSize:14, color:'#1a1b20', padding:0 }}>← Retour</button>
       <span style={{ marginLeft:'auto', fontSize:13, color:'#666', fontWeight:500 }}>Ajout facture {factureNum}/3</span>
     </div>
   );
 }
 
 // ─── WF4 MODE B — ÉTAPE A ────────────────────────────────────────────────────
-function WF4ModeB_Prepare({ factureNum, onReady, onFileClick, onNoFacture, onBack }) {
+function WF4ModeB_Prepare({ factureNum, onReady, onFileClick, onNoFacture, onBack, onDemoFile }) {
+  const [isMobileCtx, setIsMobileCtx] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const h = () => setIsMobileCtx(window.innerWidth < 768);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+
   return (
     <div style={{ minHeight:'100%' }}>
       <WF4ModeBHeader factureNum={factureNum} handleBack={onBack} />
       <div style={{ padding:'20px 16px 80px 16px' }}>
-        <div style={{ fontSize:20, fontWeight:700, marginBottom:16 }}>Préparez votre facture</div>
+        <div style={{ fontSize:20, fontWeight:700, marginBottom:16 }}>Preparez votre facture</div>
         <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><IllustrationFactureMain /></div>
-        <div style={{ background:'#FFF9E6', border:'1px solid #E6D490', borderRadius:8, padding:12, marginBottom:24, fontSize:13, color:'#92400E', lineHeight:1.6 }}>
-          ⓘ Conseils : photo bien éclairée, pas de reflet, facture entièrement visible.
+        <div style={{ background:'#fffbe6', border:'1px solid #ffc42b', borderRadius:12, padding:12, marginBottom:24, fontSize:13, color:'#7a5800', lineHeight:1.6 }}>
+          ⓘ Conseils : photo bien eclairee, pas de reflet, facture entierement visible.
         </div>
-        <button className="btn-primary" style={{ marginBottom:12 }} onClick={onReady}>Ma facture est prête →</button>
-        <button className="btn-secondary" style={{ marginBottom:24 }} onClick={onFileClick}>↑ Choisir un fichier sur mon appareil</button>
+        {isMobileCtx ? (
+          <>
+            <button className="btn-primary" style={{ marginBottom:12 }} onClick={onReady}>Ma facture est prete →</button>
+            <button className="btn-secondary" style={{ marginBottom:12 }} onClick={onFileClick}>↑ Choisir un fichier sur mon appareil</button>
+          </>
+        ) : (
+          <>
+            <button className="btn-primary" style={{ marginBottom:12 }} onClick={onFileClick}>↑ Choisir un fichier sur mon appareil</button>
+            <button className="btn-secondary" style={{ marginBottom:12 }} onClick={onReady}>Ma facture est prete →</button>
+          </>
+        )}
+        <button className="btn-secondary" style={{ marginBottom:24, borderStyle:'dashed', color:'#8b9aa4' }} onClick={onDemoFile}>
+          Utiliser des fichiers demo →
+        </button>
         <div style={{ textAlign:'center' }}>
           <button onClick={onNoFacture} style={{ background:'none', border:'none', color:'#999', fontSize:13, cursor:'pointer', textDecoration:'underline' }}>
             Pas de facture ? Continuer →
@@ -1169,18 +1567,37 @@ function WF4ModeB_Prepare({ factureNum, onReady, onFileClick, onNoFacture, onBac
 }
 
 // ─── WF4 MODE B — ÉTAPE B1 ───────────────────────────────────────────────────
-function WF4ModeB_Frame({ factureNum, onCapture, onFileClick, onNoFacture, onBack }) {
+function WF4ModeB_Frame({ factureNum, onCapture, onFileClick, onNoFacture, onBack, onDemoFile }) {
+  const [isMobileCtx, setIsMobileCtx] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const h = () => setIsMobileCtx(window.innerWidth < 768);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+
   return (
     <div style={{ minHeight:'100%' }}>
       <WF4ModeBHeader factureNum={factureNum} handleBack={onBack} />
       <div style={{ padding:'20px 16px 80px 16px' }}>
         <div style={{ fontSize:20, fontWeight:700, marginBottom:16 }}>Prenez la photo</div>
         <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><IllustrationViseur /></div>
-        <div style={{ background:'#FFF9E6', border:'1px solid #E6D490', borderRadius:8, padding:12, marginBottom:24, fontSize:13, color:'#92400E', lineHeight:1.6 }}>
-          ⓘ Conseils : pas de flash, évitez les ombres, tenez le téléphone bien droit.
+        <div style={{ background:'#fffbe6', border:'1px solid #ffc42b', borderRadius:12, padding:12, marginBottom:24, fontSize:13, color:'#7a5800', lineHeight:1.6 }}>
+          ⓘ Conseils : pas de flash, evitez les ombres, tenez le telephone bien droit.
         </div>
-        <button className="btn-primary" style={{ marginBottom:12 }} onClick={onCapture}>Prendre la photo</button>
-        <button className="btn-secondary" style={{ marginBottom:24 }} onClick={onFileClick}>↑ Choisir un fichier sur mon appareil</button>
+        {isMobileCtx ? (
+          <>
+            <button className="btn-primary" style={{ marginBottom:12 }} onClick={onCapture}>Prendre la photo</button>
+            <button className="btn-secondary" style={{ marginBottom:12 }} onClick={onFileClick}>↑ Choisir un fichier sur mon appareil</button>
+          </>
+        ) : (
+          <>
+            <button className="btn-primary" style={{ marginBottom:12 }} onClick={onFileClick}>↑ Choisir un fichier sur mon appareil</button>
+            <button className="btn-secondary" style={{ marginBottom:12 }} onClick={onCapture}>Prendre la photo</button>
+          </>
+        )}
+        <button className="btn-secondary" style={{ marginBottom:24, borderStyle:'dashed', color:'#8b9aa4' }} onClick={onDemoFile}>
+          Utiliser des fichiers demo →
+        </button>
         <div style={{ textAlign:'center' }}>
           <button onClick={onNoFacture} style={{ background:'none', border:'none', color:'#999', fontSize:13, cursor:'pointer', textDecoration:'underline' }}>
             Pas de facture ? Continuer →
@@ -1229,7 +1646,7 @@ function WF4ModeB_Loading({ factureNum, fileName, progress }) {
 }
 
 // ─── WF4 MODE B — ÉTAPE C1 ───────────────────────────────────────────────────
-function WF4ModeB_Success({ factureNum, file, factures, onAddNext, onReturn, onFinish, onContinue }) {
+function WF4ModeB_Success({ factureNum, file, factures, onAddNext, onReturn, onFinish, onContinue, onReplace, onDeleteFile }) {
   const uploadedCount = factures.filter(Boolean).length;
   const allUploaded = uploadedCount === 3;
   const isLast = factureNum === 3;
@@ -1241,20 +1658,20 @@ function WF4ModeB_Success({ factureNum, file, factures, onAddNext, onReturn, onF
         <div style={{ fontSize:14, color:'#666', marginBottom:20 }}>
           {uploadedCount}/3 facture{uploadedCount > 1 ? 's' : ''} ajoutée{uploadedCount > 1 ? 's' : ''}
         </div>
-        <div style={{ background:'#F0FFF4', border:'1px solid #22C55E', borderRadius:8, padding:14, marginBottom:24 }}>
-          <div style={{ fontSize:14, fontWeight:600, color:'#166534', marginBottom:6 }}>✓ {file?.name}</div>
+        <div style={{ background:'rgba(74,199,124,0.08)', border:'1px solid #4ac77c', borderRadius:8, padding:14, marginBottom:24 }}>
+          <div style={{ fontSize:14, fontWeight:600, color:'#1c7a46', marginBottom:6 }}>✓ {file?.name}</div>
           <div style={{ fontSize:12, color:'#666', marginBottom:10 }}>{file?.size}</div>
           <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
             <button className="btn-sm">Voir l'aperçu</button>
-            <button className="btn-sm">✓ Remplacer</button>
-            <button className="btn-sm">Supprimer</button>
+            <button className="btn-sm" onClick={onReplace}>Remplacer</button>
+            <button className="btn-sm" onClick={onDeleteFile}>Supprimer</button>
           </div>
         </div>
         {(isLast || allUploaded) ? (
           <button className="btn-primary" style={{ marginBottom:12 }} onClick={onContinue}>Continuer →</button>
         ) : (
           <button
-            style={{ display:'block', width:'100%', padding:14, background:'#22C55E', color:'white', border:'none', borderRadius:10, fontSize:15, fontWeight:600, cursor:'pointer', marginBottom:12 }}
+            style={{ display:'block', width:'100%', padding:14, background:'linear-gradient(143deg,#88e7a3,#2aba5b)', color:'#0d4a23', border:'none', borderRadius:999, fontSize:15, fontWeight:700, cursor:'pointer', marginBottom:12 }}
             onClick={onAddNext}
           >
             Ajouter une {factureNum + 1 === 2 ? '2e' : '3e'} facture
@@ -1278,7 +1695,7 @@ function WF4ModeB_Error({ factureNum, onRetry, onFileClick, onFinish }) {
       <WF4ModeBHeader factureNum={factureNum} handleBack={onRetry} />
       <div style={{ padding:'20px 16px 80px 16px' }}>
         <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><IllustrationFactureFloue /></div>
-        <div style={{ fontSize:15, fontWeight:500, textAlign:'center', color:'#1A1A1A', marginBottom:24 }}>
+        <div style={{ fontSize:15, fontWeight:500, textAlign:'center', color:'#1a1b20', marginBottom:24 }}>
           La photo est floue ou le format n'est pas reconnu.
         </div>
         <button className="btn-primary" style={{ marginBottom:12 }} onClick={onRetry}>Reprendre la photo</button>
@@ -1306,6 +1723,7 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
   const [biopropane, setBiopropane] = useState(formData.biopropane || 'non');
   const [openTip, setOpenTip] = useState(null);
   const fileRef = useRef(null);
+  const cameraRef = useRef(null);
 
   function setSubscreen(sub, extra = {}) {
     setUploadState(prev => ({ ...prev, subscreen: sub, ...extra }));
@@ -1322,14 +1740,26 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
     });
   }
 
+  function handleDemoFile() {
+    const idx = uploadState.currentFacture - 1;
+    const fakeFile = FAKE_FACTURE_NAMES[idx];
+    setUploadState(prev => {
+      const newFactures = [...prev.factures];
+      newFactures[prev.currentFacture - 1] = fakeFile;
+      return { ...prev, subscreen: 'SUCCESS', factures: newFactures, pendingFile: fakeFile };
+    });
+  }
+
   function handleFileInput(e) {
     const f = e.target.files?.[0];
     if (!f) return;
     // Reset input so the same file can be re-selected
     e.target.value = '';
-    const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+    const ext = f.name.split('.').pop().toLowerCase();
+    const validExt = ['pdf', 'jpg', 'jpeg', 'png'];
     const tooLarge = f.size > 10 * 1024 * 1024;
-    if (!validTypes.includes(f.type) || tooLarge) {
+    if ((!validTypes.includes(f.type) && !validExt.includes(ext)) || tooLarge) {
       setSubscreen('ERROR');
       return;
     }
@@ -1360,6 +1790,37 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
     fileRef.current && fileRef.current.click();
   }
 
+  function triggerCamera() {
+    cameraRef.current && cameraRef.current.click();
+  }
+
+  function simulateCapture() {
+    const fakeFile = {
+      name: `photo_facture_${uploadState.currentFacture}.jpg`,
+      size: Math.floor(800 + Math.random() * 600) + ' Ko',
+    };
+    const shouldError = simulateError;
+    if (shouldError && setSimulateError) setSimulateError(false);
+    setUploadState(prev => ({ ...prev, subscreen: 'LOADING', pendingFile: fakeFile, progress: 0 }));
+    let p = 0;
+    const iv = setInterval(() => {
+      p += 5;
+      setUploadState(prev => ({ ...prev, progress: p }));
+      if (p >= 100) {
+        clearInterval(iv);
+        if (shouldError) {
+          setUploadState(prev => ({ ...prev, subscreen: 'ERROR', progress: 0 }));
+        } else {
+          setUploadState(prev => {
+            const newFactures = [...prev.factures];
+            newFactures[prev.currentFacture - 1] = prev.pendingFile;
+            return { ...prev, subscreen: 'SUCCESS', factures: newFactures, progress: 0 };
+          });
+        }
+      }
+    }, 100);
+  }
+
   function handleStepClick(n) {
     const screens = ['WF1','WF2','WF3','WF4','WF5'];
     if (stepHistory.includes(screens[n-1])) navigate(screens[n-1]);
@@ -1374,69 +1835,76 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
   const { subscreen, currentFacture, factures, pendingFile, progress } = uploadState;
   const allUploaded = factures.every(Boolean);
 
+  // ── Inputs toujours montés (refs disponibles dans tous les sous-écrans) ───
+  const hiddenInputs = (
+    <>
+      <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png,image/*" onChange={handleFileInput} />
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFileInput} />
+    </>
+  );
+
   // ── Sous-écrans Mode B ────────────────────────────────────────────────────
   if (subscreen === 'PREPARE') {
-    return (
-      <WF4ModeB_Prepare
-        factureNum={currentFacture}
-        onReady={() => setSubscreen('FRAME')}
-        onFileClick={triggerFilePicker}
-        onNoFacture={() => navigate('WF4-sortie')}
-        onBack={() => setSubscreen(null)}
-      />
-    );
+    return <>{hiddenInputs}<WF4ModeB_Prepare
+      factureNum={currentFacture}
+      onReady={() => setSubscreen('FRAME')}
+      onFileClick={triggerFilePicker}
+      onNoFacture={() => navigate('WF4-sortie')}
+      onBack={() => setSubscreen(null)}
+      onDemoFile={handleDemoFile}
+    /></>;
   }
   if (subscreen === 'FRAME') {
-    return (
-      <WF4ModeB_Frame
-        factureNum={currentFacture}
-        onCapture={() => setSubscreen('CAMERA')}
-        onFileClick={triggerFilePicker}
-        onNoFacture={() => navigate('WF4-sortie')}
-        onBack={() => setSubscreen('PREPARE')}
-      />
-    );
+    return <>{hiddenInputs}<WF4ModeB_Frame
+      factureNum={currentFacture}
+      onCapture={() => setSubscreen('CAMERA')}
+      onFileClick={triggerFilePicker}
+      onNoFacture={() => navigate('WF4-sortie')}
+      onBack={() => setSubscreen('PREPARE')}
+      onDemoFile={handleDemoFile}
+    /></>;
   }
   if (subscreen === 'CAMERA') {
-    return (
-      <WF4ModeB_Camera
-        factureNum={currentFacture}
-        onCapture={triggerFilePicker}
-        onBack={() => setSubscreen('FRAME')}
-      />
-    );
+    return <>{hiddenInputs}<WF4ModeB_Camera
+      factureNum={currentFacture}
+      onCapture={simulateCapture}
+      onBack={() => setSubscreen('FRAME')}
+    /></>;
   }
   if (subscreen === 'LOADING') {
-    return <WF4ModeB_Loading factureNum={currentFacture} fileName={pendingFile?.name} progress={progress} />;
+    return <>{hiddenInputs}<WF4ModeB_Loading factureNum={currentFacture} fileName={pendingFile?.name} progress={progress} /></>;
   }
   if (subscreen === 'SUCCESS') {
-    return (
-      <WF4ModeB_Success
-        factureNum={currentFacture}
-        file={factures[currentFacture - 1]}
-        factures={factures}
-        onAddNext={() => setSubscreen('PREPARE', { currentFacture: currentFacture + 1 })}
-        onReturn={() => setSubscreen(null)}
-        onFinish={() => setSubscreen(null)}
-        onContinue={handleContinueToWF5}
-      />
-    );
+    return <>{hiddenInputs}<WF4ModeB_Success
+      factureNum={currentFacture}
+      file={factures[currentFacture - 1]}
+      factures={factures}
+      onAddNext={() => setSubscreen('PREPARE', { currentFacture: currentFacture + 1 })}
+      onReturn={() => setSubscreen(null)}
+      onFinish={() => setSubscreen(null)}
+      onContinue={handleContinueToWF5}
+      onReplace={() => setSubscreen('PREPARE', { currentFacture })}
+      onDeleteFile={() => {
+        setUploadState(prev => {
+          const newF = [...prev.factures]; newF[prev.currentFacture - 1] = null;
+          return { ...prev, subscreen: null, factures: newF };
+        });
+      }}
+    /></>;
   }
   if (subscreen === 'ERROR') {
-    return (
-      <WF4ModeB_Error
-        factureNum={currentFacture}
-        onRetry={() => setSubscreen('FRAME')}
-        onFileClick={triggerFilePicker}
-        onFinish={() => setSubscreen(null)}
-      />
-    );
+    return <>{hiddenInputs}<WF4ModeB_Error
+      factureNum={currentFacture}
+      onRetry={() => setSubscreen('FRAME')}
+      onFileClick={triggerFilePicker}
+      onFinish={() => setSubscreen(null)}
+    /></>;
   }
 
   // ── WF4 Principal ─────────────────────────────────────────────────────────
   return (
     <div className="screen-anim">
-      <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png,image/*" onChange={handleFileInput} />
+      {hiddenInputs}
       <TunnelHeader onHome={onHome} />
       <ProgressBar step={4} onStepClick={handleStepClick} />
       <div style={{ padding:'8px 16px 16px 16px' }}>
@@ -1473,7 +1941,7 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
         <FormField
           id="biopropane"
           label="Souhaitez-vous souscrire à l'option Biopropane ? (option payante)"
-          tooltipText="Le biopropane est une version du propane issue de ressources renouvelables. Cette option entraîne un coût supplémentaire par rapport au propane standard."
+          tooltipText="ℹ️ Le biopropane est une version du propane issue de ressources renouvelables. Cette option entraîne un coût supplémentaire par rapport au propane standard."
           openTip={openTip}
           onToggleTip={id => setOpenTip(prev => prev === id ? null : id)}
         >
@@ -1482,6 +1950,11 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
             value={biopropane}
             onChange={setBiopropane}
           />
+          {(biopropane === '20' || biopropane === '100') && (
+            <div className="slide-down-anim" style={{ background:'rgba(74,199,124,0.08)', border:'1px solid #4ac77c', borderRadius:12, padding:12, marginTop:8, fontSize:13, color:'#1c7a46', lineHeight:1.6 }}>
+              ⓘ Option payante. Le biopropane est issu de ressources renouvelables. Son cout est superieur au propane standard — ce surcout sera precise dans votre proposition de contrat.
+            </div>
+          )}
         </FormField>
 
         <button
@@ -1493,7 +1966,7 @@ function ScreenWF4({ formData, setFormData, navigate, showRecall, returnTo, setR
           {returnTo === 'WF5' ? 'Enregistrer et retourner à la synthèse' : 'Continuer →'}
         </button>
         {!allUploaded && (
-          <div style={{ fontSize:12, color:'#CC0000', marginTop:6, textAlign:'center' }}>
+          <div style={{ fontSize:12, color:'#ec3431', marginTop:6, textAlign:'center' }}>
             Les 3 factures sont obligatoires pour continuer.
           </div>
         )}
@@ -1525,7 +1998,7 @@ function ScreenWF4Sortie({ formData, navigate, returnToSite, onHome }) {
 
         <WarningBlock>
           <strong>Où trouver vos factures ?</strong><br />
-          · Dans votre boîte aux lettres<br />
+          · Dans votre boîte mail<br />
           · Dans votre espace client en ligne (Primagaz, Antargaz, Vitogaz)<br />
           · Sur l'appli de votre fournisseur<br />
           · Sur votre téléphone si vous les avez photographiées
@@ -1547,7 +2020,7 @@ function ScreenWF4Sortie({ formData, navigate, returnToSite, onHome }) {
               <button className="btn-primary" onClick={() => setSubmitted(true)}>Confirmer et Envoyer</button>
             </>
           ) : (
-            <InfoBlock>Votre demande est bien enregistrée. Un conseiller vous contactera sous 24 h.</InfoBlock>
+            <InfoBlock>Votre demande est bien enregistrée. Un conseiller vous contactera sous 24h ouvres.</InfoBlock>
           )}
         </div>
 
@@ -1577,7 +2050,9 @@ function ScreenWF5({ formData, navigate, showRecall, setReturnTo, stepHistory, o
     if (stepHistory.includes(screens[n-1])) navigate(screens[n-1]);
   }
 
-  const factureCount = (formData.factures || []).filter(Boolean).length;
+  const rawFactures = formData.factures || [null, null, null];
+  const factureCount = rawFactures.filter(Boolean).length;
+  const facturesForDisplay = rawFactures.map((f, i) => f || FAKE_FACTURE_NAMES[i]);
   const bioPropaneLabel = formData.biopropane === '20' ? '20 % biopropane' : formData.biopropane === '100' ? '100 % biopropane' : 'Non';
 
   return (
@@ -1630,8 +2105,8 @@ function ScreenWF5({ formData, navigate, showRecall, setReturnTo, stepHistory, o
             <span className="lnk" style={{ fontSize:13 }} onClick={() => handleModify('WF4')}>Modifier &gt;</span>
           </div>
           <div style={{ fontSize:13, color:'#666', marginBottom:4 }}>{factureCount} facture{factureCount > 1 ? 's' : ''} envoyée{factureCount > 1 ? 's' : ''}</div>
-          {(formData.factures || []).filter(Boolean).map((f, i) => (
-            <div key={i} style={{ fontSize:12, color:'#999', marginBottom:2 }}>· {f.name}</div>
+          {facturesForDisplay.map((f, i) => (
+            <div key={i} style={{ fontSize:12, color: rawFactures[i] ? '#999' : '#CCC', marginBottom:2 }}>· {f.name}</div>
           ))}
           <div style={{ fontSize:13, color:'#666', marginTop:6 }}>Biopropane : {bioPropaneLabel}</div>
         </div>
@@ -1657,12 +2132,13 @@ function ScreenWF5({ formData, navigate, showRecall, setReturnTo, stepHistory, o
 function ScreenWF5b({ formData, navigate, returnToSite, onHome }) {
   const refNumber = useRef('BSWT-2026-' + String(Math.floor(1000 + Math.random() * 9000)));
   const isApparente = formData.citerneType === 'apparente';
+  const [showContactTip, setShowContactTip] = useState(false);
 
   return (
     <div className="screen-anim">
       <TunnelHeader onHome={returnToSite || onHome} />
       <div style={{ padding:'24px 16px 32px 16px', textAlign:'center' }}>
-        <div style={{ width:64, height:64, borderRadius:'50%', background:'#F0FFF4', border:'2px solid #22C55E', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:28, color:'#166534' }}>✓</div>
+        <div style={{ width:64, height:64, borderRadius:'50%', background:'rgba(74,199,124,0.08)', border:'2px solid #4ac77c', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:28, color:'#1c7a46' }}>✓</div>
 
         <div style={{ fontSize:22, fontWeight:700, marginBottom:6 }}>Votre demande est envoyée</div>
         <div style={{ fontSize:13, color:'#999', marginBottom:20 }}>Référence : {refNumber.current}</div>
@@ -1681,15 +2157,20 @@ function ScreenWF5b({ formData, navigate, returnToSite, onHome }) {
           <div style={{ border:'1px solid #E0E0E0', borderRadius:10, padding:16, marginBottom:16 }}>
             <div style={{ display:'flex', gap:12, alignItems:'center', marginBottom:8 }}>
               <div style={{ width:44, height:44, borderRadius:'50%', background:'#F0F0F0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 }}>👤</div>
-              <div>
-                <div style={{ fontWeight:600, fontSize:14 }}>Sabrina et Éric</div>
+              <div style={{ flex:1 }}>
+                <div style={{ display:'flex', alignItems:'center' }}>
+                  <div style={{ fontWeight:600, fontSize:14, flex:1 }}>Sabrina et Éric</div>
+                  <TooltipBtn id="contact" onToggle={() => setShowContactTip(v => !v)} />
+                </div>
                 <div style={{ fontSize:13, color:'#666' }}>Vos contacts locaux</div>
                 <div style={{ fontSize:13, color:'#666' }}>Appel depuis le 01 XX XX XX XX</div>
               </div>
-              <span style={{ marginLeft:'auto', display:'inline-flex', alignItems:'center', justifyContent:'center', width:17, height:17, borderRadius:'50%', border:'1px solid #AAA', fontSize:10, color:'#888', cursor:'pointer' }}
-                title="Si vous avez une question, vous pouvez les contacter directement. Ils connaissent déjà votre dossier."
-              >i</span>
             </div>
+            {showContactTip && (
+              <div className="tooltip-anim" style={{ background:'#fffbe6', border:'1px solid #ffc42b', borderRadius:12, padding:10, fontSize:13, color:'#7a5800', lineHeight:1.5, width:'100%' }}>
+                Si vous avez une question, vous pouvez les contacter directement. Ils connaissent déjà votre dossier.
+              </div>
+            )}
           </div>
         </div>
 
@@ -1707,7 +2188,7 @@ function ScreenRouter({ screen, formData, setFormData, navigate, showRecall, ret
     case 'WF0-step3':   return <ScreenWF0Step3 navigate={navigate} returnToSite={returnToSite} />;
     case 'WF1':         return <ScreenWF1 navigate={navigate} showRecall={showRecall} initChoice={formData._wf1Choice} onHome={onHome} />;
     case 'WF1bis':      return <ScreenWF1bis navigate={navigate} showRecall={showRecall} onHome={onHome} />;
-    case 'WF1-sortie':  return <ScreenWF1Sortie formData={formData} navigate={navigate} returnToSite={returnToSite} onHome={onHome} />;
+    case 'WF1-sortie':  return <ScreenWF1Sortie navigate={navigate} showRecall={showRecall} returnToSite={returnToSite} onHome={onHome} />;
     case 'WF2':         return <ScreenWF2 formData={formData} setFormData={setFormData} navigate={navigate} showRecall={showRecall} returnTo={returnTo} setReturnTo={setReturnTo} stepHistory={stepHistory} onHome={onHome} />;
     case 'WF2-sortie':  return <ScreenWF2Sortie navigate={navigate} returnToSite={returnToSite} />;
     case 'WF3':         return <ScreenWF3 formData={formData} setFormData={setFormData} navigate={navigate} showRecall={showRecall} returnTo={returnTo} setReturnTo={setReturnTo} stepHistory={stepHistory} onHome={onHome} />;
@@ -1721,7 +2202,7 @@ function ScreenRouter({ screen, formData, setFormData, navigate, showRecall, ret
 
 // ─── PANORAMA THUMBNAILS ──────────────────────────────────────────────────────
 function ThumbContent({ screen, scenario }) {
-  const bg = { ok:'#DCFCE7', branch:'#FEF3C7', exit:'#FEE2E2' };
+  const bg = { ok:'rgba(74,199,124,0.15)', branch:'rgba(255,196,43,0.2)', exit:'rgba(236,52,49,0.1)' };
   const type = BADGE_TYPE[screen] || 'ok';
   const f = scenario?.form || {};
 
@@ -1745,12 +2226,12 @@ function ThumbContent({ screen, scenario }) {
   const content = lines[screen] || [screen];
 
   return (
-    <div style={{ padding:'6px 8px', height:'100%' }}>
-      <div style={{ background: bg[type], borderRadius:4, padding:'3px 6px', fontSize:9, fontWeight:700, marginBottom:6, display:'inline-block' }}>
+    <div style={{ padding:'8px 10px', height:'100%' }}>
+      <div style={{ background: bg[type], borderRadius:5, padding:'4px 7px', fontSize:11, fontWeight:700, marginBottom:8, display:'inline-block' }}>
         {SCREEN_LABELS[screen] || screen}
       </div>
       {content.map((line, i) => (
-        <div key={i} style={{ fontSize:9, color: i===0 ? '#1A1A1A' : '#666', fontWeight: i===0 ? 600 : 400, marginBottom:3, lineHeight:1.3 }}>{line}</div>
+        <div key={i} style={{ fontSize:11, color: i===0 ? '#1A1A1A' : '#777', fontWeight: i===0 ? 600 : 400, marginBottom:4, lineHeight:1.35 }}>{line}</div>
       ))}
     </div>
   );
@@ -1758,17 +2239,17 @@ function ThumbContent({ screen, scenario }) {
 
 function ScreenThumb({ screen, scenario, onClick }) {
   return (
-    <div className="screen-thumb" style={{ width:140, flexShrink:0 }} onClick={onClick}>
-      <div className="thumb-frame" style={{ width:140, height:220, background:'#FFF', borderRadius:8, border:'1px solid #E0E0E0', overflow:'hidden', marginBottom:6, transition:'border-color 0.1s, box-shadow 0.1s' }}>
-        {/* Mini header */}
-        <div style={{ height:18, background:'#FFF', borderBottom:'1px solid #E8E8E8', display:'flex', alignItems:'center', padding:'0 6px', justifyContent:'space-between' }}>
-          <span style={{ fontSize:8, fontWeight:700 }}>Butagaz</span>
-          <span style={{ fontSize:7, color:'#999' }}>Retour</span>
+    <div className="screen-thumb" onClick={onClick}>
+      <div className="thumb-frame">
+        {/* Mini header tunnel */}
+        <div style={{ height:24, background:'#FFF', borderBottom:'1px solid #EBEBEB', display:'flex', alignItems:'center', padding:'0 8px', justifyContent:'space-between', flexShrink:0 }}>
+          <span style={{ fontSize:10, fontWeight:800, letterSpacing:'-0.2px' }}>Butagaz</span>
+          <span style={{ fontSize:9, color:'#AAA' }}>Retour</span>
         </div>
         <ThumbContent screen={screen} scenario={scenario} />
       </div>
-      <div style={{ fontSize:10, fontWeight:600, color:'#1A1A1A', marginBottom:2 }}>{SCREEN_LABELS[screen]}</div>
-      <span className={`badge-${BADGE_TYPE[screen]||'ok'}`} style={{ fontSize:9 }}>
+      <div style={{ fontSize:12, fontWeight:600, color:'#1a1b20', marginBottom:3 }}>{SCREEN_LABELS[screen]}</div>
+      <span className={`badge-${BADGE_TYPE[screen]||'ok'}`} style={{ fontSize:11 }}>
         {BADGE_TYPE[screen]==='ok' ? 'Étape' : BADGE_TYPE[screen]==='branch' ? 'Branchement' : 'Sortie'}
       </span>
     </div>
@@ -1776,7 +2257,7 @@ function ScreenThumb({ screen, scenario, onClick }) {
 }
 
 function ArrowBetween() {
-  return <div style={{ display:'flex', alignItems:'center', paddingTop:80, flexShrink:0 }}><span style={{ fontSize:18, color:'#CCC' }}>→</span></div>;
+  return <div style={{ display:'flex', alignItems:'center', paddingTop:110, paddingLeft:4, paddingRight:4, flexShrink:0 }}><span style={{ fontSize:16, color:'#CCC' }}>→</span></div>;
 }
 
 function ScenarioRow({ scenarioId, scenario, onThumbClick }) {
@@ -1806,69 +2287,161 @@ function ScenarioRow({ scenarioId, scenario, onThumbClick }) {
 
 // ─── WELCOME SCREEN ───────────────────────────────────────────────────────────
 function ScreenWelcome({ onStart }) {
-  const qrUrl = typeof window !== 'undefined'
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(window.location.href)}&color=FFFFFF&bgcolor=1A1A1A`
-    : '';
+  const isMobileVP = typeof window !== 'undefined' && window.innerWidth <= 500;
+  const PROTOTYPE_URL = 'https://prototype-eight-sigma.vercel.app';
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(PROTOTYPE_URL)}&color=FFFFFF&bgcolor=161616`;
+  const [showAbout, setShowAbout] = useState(true);
+  const [showGuide, setShowGuide] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
+
+  function copyEmail() {
+    navigator.clipboard.writeText('victorsoussan@gmail.com').then(() => {
+      setEmailCopied(true);
+      setTimeout(() => setEmailCopied(false), 2000);
+    });
+  }
+
+  const modes = [
+    {
+      id: 'navigation',
+      label: '▶  Tester un profil',
+      desc: 'Choisissez un archétype utilisateur et parcourez le tunnel étape par étape, avec les données pré-remplies de ce profil.',
+    },
+    {
+      id: 'panorama',
+      label: '⊞  Voir tous les écrans',
+      desc: 'Vue d\'ensemble de tous les écrans classés par scénario. Cliquez sur une miniature pour l\'ouvrir directement.',
+    },
+    {
+      id: 'libre',
+      label: '✎  Parcours libre',
+      desc: 'Démarrez depuis l\'encart sur butagaz.fr, sans profil présélectionné. Testez comme un vrai utilisateur.',
+    },
+  ];
+
+  const shortcuts = Object.entries(SCENARIOS).map(([id, sc]) => ({ id, label: sc.label, shortDesc: sc.shortDesc }));
+
+  const tips = [
+    { n:'1', text: <><strong style={{color:'#1a1b20'}}>Choisir un mode</strong> — Utilisez les boutons en haut (Ecrans / Profil / Libre) pour basculer entre les 3 modes.</> },
+    { n:'2', text: <><strong style={{color:'#1a1b20'}}>Naviguer dans un profil</strong> — En mode Profil, selectionnez un archetype dans le menu deroulant, puis avancez avec Precedente / Suivante.</> },
+    { n:'3', text: <><strong style={{color:'#1a1b20'}}>Voir tous les ecrans</strong> — En mode Ecrans, cliquez sur une miniature pour ouvrir l'ecran directement.</> },
+    { n:'4', text: <><strong style={{color:'#1a1b20'}}>Mode mobile realiste</strong> — Le bouton 📱 <strong style={{color:'#1a1b20'}}>Mobile</strong> dans la barre bleue masque l'interface du prototype et affiche le parcours comme sur un vrai telephone.</> },
+    { n:'5', text: <><strong style={{color:'#1a1b20'}}>Les sorties font partie du parcours</strong> — Les liens Retour au site butagaz.fr sont intentionnels : ils representent les sorties pour les profils non eligibles.</> },
+    { n:'6', text: <><strong style={{color:'#1a1b20'}}>Tester avec ou sans offre</strong> — Le bouton Offre en haut a droite affiche la variante avec l'offre 200 € active.</> },
+  ];
+
+  const sectionStyle = { background:'#fff', border:'1px solid #dde6ed', borderRadius:12, padding:'14px 18px', marginBottom:8 };
+  const sectionLabelStyle = { fontSize:11, color:'#439fdb', textTransform:'uppercase', letterSpacing:'1.5px', fontWeight:600 };
 
   return (
-    <div style={{ minHeight:'100vh', background:'#111', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'32px 20px' }}>
+    <div style={{ minHeight:'100dvh', background:'linear-gradient(180deg,#ecf5fb,#f5f9fd)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent: isMobileVP ? 'flex-start' : 'center', padding: isMobileVP ? '40px 20px 48px' : '48px 20px' }}>
       <div style={{ maxWidth:520, width:'100%' }}>
-        {/* Header */}
-        <div style={{ marginBottom:6, fontSize:11, color:'#555', textTransform:'uppercase', letterSpacing:'2px' }}>Prototype interactif v2.1</div>
-        <h1 style={{ fontSize:48, fontWeight:800, color:'#FFF', letterSpacing:'-2px', lineHeight:1, marginBottom:8 }}>Butaswitch</h1>
-        <div style={{ fontSize:16, color:'#666', marginBottom:40, lineHeight:1.5 }}>
-          Parcours de souscription GPL en ligne — Butagaz
-        </div>
 
-        {/* Stats grid */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8, marginBottom:24 }}>
-          {[
-            { n:'6', label:'scénarios' },
-            { n:'13', label:'écrans' },
-            { n:'3', label:'modes de vue' },
-          ].map(item => (
-            <div key={item.n} style={{ background:'#1A1A1A', borderRadius:10, padding:'14px 12px', textAlign:'center' }}>
-              <div style={{ fontSize:28, fontWeight:800, color:'#FFF', lineHeight:1 }}>{item.n}</div>
-              <div style={{ fontSize:11, color:'#666', marginTop:4 }}>{item.label}</div>
+        {/* Brand header */}
+        <div style={{ marginBottom:6, fontSize:11, color:'#439fdb', background:'#ecf5fb', border:'1px solid #c2dcf0', display:'inline-block', padding:'3px 10px', borderRadius:6, textTransform:'uppercase', letterSpacing:'2px' }}>Prototype interactif v2.1</div>
+        <h1 style={{ fontSize: isMobileVP ? 34 : 44, fontWeight:800, color:'#0079c0', letterSpacing:'-2px', lineHeight:1, marginBottom:6 }}>Butaswitch</h1>
+        <div style={{ fontSize:13, color:'#666f7c', marginBottom:32, fontWeight:500 }}>Butagaz — Parcours de souscription GPL en ligne</div>
+
+        {/* Mode cards — action principale */}
+        <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
+          {modes.map((m, i) => (
+            <div key={m.id} className="welcome-card-stagger" style={{ animationDelay: `${i * 65}ms` }}>
+              <button className="welcome-mode-btn" onClick={() => onStart(m.id)}>
+                <div style={{ fontWeight:700, fontSize:15, marginBottom:5, letterSpacing:'-0.2px', color:'#0079c0' }}>{m.label}</div>
+                <div style={{ fontSize:13, lineHeight:1.55, fontWeight:400, color:'#666f7c' }}>{m.desc}</div>
+              </button>
             </div>
           ))}
         </div>
 
-        {/* Description */}
-        <div style={{ background:'#1A1A1A', borderRadius:10, padding:'16px 20px', marginBottom:24, lineHeight:1.7, fontSize:13, color:'#888' }}>
-          Prototype du tunnel Butaswitch — de la page butagaz.fr jusqu'à la confirmation de demande. Conçu pour tester la lisibilité du parcours, la cohérence des sorties, et la charge perçue des étapes de qualification.
-        </div>
-
-        {/* CTAs */}
-        <div style={{ display:'flex', gap:10, marginBottom:24 }}>
-          <button
-            onClick={() => onStart('panorama')}
-            style={{ flex:1, padding:'14px 20px', background:'#FFF', color:'#1A1A1A', border:'none', borderRadius:10, fontSize:14, fontWeight:700, cursor:'pointer', letterSpacing:'-0.2px' }}
-          >
-            ⊞ Vue Panorama
-          </button>
-          <button
-            onClick={() => onStart('navigation')}
-            style={{ flex:1, padding:'14px 20px', background:'transparent', color:'#FFF', border:'2px solid #333', borderRadius:10, fontSize:14, fontWeight:700, cursor:'pointer', letterSpacing:'-0.2px' }}
-          >
-            ▶ Navigation interactive
-          </button>
-        </div>
-
-        {/* QR code */}
-        <div style={{ display:'flex', alignItems:'center', gap:16, background:'#1A1A1A', borderRadius:10, padding:'14px 16px' }}>
-          {qrUrl ? (
-            <img src={qrUrl} alt="QR code" style={{ width:80, height:80, borderRadius:6, flexShrink:0 }} />
-          ) : (
-            <div style={{ width:80, height:80, background:'#222', borderRadius:6, flexShrink:0 }} />
-          )}
+        {/* Callout mode mobile */}
+        <div style={{ background:'#ecf5fb', border:'1px solid #c2dcf0', borderRadius:10, padding:'12px 16px', marginBottom:8, display:'flex', alignItems:'flex-start', gap:12 }}>
+          <span style={{ fontSize:18, flexShrink:0, lineHeight:1.3 }}>📱</span>
           <div>
-            <div style={{ fontSize:13, fontWeight:600, color:'#FFF', marginBottom:4 }}>Tester sur mobile</div>
-            <div style={{ fontSize:12, color:'#666', lineHeight:1.6 }}>
-              Scannez ce QR code pour ouvrir le prototype sur votre téléphone et tester le parcours en contexte réel, en viewport 375px.
+            <div style={{ fontSize:13, fontWeight:600, color:'#0079c0', marginBottom:3 }}>Mode mobile realiste</div>
+            <div style={{ fontSize:12, color:'#666f7c', lineHeight:1.6 }}>Cliquez sur le bouton <strong style={{color:'#1a1b20'}}>Mobile</strong> dans la barre bleue pour voir le parcours comme sur un vrai telephone. Sur mobile, appuyez sur <strong style={{color:'#1a1b20'}}>← Quitter</strong> dans la barre du bas pour revenir.</div>
+          </div>
+        </div>
+
+        {/* Raccourcis par scénario — progressive disclosure */}
+        <div style={sectionStyle}>
+          <button className="welcome-collapse-trigger" onClick={() => setShowShortcuts(v => !v)}>
+            <span style={sectionLabelStyle}>Démarrer directement sur un scénario</span>
+            <span className={`welcome-chevron${showShortcuts ? ' wc-open' : ''}`}>▾</span>
+          </button>
+          <div className={`welcome-collapse-content${showShortcuts ? ' wc-open' : ' wc-closed'}`}>
+            <div style={{ paddingTop:12, display:'flex', flexDirection:'column', gap:6 }}>
+              {shortcuts.map(sc => (
+                <button key={sc.id} className="welcome-scenario-chip" onClick={() => onStart('navigation', sc.id)}>
+                  <div style={{ fontWeight:600, fontSize:13, color:'#1a1b20', marginBottom:2 }}>{sc.label}</div>
+                  <div style={{ fontSize:12, color:'#666f7c' }}>{sc.shortDesc}</div>
+                </button>
+              ))}
             </div>
           </div>
         </div>
+
+        {/* À propos — collapsible, ouvert par défaut */}
+        <div style={sectionStyle}>
+          <button className="welcome-collapse-trigger" onClick={() => setShowAbout(v => !v)}>
+            <span style={sectionLabelStyle}>À propos de ce prototype</span>
+            <span className={`welcome-chevron${showAbout ? ' wc-open' : ''}`}>▾</span>
+          </button>
+          <div className={`welcome-collapse-content${showAbout ? ' wc-open' : ' wc-closed'}`}>
+            <div style={{ paddingTop:14 }}>
+              <p style={{ fontSize:13, color:'#666f7c', lineHeight:1.75, margin:0, marginBottom:10 }}>
+                Ce prototype couvre le parcours complet de souscription, de l'encart integre sur butagaz.fr jusqu'a la confirmation de demande de contrat GPL.
+              </p>
+              <p style={{ fontSize:13, color:'#666f7c', lineHeight:1.75, margin:0, marginBottom:10 }}>
+                Il a ete concu pour tester la lisibilite du tunnel, la coherence des sorties non-eligibles (locataire, pas de factures, mauvaise energie), et la charge percue des etapes de qualification.
+              </p>
+              <p style={{ fontSize:13, color:'#8b9aa4', lineHeight:1.75, margin:0 }}>
+                Six profils utilisateurs sont representes : du client autonome qui compare les prix au client qui prefere etre rappele.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Guide pratique — collapsible */}
+        <div style={{ ...sectionStyle, marginBottom: isMobileVP ? 8 : 8 }}>
+          <button className="welcome-collapse-trigger" onClick={() => setShowGuide(v => !v)}>
+            <span style={sectionLabelStyle}>Guide pratique</span>
+            <span className={`welcome-chevron${showGuide ? ' wc-open' : ''}`}>▾</span>
+          </button>
+          <div className={`welcome-collapse-content${showGuide ? ' wc-open' : ' wc-closed'}`}>
+            <div style={{ paddingTop:14 }}>
+              {tips.map(tip => (
+                <div key={tip.n} style={{ display:'flex', gap:12, marginBottom:12, alignItems:'flex-start' }}>
+                  <span style={{ width:20, height:20, borderRadius:'50%', background:'#ecf5fb', border:'1px solid #c2dcf0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, color:'#439fdb', fontWeight:700, flexShrink:0, marginTop:2 }}>{tip.n}</span>
+                  <span style={{ fontSize:13, color:'#666f7c', lineHeight:1.65 }}>{tip.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* QR code */}
+        <div style={{ ...sectionStyle, display:'flex', flexDirection: isMobileVP ? 'column' : 'row', alignItems: isMobileVP ? 'center' : 'center', gap:18, marginBottom:8, textAlign: isMobileVP ? 'center' : 'left' }}>
+          <img src={qrUrl} alt="QR code" style={{ width: isMobileVP ? 140 : 96, height: isMobileVP ? 140 : 96, borderRadius:8, flexShrink:0 }} />
+          <div>
+            <div style={{ fontSize:13, fontWeight:600, color:'#1a1b20', marginBottom:4 }}>Tester sur mobile</div>
+            <div style={{ fontSize:12, color:'#666f7c', lineHeight:1.65, marginBottom:8 }}>Scannez ce QR code pour ouvrir le prototype sur votre telephone.</div>
+            <div style={{ fontSize:11, color:'#8b9aa4', fontFamily:'monospace', letterSpacing:'-0.3px' }}>{PROTOTYPE_URL}</div>
+          </div>
+        </div>
+
+        {/* Footer contact */}
+        <div style={{ ...sectionStyle, marginBottom:0, display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap' }}>
+          <div>
+            <div style={{ fontSize:13, fontWeight:600, color:'#1a1b20', marginBottom:2 }}>Victor Soussan</div>
+            <a href="mailto:victorsoussan@gmail.com" style={{ fontSize:12, color:'#439fdb', textDecoration:'none' }}>victorsoussan@gmail.com</a>
+          </div>
+          <button className="welcome-copy-btn" onClick={copyEmail}>
+            {emailCopied ? '✓ Copié' : 'Copier l\'email'}
+          </button>
+        </div>
+
       </div>
     </div>
   );
@@ -1877,20 +2450,65 @@ function ScreenWelcome({ onStart }) {
 // ─── PANORAMA VIEW ────────────────────────────────────────────────────────────
 function PanoramaView({ activeScenario, setActiveScenario, onThumbClick }) {
   const tabs = ['A','B','C','D','E','F','Tous'];
+  const scenariosToShow = activeScenario === 'Tous'
+    ? Object.entries(SCENARIOS)
+    : SCENARIOS[activeScenario] ? [[activeScenario, SCENARIOS[activeScenario]]] : [];
 
   return (
-    <div style={{ minHeight:'100vh', background:'#D8D8D8' }}>
+    <div className="pano-view-root">
       {/* Tabs */}
-      <div style={{ background:'#FFF', borderBottom:'1px solid #E0E0E0', padding:'10px 16px', display:'flex', gap:8, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
-        <span style={{ fontSize:13, fontWeight:600, color:'#666', display:'flex', alignItems:'center', marginRight:8, flexShrink:0 }}>Scénario :</span>
+      <div className="pano-tabs-bar" style={{ background:'#FFF', borderBottom:'1px solid #E0E0E0', padding:'10px 12px', display:'flex', gap:6, position:'sticky', top:93, zIndex:100, overflowX:'auto' }}>
+        <span className="pano-tabs-label" style={{ fontSize:13, fontWeight:600, color:'#666', display:'flex', alignItems:'center', marginRight:4, flexShrink:0, whiteSpace:'nowrap' }}>Scénario :</span>
         {tabs.map(t => (
-          <button key={t} className={`tab-btn${activeScenario===t?' active':''}`} onClick={() => setActiveScenario(t)}>
-            {t === 'Tous' ? 'Tous' : SCENARIOS[t]?.label}
+          <button
+            key={t}
+            className={`tab-btn${activeScenario===t?' active':''}`}
+            style={{ fontSize:12, padding:'5px 10px', flexShrink:0 }}
+            onClick={() => setActiveScenario(t)}
+          >
+            {t === 'Tous' ? 'Tous' : SCENARIOS[t] ? SCENARIOS[t].label.split('.')[0].trim() + '.' : t}
           </button>
         ))}
       </div>
 
-      <div style={{ padding:'16px' }}>
+      {/* MOBILE LIST (CSS-driven, affiché via media query) */}
+      <div className="pano-mobile-list" style={{ padding:'12px' }}>
+        {scenariosToShow.map(([id, sc]) => (
+          <div key={id} style={{ background:'#FFF', borderRadius:12, marginBottom:12, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.08)' }}>
+            <div style={{ padding:'14px 16px', borderBottom:'1px solid #F0F0F0' }}>
+              <div style={{ fontWeight:700, fontSize:16, marginBottom:2 }}>{sc.label}</div>
+              <div style={{ fontSize:13, color:'#999' }}>{sc.shortDesc}</div>
+            </div>
+            {sc.screens.map((screen, i) => {
+              const badge = BADGE_TYPE[screen] || 'ok';
+              const bgBadge = { ok:'rgba(74,199,124,0.15)', branch:'rgba(255,196,43,0.2)', exit:'rgba(236,52,49,0.1)' };
+              const colorBadge = { ok:'#1c7a46', branch:'#7a5800', exit:'#b02624' };
+              return (
+                <div
+                  key={screen}
+                  onClick={() => onThumbClick(id, screen, i)}
+                  style={{ display:'flex', alignItems:'center', gap:12, padding:'13px 16px', borderBottom: i < sc.screens.length - 1 ? '1px solid #F5F5F5' : 'none', cursor:'pointer', WebkitTapHighlightColor:'transparent', background:'#FFF' }}
+                  onTouchStart={e => e.currentTarget.style.background='#F5F5F5'}
+                  onTouchEnd={e => e.currentTarget.style.background='#FFF'}
+                  onTouchCancel={e => e.currentTarget.style.background='#FFF'}
+                >
+                  <div style={{ width:30, height:30, borderRadius:'50%', background:'#F0F0F0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, color:'#666', flexShrink:0 }}>{i + 1}</div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:15, fontWeight:600, color:'#1a1b20', marginBottom:1 }}>{SCREEN_LABELS[screen] || screen}</div>
+                  </div>
+                  <span style={{ padding:'3px 9px', borderRadius:10, fontSize:11, fontWeight:600, background:bgBadge[badge], color:colorBadge[badge], flexShrink:0 }}>
+                    {badge === 'ok' ? 'Étape' : badge === 'branch' ? 'Branchement' : 'Sortie'}
+                  </span>
+                  <span style={{ color:'#CCC', fontSize:18, flexShrink:0 }}>›</span>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {/* DESKTOP THUMBNAILS */}
+      <div className="pano-desktop-thumbs" style={{ padding:'16px' }}>
         {activeScenario === 'Tous' ? (
           Object.entries(SCENARIOS).map(([id, sc]) => (
             <ScenarioRow key={id} scenarioId={id} scenario={sc} onThumbClick={onThumbClick} />
@@ -1910,12 +2528,70 @@ function PanoramaView({ activeScenario, setActiveScenario, onThumbClick }) {
   );
 }
 
+// ─── IMMERSIVE LAYOUT ────────────────────────────────────────────────────────
+function ImmersiveLayout({ onExit, children }) {
+  useEffect(() => {
+    function onKey(e) { if (e.key === 'Escape') onExit(); }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onExit]);
+
+  const StatusBar = () => (
+    <div className="ios-status">
+      <span className="ios-status-time">9:41</span>
+      <div className="ios-status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="#1A1A1A"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity="0.3"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#1A1A1A"><path d="M8 2.5C10.5 2.5 12.7 3.6 14.2 5.3L15.5 4C13.6 1.9 10.9.7 8 .7S2.4 1.9.5 4L1.8 5.3C3.3 3.6 5.5 2.5 8 2.5z"/><path d="M8 5.5C9.7 5.5 11.2 6.2 12.3 7.3L13.6 6C12.1 4.4 10.1 3.5 8 3.5S3.9 4.4 2.4 6L3.7 7.3C4.8 6.2 6.3 5.5 8 5.5z"/><circle cx="8" cy="10" r="1.8"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#1A1A1A" strokeOpacity="0.35"/><rect x="1.5" y="1.5" width="18" height="9" rx="2" fill="#1A1A1A"/><path d="M23 4v4c.8-.5 1.3-1.2 1.3-2S23.8 4.5 23 4z" fill="#1A1A1A" fillOpacity="0.4"/></svg>
+      </div>
+    </div>
+  );
+
+  const AddressBar = () => (
+    <div className="ios-address">
+      <span className="ios-nav-icon disabled">‹</span>
+      <span className="ios-nav-icon disabled" style={{ opacity: 0.2 }}>›</span>
+      <div className="ios-url-pill">
+        <svg width="12" height="14" viewBox="0 0 12 14" fill="#666"><path d="M6 0C4.3 0 3 1.3 3 3v1H1.5C.7 4 0 4.7 0 5.5v7c0 .8.7 1.5 1.5 1.5h9c.8 0 1.5-.7 1.5-1.5v-7C12 4.7 11.3 4 10.5 4H9V3C9 1.3 7.7 0 6 0zm0 1.5c.8 0 1.5.7 1.5 1.5v1h-3V3c0-.8.7-1.5 1.5-1.5z"/></svg>
+        <span className="ios-url-text">butagaz.fr/souscription</span>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="#0A84FF" style={{ flexShrink:0 }}><path d="M9 1l3 3H10v6H8V4H6L9 1zm-6 8v6h12V9h-2v5H5V9H3z"/></svg>
+    </div>
+  );
+
+  const BottomBar = ({ onExit }) => (
+    <div className="ios-bottom">
+      <span className="ios-bottom-icon disabled ios-bottom-desktop">‹</span>
+      <span className="ios-bottom-icon disabled ios-bottom-desktop" style={{ opacity: 0.2 }}>›</span>
+      <svg className="ios-bottom-desktop" width="20" height="20" viewBox="0 0 20 20" fill="#0A84FF"><rect x="1" y="5" width="13" height="14" rx="2" stroke="#0A84FF" strokeWidth="1.5" fill="none"/><path d="M4 4V3a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2h-1" stroke="#0A84FF" strokeWidth="1.5" fill="none"/></svg>
+      <svg className="ios-bottom-desktop" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0A84FF" strokeWidth="1.5"><path d="M3 3h5v5H3zM12 3h5v5h-5zM3 12h5v5H3zM12 12h5v5h-5z"/></svg>
+      <button className="ios-exit-btn" onClick={onExit}>← Retour au prototype complet</button>
+    </div>
+  );
+
+  return (
+    <div className="immersive-overlay">
+      <div className="immersive-phone-shell">
+        <div className="ios-dynamic-island" />
+        <StatusBar />
+        <AddressBar />
+        {children}
+        <BottomBar onExit={onExit} />
+      </div>
+      <button className="immersive-exit-pill" onClick={onExit}>
+        ← Retour à l'interface prototype
+      </button>
+    </div>
+  );
+}
+
 // ─── NAVIGATION VIEW ─────────────────────────────────────────────────────────
 function NavigationView({
   scenario, setScenario, currentScreen, setCurrentScreen,
   formData, setFormData, showAnnotations, setShowAnnotations,
   returnTo, setReturnTo, stepHistory, setStepHistory,
-  offerMode, setOfferMode, onSwitchToPanorama, isLibre,
+  offerMode, setOfferMode, onSwitchToPanorama, isLibre, isMobileVP,
+  immersiveMode, setImmersiveMode,
 }) {
   const [showRecallModal, setShowRecallModal] = useState(false);
   const [screenKey, setScreenKey] = useState(0);
@@ -1958,10 +2634,38 @@ function NavigationView({
 
   const isTunnelScreen = STEP_FOR_SCREEN[currentScreen] !== undefined;
 
+  const screenRouterEl = (
+    <ScreenRouter
+      screen={currentScreen}
+      formData={formData}
+      setFormData={setFormData}
+      navigate={navigate}
+      showRecall={() => setShowRecallModal(true)}
+      returnTo={returnTo}
+      setReturnTo={setReturnTo}
+      stepHistory={stepHistory}
+      offerMode={offerMode}
+      returnToSite={returnToSite}
+      onHome={returnToSite}
+      simulateError={simulateError}
+      setSimulateError={setSimulateError}
+    />
+  );
+
+  if (immersiveMode) {
+    return (
+      <ImmersiveLayout onExit={() => setImmersiveMode(false)}>
+        <div ref={mobileFrameRef} className="immersive-phone-content">
+          {screenRouterEl}
+        </div>
+      </ImmersiveLayout>
+    );
+  }
+
   return (
-    <div style={{ minHeight:'100vh', background:'#D8D8D8', display:'flex', flexDirection:'column' }}>
-      {/* Nav top bar */}
-      <div style={{ background:'#FFF', borderBottom:'1px solid #E0E0E0', padding:'8px 16px', display:'flex', alignItems:'center', gap:12, position:'sticky', top:0, zIndex:200, flexWrap:'wrap' }}>
+    <div className="nav-view" style={{ background:'#f0f4f8', display:'flex', flexDirection:'column' }}>
+      {/* Nav scenario bar */}
+      <div className="nav-scenario-bar">
         {!isLibre && (
           <select
             value={scenario || ''}
@@ -1975,122 +2679,91 @@ function NavigationView({
               setReturnTo(null);
               setScreenKey(k => k + 1);
             }}
-            style={{ padding:'4px 8px', border:'1px solid #D0D0D0', borderRadius:6, fontSize:13, background:'#FFF' }}
           >
             {Object.entries(SCENARIOS).map(([id, sc]) => (
               <option key={id} value={id}>{sc.label}</option>
             ))}
           </select>
         )}
-
-        <div style={{ flex:1, fontSize:13, color:'#666' }}>
-          {currentScreen ? (
-            <span><strong>{SCREEN_LABELS[currentScreen]}</strong> {currentIdx >= 0 && screenList ? `· ${currentIdx+1}/${screenList.length}` : ''}</span>
-          ) : null}
+        <div style={{ flex:1, fontSize:13, color:'#666', minWidth:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+          {currentScreen && <span><strong>{SCREEN_LABELS[currentScreen]}</strong>{currentIdx >= 0 && screenList ? ` · ${currentIdx+1}/${screenList.length}` : ''}</span>}
         </div>
-
         {!isLibre && (
-          <button
-            style={{ padding:'4px 10px', border:'1px solid #D0D0D0', borderRadius:6, fontSize:12, background: showAnnotations ? '#1A1A1A' : '#FFF', color: showAnnotations ? '#FFF' : '#666', cursor:'pointer' }}
+          <button className="nav-panel-toggle nav-panels btn-sm"
+            style={{ background: showAnnotations ? '#439fdb' : '#fff', color: showAnnotations ? '#fff' : '#666f7c', borderColor: showAnnotations ? '#439fdb' : '#dde6ed' }}
             onClick={() => setShowAnnotations(!showAnnotations)}
           >
-            {showAnnotations ? 'Masquer annotations' : 'Annotations'}
+            {showAnnotations ? 'Masquer' : 'Annotations'}
           </button>
         )}
-
-        <button
-          style={{ padding:'4px 10px', border:'1px solid #D0D0D0', borderRadius:6, fontSize:12, background:'#FFF', color:'#666', cursor:'pointer' }}
+        <button className="nav-panels btn-sm"
           onClick={onSwitchToPanorama}
         >
-          Vue panorama
+          Tous les écrans
         </button>
       </div>
 
-      {/* Main content */}
-      <div className="nav-main" style={{ flex:1, display:'flex', gap:16, padding:'16px', justifyContent:'center', alignItems:'flex-start' }}>
-        {/* Annotations panel */}
+      {/* Main */}
+      <div className="nav-main-layout" style={{ flex:1, display:'flex', gap:16, padding:'16px', justifyContent:'center', alignItems:'flex-start', minHeight:0, overflow:'auto' }}>
+        {/* Annotations — desktop */}
         {!isLibre && showAnnotations && (
-          <div className="nav-panels" style={{ width:220, background:'#FFF', borderRadius:10, padding:16, fontSize:12, lineHeight:1.7, color:'#333', flexShrink:0, position:'sticky', top:72 }}>
-            <div style={{ fontWeight:700, fontSize:13, marginBottom:10, color:'#1A1A1A', borderBottom:'1px solid #E8E8E8', paddingBottom:8 }}>Annotations UX</div>
+          <div className="nav-panels" style={{ width:220, background:'#FFF', borderRadius:10, padding:16, fontSize:12, lineHeight:1.7, color:'#333', flexShrink:0, position:'sticky', top:0 }}>
+            <div style={{ fontWeight:700, fontSize:13, marginBottom:10, color:'#1a1b20', borderBottom:'1px solid #E8E8E8', paddingBottom:8 }}>Annotations UX</div>
             <div style={{ color:'#555', lineHeight:1.7 }}>{annText || 'Aucune annotation pour cet écran.'}</div>
           </div>
         )}
 
-        {/* Mobile frame */}
-        <div className="mobile-frame-wrap" style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
-          <div
-            key={screenKey}
-            ref={mobileFrameRef}
-            style={{ width:375, height:812, background:'#FFF', borderRadius:12, overflowY:'auto', overflowX:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.15)', position:'relative' }}
-            className="mobile-scroll"
-          >
-            <ScreenRouter
-              screen={currentScreen}
-              formData={formData}
-              setFormData={setFormData}
-              navigate={navigate}
-              showRecall={() => setShowRecallModal(true)}
-              returnTo={returnTo}
-              setReturnTo={setReturnTo}
-              stepHistory={stepHistory}
-              offerMode={offerMode}
-              returnToSite={returnToSite}
-              onHome={returnToSite}
-              simulateError={simulateError}
-              setSimulateError={setSimulateError}
-            />
+        {/* Frame */}
+        <div className="nav-frame-wrap-desktop" style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
+          <div key={screenKey} ref={mobileFrameRef} className="nav-frame-desktop mobile-scroll">
+            {screenRouterEl}
           </div>
-          {/* Simuler erreur — mode libre uniquement */}
           {isLibre && (
-            <button
+            <button className="nav-panels"
               onClick={() => setSimulateError(v => !v)}
-              style={{
-                padding:'5px 12px', fontSize:12, cursor:'pointer', borderRadius:6,
-                background: simulateError ? '#FFF0F0' : '#FFF',
-                border: simulateError ? '1px solid #CC0000' : '1px solid #D0D0D0',
-                color: simulateError ? '#CC0000' : '#999',
-              }}
+              style={{ padding:'5px 12px', fontSize:12, cursor:'pointer', borderRadius:6, background: simulateError ? '#FFF0F0' : '#FFF', border: simulateError ? '1px solid #ec3431' : '1px solid #D0D0D0', color: simulateError ? '#ec3431' : '#999' }}
             >
-              {simulateError ? '✗ Erreur activée — prochain upload → C2' : 'Simuler erreur upload'}
+              {simulateError ? '✗ Erreur activée' : 'Simuler erreur upload'}
             </button>
           )}
         </div>
 
-        {/* Context panel */}
+        {/* Contexte — desktop */}
         {!isLibre && showAnnotations && (
-          <div className="nav-panels" style={{ width:220, background:'#FFF', borderRadius:10, padding:16, fontSize:12, lineHeight:1.7, color:'#333', flexShrink:0, position:'sticky', top:72 }}>
-            <div style={{ fontWeight:700, fontSize:13, marginBottom:10, color:'#1A1A1A', borderBottom:'1px solid #E8E8E8', paddingBottom:8 }}>Contexte scénario</div>
+          <div className="nav-panels" style={{ width:220, background:'#FFF', borderRadius:10, padding:16, fontSize:12, lineHeight:1.7, color:'#333', flexShrink:0, position:'sticky', top:0 }}>
+            <div style={{ fontWeight:700, fontSize:13, marginBottom:10, color:'#1a1b20', borderBottom:'1px solid #E8E8E8', paddingBottom:8 }}>Contexte scénario</div>
             <div style={{ whiteSpace:'pre-wrap', color:'#555' }}>{ctxText || '—'}</div>
           </div>
         )}
       </div>
 
-      {/* Prev / Next buttons */}
+      {/* Prev / Next */}
       {screenList && screenList.length > 1 && (
-        <div style={{ background:'#FFF', borderTop:'1px solid #E0E0E0', padding:'10px 16px', display:'flex', justifyContent:'center', gap:16 }}>
-          <button className="btn-sm" onClick={handlePrev} style={{ opacity: currentIdx > 0 ? 1 : 0.35 }} disabled={currentIdx <= 0}>
-            ← Étape précédente
-          </button>
-          <div style={{ display:'flex', gap:4, alignItems:'center' }}>
+        <div className="nav-bottom-bar">
+          <button className="btn-sm" onClick={handlePrev} style={{ opacity: currentIdx > 0 ? 1 : 0.3 }} disabled={currentIdx <= 0}>← Précédente</button>
+          <div style={{ display:'flex', gap:5, alignItems:'center' }}>
             {screenList.map((s, i) => (
-              <div key={s} style={{ width:6, height:6, borderRadius:'50%', background: i === currentIdx ? '#1A1A1A' : '#DDD', flexShrink:0 }} />
+              <div key={s} style={{ width: i === currentIdx ? 18 : 7, height:7, borderRadius: i === currentIdx ? 4 : '50%', background: i === currentIdx ? '#439fdb' : '#dde6ed', flexShrink:0, transition:'all 0.2s cubic-bezier(0.23, 1, 0.32, 1)' }} />
             ))}
           </div>
-          <button className="btn-sm" onClick={handleNext} style={{ opacity: currentIdx < screenList.length-1 ? 1 : 0.35 }} disabled={currentIdx >= screenList.length-1}>
-            Étape suivante →
-          </button>
+          <button className="btn-sm" onClick={handleNext} style={{ opacity: currentIdx < screenList.length-1 ? 1 : 0.3 }} disabled={currentIdx >= screenList.length-1}>Suivante →</button>
         </div>
       )}
 
-      {showRecallModal && (
-        <RecallModal formData={formData} onClose={() => setShowRecallModal(false)} />
-      )}
+      {showRecallModal && <RecallModal formData={formData} onClose={() => setShowRecallModal(false)} />}
     </div>
   );
 }
 
 // ─── APP ──────────────────────────────────────────────────────────────────────
 export default function App() {
+  const [isMobileVP, setIsMobileVP] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 500);
+  useEffect(() => {
+    const handler = () => setIsMobileVP(window.innerWidth <= 500);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
   const [isWelcome, setIsWelcome] = useState(true);
   const [mode, setMode] = useState('panorama'); // 'panorama' | 'navigation' | 'libre'
   const [panoramaScenario, setPanoramaScenario] = useState('A');
@@ -2104,8 +2777,17 @@ export default function App() {
   const [returnTo, setReturnTo] = useState(null);
   const [stepHistory, setStepHistory] = useState(['PAGE0']);
   const [offerMode, setOfferMode] = useState(false);
+  const [immersiveMode, setImmersiveMode] = useState(false);
 
-  function handleStart(startMode) {
+  function handleStart(startMode, scenarioId) {
+    if (scenarioId && SCENARIOS[scenarioId]) {
+      const sc = SCENARIOS[scenarioId];
+      setScenario(scenarioId);
+      setFormData({ ...sc.form, _wf1Choice: sc.screenChoices?.WF1 });
+      setCurrentScreen('PAGE0');
+      setStepHistory(['PAGE0']);
+      setReturnTo(null);
+    }
     setIsWelcome(false);
     setMode(startMode);
   }
@@ -2121,6 +2803,7 @@ export default function App() {
   }
 
   function handleModeChange(newMode) {
+    if (immersiveMode) setImmersiveMode(false);
     if (newMode === 'libre') {
       setFormData({ ...EMPTY_FORM });
       setCurrentScreen('PAGE0');
@@ -2128,6 +2811,21 @@ export default function App() {
       setReturnTo(null);
     }
     setMode(newMode);
+  }
+
+  function handleImmersiveToggle() {
+    if (immersiveMode) {
+      setImmersiveMode(false);
+    } else {
+      if (mode === 'panorama') {
+        setFormData({ ...EMPTY_FORM });
+        setCurrentScreen('PAGE0');
+        setStepHistory(['PAGE0']);
+        setReturnTo(null);
+        setMode('libre');
+      }
+      setImmersiveMode(true);
+    }
   }
 
   if (isWelcome) {
@@ -2142,38 +2840,61 @@ export default function App() {
   return (
     <>
       <InjectCSS />
+      <div className="app-shell">
 
       {/* Top mode bar */}
-      <div style={{ background:'#1A1A1A', padding:'8px 16px', display:'flex', alignItems:'center', gap:16, position:'sticky', top:0, zIndex:300 }}>
-        <span
-          style={{ color:'#FFF', fontWeight:700, fontSize:14, marginRight:8, cursor:'pointer' }}
-          onClick={() => setIsWelcome(true)}
-          title="Retour à l'accueil"
-        >Butaswitch</span>
-        <span style={{ color:'#555', fontSize:12, marginRight:8 }}>v2.1</span>
-        {['panorama','navigation','libre'].map(m => (
-          <button
-            key={m}
-            onClick={() => handleModeChange(m)}
-            style={{
-              padding:'4px 12px', borderRadius:6, fontSize:12, border:'none', cursor:'pointer',
-              background: mode===m ? '#FFF' : 'transparent',
-              color: mode===m ? '#1A1A1A' : '#999',
-              fontWeight: mode===m ? 600 : 400,
-            }}
-          >
-            {m === 'panorama' ? '⊞ Panorama' : m === 'navigation' ? '▶ Navigation' : '✎ Mode libre'}
-          </button>
-        ))}
-        <label style={{ display:'flex', alignItems:'center', gap:6, fontSize:12, color:'#AAA', cursor:'pointer', marginLeft:'auto', userSelect:'none' }}>
-          <input
-            type="checkbox"
-            checked={offerMode}
-            onChange={e => setOfferMode(e.target.checked)}
-            style={{ accentColor:'#FFF', cursor:'pointer' }}
-          />
-          Activer l'offre 200 €
-        </label>
+      <div className="shell-topbar">
+        <span className="shell-logo" onClick={() => setIsWelcome(true)}>Butaswitch</span>
+        <span className="shell-version">v2.1</span>
+        <div className="shell-modes">
+          {[
+            { id:'panorama', label:'⊞ Tous les écrans', short:'Écrans' },
+            { id:'navigation', label:'▶ Tester un profil', short:'Profil' },
+            { id:'libre', label:'✎ Parcours libre', short:'Libre' },
+          ].map(m => (
+            <button
+              key={m.id}
+              className={`shell-mode-btn${mode===m.id?' active':''}`}
+              onClick={() => handleModeChange(m.id)}
+            >
+              <span className="shell-label-long">{m.label}</span>
+              <span className="shell-label-short" style={{ display:'none' }}>{m.short}</span>
+            </button>
+          ))}
+        </div>
+        <button
+          className={`shell-mobile-btn${immersiveMode ? ' active' : ''}`}
+          onClick={handleImmersiveToggle}
+          title="Voir le prototype comme sur un vrai téléphone, sans le shell démonstrateur"
+        >
+          <svg width="11" height="14" viewBox="0 0 11 14" fill="currentColor"><path d="M9 0H2C.9 0 0 .9 0 2v10c0 1.1.9 2 2 2h7c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zm.5 12c0 .3-.2.5-.5.5H2c-.3 0-.5-.2-.5-.5V2c0-.3.2-.5.5-.5h7c.3 0 .5.2.5.5v10zm-4 .5c-.4 0-.7-.3-.7-.7s.3-.7.7-.7.7.3.7.7-.3.7-.7.7z"/></svg>
+          <span className="mob-label">Mobile</span>
+        </button>
+        <button
+          className={`shell-offer-chip${offerMode ? ' on' : ''}`}
+          onClick={() => setOfferMode(v => !v)}
+          aria-label={offerMode ? "Désactiver l'offre promotionnelle" : "Activer l'offre promotionnelle"}
+          title={offerMode ? "Version avec offre 200€ — cliquez pour désactiver" : "Version sans offre — cliquez pour afficher la promo"}
+        >
+          <span className="shell-label-short">{offerMode ? 'Promo on' : 'Promo off'}</span>
+          <span className="shell-label-long">{offerMode ? '✓ Avec offre 200 €' : 'Sans offre promo'}</span>
+        </button>
+      </div>
+
+      {/* Mode descriptor bar */}
+      <div className="mode-descriptor-bar">
+        {mode === 'panorama' && <>
+          <span className="mode-descriptor-icon">⊞</span>
+          <strong>Tous les écrans du prototype</strong> — Vue complète classée par profil utilisateur. Cliquez sur un écran pour le tester directement.
+        </>}
+        {mode === 'navigation' && <>
+          <span className="mode-descriptor-icon">▶</span>
+          <strong>Tester un profil</strong> — Sélectionnez un archétype et parcourez le tunnel étape par étape, avec les données pré-remplies de ce profil.
+        </>}
+        {mode === 'libre' && <>
+          <span className="mode-descriptor-icon">✎</span>
+          <strong>Parcours libre</strong> — Démarrez depuis le site butagaz.fr, sans profil présélectionné. Testez comme un vrai utilisateur arrivant de zéro.
+        </>}
       </div>
 
       {mode === 'panorama' && (
@@ -2202,8 +2923,11 @@ export default function App() {
           setOfferMode={setOfferMode}
           onSwitchToPanorama={() => setMode('panorama')}
           isLibre={mode === 'libre'}
+          immersiveMode={immersiveMode}
+          setImmersiveMode={setImmersiveMode}
         />
       )}
+      </div>{/* /app-shell */}
     </>
   );
 }
