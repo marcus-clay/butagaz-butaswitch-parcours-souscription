@@ -283,14 +283,44 @@ input[type="file"] { display: none; }
 }
 .nav-frame-wrap-desktop { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:10px; }
 
-/* Desktop large — panneaux toujours visibles, pas de toggle */
+/* Desktop large — panneaux toujours visibles */
 @media (min-width: 1100px) {
-  .nav-main-layout { max-width: 1180px; margin: 0 auto; }
   .nav-panels { display: flex !important; }
 }
-/* Intermédiaire 700-1099px — panneau si activé, sinon frame seul centré */
+/* Intermédiaire 700-1099px */
 @media (min-width: 701px) and (max-width: 1099px) {
-  .nav-panels { max-width: 200px; }
+  .nav-panels { max-width: 260px; }
+}
+
+/* ── PANNEAUX ANNOTATIONS ──────────────────────────────────────────────────── */
+.ann-panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #444;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+}
+.ann-panel-title {
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8b9aa4;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e8edf2;
+}
+
+/* Contenu form centré dans le navigateur desktop */
+.browser-inner-content {
+  max-width: 640px;
+  margin: 0 auto;
+  background: #fff;
+  min-height: 100%;
 }
 
 /* ── BOTTOM NAV ─────────────────────────────────────────────────────────── */
@@ -2880,71 +2910,104 @@ function NavigationView({
       </div>
 
       {/* Main */}
-      <div className="nav-main-layout" style={{ flex:1, display:'flex', gap:16, padding:'16px', justifyContent:'center', alignItems:'flex-start', minHeight:0, overflow:'auto' }}>
-        {/* Annotations — desktop */}
-        {!isLibre && showAnnotations && (
-          <div className="nav-panels" style={{ width:220, background:'#FFF', borderRadius:10, padding:16, fontSize:12, lineHeight:1.7, color:'#333', flexShrink:0, position:'sticky', top:0 }}>
-            <div style={{ fontWeight:700, fontSize:13, marginBottom:10, color:'#1a1b20', borderBottom:'1px solid #E8E8E8', paddingBottom:8 }}>Annotations UX</div>
-            <div style={{ color:'#555', lineHeight:1.7 }}>{annText || 'Aucune annotation pour cet écran.'}</div>
-          </div>
-        )}
+      <div className="nav-main-layout" style={{ flex:1, display:'flex', flexDirection: showBrowserChrome ? 'column' : 'row', gap:16, padding:'16px', justifyContent: showBrowserChrome ? 'flex-start' : 'center', alignItems: showBrowserChrome ? 'stretch' : 'flex-start', minHeight:0, overflow:'auto' }}>
 
-        {/* Frame */}
-        <div className="nav-frame-wrap-desktop" style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
-          {showBrowserChrome ? (
-            <div style={{ width:520, background:'#e8eaed', borderRadius:12, overflow:'hidden', boxShadow:'0 8px 40px rgba(0,0,0,0.15)' }}>
-              {/* Chrome navigateur mockup */}
-              <div style={{ background:'#dee1e6', padding:'8px 10px 0', display:'flex', flexDirection:'column', gap:0 }}>
-                {/* Barre de tabs */}
-                <div style={{ display:'flex', alignItems:'flex-end', gap:0, paddingLeft:4 }}>
-                  <div style={{ background:'#fff', padding:'6px 16px 0', borderRadius:'6px 6px 0 0', fontSize:11, color:'#1a1b20', fontWeight:500, display:'flex', alignItems:'center', gap:6, minWidth:160, maxWidth:220 }}>
-                    <img src="/logo-butagaz.png" alt="" style={{ height:12, width:'auto' }} />
-                    <span style={{ flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>Butagaz — Souscription gaz citerne</span>
-                    <span style={{ fontSize:10, color:'#999', cursor:'pointer', marginLeft:4 }}>×</span>
-                  </div>
-                  <div style={{ width:28, height:28, borderRadius:'4px 4px 0 0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, color:'#666', cursor:'pointer' }}>+</div>
-                </div>
-                {/* Barre d'adresse */}
-                <div style={{ background:'#fff', padding:'6px 10px', display:'flex', alignItems:'center', gap:8 }}>
-                  <div style={{ display:'flex', gap:6, flexShrink:0 }}>
-                    {['←','→','↻'].map((c,i) => <span key={i} style={{ fontSize:14, color: i < 2 ? '#bbb' : '#555', cursor:'pointer', padding:'0 2px' }}>{c}</span>)}
-                  </div>
-                  <div style={{ flex:1, background:'#f0f2f5', borderRadius:16, padding:'5px 12px', display:'flex', alignItems:'center', gap:6 }}>
-                    <span style={{ fontSize:11, color:'#2a9d5c' }}>🔒</span>
-                    <span style={{ fontSize:12, color:'#555', flex:1 }}>butagaz.fr/souscrire-gaz-citerne</span>
-                  </div>
-                  <div style={{ display:'flex', gap:6, flexShrink:0 }}>
-                    {['☆','⋮'].map((c,i) => <span key={i} style={{ fontSize:16, color:'#666', cursor:'pointer', padding:'0 2px' }}>{c}</span>)}
-                  </div>
-                </div>
+        {/* ── MODE MOBILE FRAME : 3 colonnes ─────────────────────────────────── */}
+        {!showBrowserChrome && (
+          <>
+            {/* Panneau gauche — Annotations */}
+            {!isLibre && showAnnotations && (
+              <div className="nav-panels ann-panel" style={{ width:260 }}>
+                <div className="ann-panel-title">Annotations UX</div>
+                <div>{annText || 'Aucune annotation pour cet écran.'}</div>
               </div>
-              {/* Contenu du site */}
-              <div key={screenKey} ref={mobileFrameRef} className="mobile-scroll" style={{ height:700, overflowY:'auto', overflowX:'hidden', background:'#fff' }}>
+            )}
+
+            {/* Frame téléphone */}
+            <div className="nav-frame-wrap-desktop" style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
+              <div key={screenKey} ref={mobileFrameRef} className="nav-frame-desktop mobile-scroll">
                 {screenRouterEl}
               </div>
+              {isLibre && (
+                <button className="nav-panels"
+                  onClick={() => setSimulateError(v => !v)}
+                  style={{ padding:'5px 12px', fontSize:12, cursor:'pointer', borderRadius:6, background: simulateError ? '#FFF0F0' : '#FFF', border: simulateError ? '1px solid #ec3431' : '1px solid #D0D0D0', color: simulateError ? '#ec3431' : '#999' }}
+                >
+                  {simulateError ? '✗ Erreur activée' : 'Simuler erreur upload'}
+                </button>
+              )}
             </div>
-          ) : (
-            <div key={screenKey} ref={mobileFrameRef} className="nav-frame-desktop mobile-scroll">
-              {screenRouterEl}
-            </div>
-          )}
-          {isLibre && (
-            <button className="nav-panels"
-              onClick={() => setSimulateError(v => !v)}
-              style={{ padding:'5px 12px', fontSize:12, cursor:'pointer', borderRadius:6, background: simulateError ? '#FFF0F0' : '#FFF', border: simulateError ? '1px solid #ec3431' : '1px solid #D0D0D0', color: simulateError ? '#ec3431' : '#999' }}
-            >
-              {simulateError ? '✗ Erreur activée' : 'Simuler erreur upload'}
-            </button>
-          )}
-        </div>
 
-        {/* Contexte — desktop */}
-        {!isLibre && showAnnotations && (
-          <div className="nav-panels" style={{ width:220, background:'#FFF', borderRadius:10, padding:16, fontSize:12, lineHeight:1.7, color:'#333', flexShrink:0, position:'sticky', top:0 }}>
-            <div style={{ fontWeight:700, fontSize:13, marginBottom:10, color:'#1a1b20', borderBottom:'1px solid #E8E8E8', paddingBottom:8 }}>Contexte scénario</div>
-            <div style={{ whiteSpace:'pre-wrap', color:'#555' }}>{ctxText || '—'}</div>
-          </div>
+            {/* Panneau droit — Contexte */}
+            {!isLibre && showAnnotations && (
+              <div className="nav-panels ann-panel" style={{ width:260 }}>
+                <div className="ann-panel-title">Contexte scénario</div>
+                <div style={{ whiteSpace:'pre-wrap' }}>{ctxText || '—'}</div>
+              </div>
+            )}
+          </>
         )}
+
+        {/* ── MODE BROWSER DESKTOP : plein viewport + panneaux en bas ──────── */}
+        {showBrowserChrome && (
+          <>
+            {/* Chrome navigateur pleine largeur */}
+            <div style={{ background:'#e8eaed', borderRadius:12, overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.1)', flexShrink:0 }}>
+              {/* Décoration : barre de titre macOS */}
+              <div style={{ background:'#d4d7db', padding:'10px 14px 0', display:'flex', flexDirection:'column' }}>
+                {/* Traffic lights */}
+                <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:8 }}>
+                  {['#ff5f57','#ffbd2e','#28c840'].map((c,i) => (
+                    <div key={i} style={{ width:12, height:12, borderRadius:'50%', background:c, flexShrink:0 }} />
+                  ))}
+                </div>
+                {/* Barre de tabs */}
+                <div style={{ display:'flex', alignItems:'flex-end', gap:0, paddingLeft:2 }}>
+                  <div style={{ background:'#fff', padding:'6px 16px 0', borderRadius:'6px 6px 0 0', fontSize:11, color:'#1a1b20', fontWeight:500, display:'flex', alignItems:'center', gap:6, minWidth:200, maxWidth:280 }}>
+                    <img src="/logo-butagaz.png" alt="" style={{ height:12, width:'auto', flexShrink:0 }} />
+                    <span style={{ flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>Butagaz — Souscription gaz citerne</span>
+                    <span style={{ fontSize:10, color:'#bbb', cursor:'pointer', marginLeft:4, flexShrink:0 }}>×</span>
+                  </div>
+                  <div style={{ width:28, height:26, borderRadius:'4px 4px 0 0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#888', cursor:'pointer' }}>+</div>
+                </div>
+                {/* Barre d'adresse */}
+                <div style={{ background:'#fff', padding:'7px 12px', display:'flex', alignItems:'center', gap:10 }}>
+                  <div style={{ display:'flex', gap:8, flexShrink:0 }}>
+                    {['←','→','↻'].map((c,i) => <span key={i} style={{ fontSize:15, color: i < 2 ? '#ccc' : '#666', cursor:'pointer', lineHeight:1 }}>{c}</span>)}
+                  </div>
+                  <div style={{ flex:1, background:'#f1f3f4', borderRadius:20, padding:'5px 14px', display:'flex', alignItems:'center', gap:7 }}>
+                    <span style={{ fontSize:12, color:'#2a9d5c', flexShrink:0 }}>🔒</span>
+                    <span style={{ fontSize:13, color:'#3c4043', flex:1, letterSpacing:'-0.1px' }}>butagaz.fr/souscrire-gaz-citerne</span>
+                  </div>
+                  <div style={{ display:'flex', gap:8, flexShrink:0 }}>
+                    {['☆','⋮'].map((c,i) => <span key={i} style={{ fontSize:17, color:'#666', cursor:'pointer' }}>{c}</span>)}
+                  </div>
+                </div>
+              </div>
+              {/* Contenu du site — centré à 640px, hauteur viewport */}
+              <div key={screenKey} ref={mobileFrameRef} className="mobile-scroll" style={{ maxHeight:'calc(100vh - 240px)', overflowY:'auto', overflowX:'hidden', background:'#f4f6f8' }}>
+                <div className="browser-inner-content">
+                  {screenRouterEl}
+                </div>
+              </div>
+            </div>
+
+            {/* Panneaux annotations + contexte — en ligne sous le browser */}
+            {!isLibre && showAnnotations && (
+              <div style={{ display:'flex', gap:16, flexShrink:0 }}>
+                <div className="ann-panel" style={{ flex:1 }}>
+                  <div className="ann-panel-title">Annotations UX</div>
+                  <div>{annText || 'Aucune annotation pour cet écran.'}</div>
+                </div>
+                <div className="ann-panel" style={{ flex:1 }}>
+                  <div className="ann-panel-title">Contexte scénario</div>
+                  <div style={{ whiteSpace:'pre-wrap' }}>{ctxText || '—'}</div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
       </div>
 
       {/* Prev / Next */}
