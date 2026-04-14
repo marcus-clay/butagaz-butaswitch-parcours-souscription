@@ -35,17 +35,23 @@ body {
 input, textarea, select, button { font-family: inherit; font-size: inherit; }
 button { cursor: pointer; }
 
+/* Courbes d'easing custom — plus punchées que les built-in */
+:root {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
 /* Screen animation */
-.screen-anim { animation: screenIn 0.25s ease-out; }
-@keyframes screenIn { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: translateX(0); } }
+.screen-anim { animation: screenIn 220ms var(--ease-out-strong); }
+@keyframes screenIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Tooltip */
-.tooltip-anim { animation: ttIn 0.15s ease-out; }
-@keyframes ttIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+.tooltip-anim { animation: ttIn 140ms var(--ease-out-strong); }
+@keyframes ttIn { from { opacity: 0; transform: scale(0.95) translateY(-4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
 /* Slide down for conditional fields */
-.slide-down { animation: sdIn 0.2s ease-out; }
-@keyframes sdIn { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 300px; } }
+.slide-down { animation: sdIn 220ms var(--ease-out-strong); }
+@keyframes sdIn { from { opacity: 0; transform: translateY(-6px); max-height: 0; } to { opacity: 1; transform: translateY(0); max-height: 400px; } }
 
 /* Upload progress bar */
 .upbar-track { height: 4px; background: #E0E0E0; border-radius: 2px; margin-top: 10px; overflow: hidden; }
@@ -272,8 +278,20 @@ input[type="file"] { display: none; }
   width:390px; min-height:812px; background:#fff;
   border-radius:20px; overflow-y:auto; overflow-x:hidden;
   box-shadow:0 8px 40px rgba(26,133,204,0.15);
+  /* Transition fluide quand les panneaux apparaissent/disparaissent */
+  transition: width 250ms var(--ease-out-strong), border-radius 250ms var(--ease-out-strong);
 }
 .nav-frame-wrap-desktop { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+/* Desktop large — panneaux toujours visibles, pas de toggle */
+@media (min-width: 1100px) {
+  .nav-main-layout { max-width: 1180px; margin: 0 auto; }
+  .nav-panels { display: flex !important; }
+}
+/* Intermédiaire 700-1099px — panneau si activé, sinon frame seul centré */
+@media (min-width: 701px) and (max-width: 1099px) {
+  .nav-panels { max-width: 200px; }
+}
 
 /* ── BOTTOM NAV ─────────────────────────────────────────────────────────── */
 .nav-bottom-bar {
@@ -363,10 +381,27 @@ input[type="file"] { display: none; }
 .help-popover { position:absolute; top:calc(100% + 8px); right:0; background:white; border:1px solid #e2e8ed; border-radius:14px; padding:14px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.12); z-index:200; font-size:14px; white-space:nowrap; min-width:220px; }
 
 /* Nouvelles keyframes */
-@keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes slideDown { from { opacity:0; transform:translateY(-8px) scale(0.96); } to { opacity:1; transform:translateY(0) scale(1); } }
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-.slide-down-anim { animation:slideDown 200ms ease-out; }
-.fade-in-anim { animation:fadeIn 200ms ease-out; }
+@keyframes popIn { from { opacity:0; transform:scale(0.93) translateY(-6px); } to { opacity:1; transform:scale(1) translateY(0); } }
+.slide-down-anim { animation:slideDown 180ms var(--ease-out-strong); }
+.fade-in-anim { animation:fadeIn 160ms ease-out; }
+
+/* Popover aide — scale depuis le coin supérieur droit */
+.help-popover { transform-origin: top right; animation: popIn 180ms var(--ease-out-strong); }
+
+/* Choice block — active feedback */
+.choice-block:active { transform: scale(0.985); transition: transform 100ms ease-out, border-color 0.15s, background 0.1s; }
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .screen-anim { animation: fadeIn 150ms ease-out; }
+  .slide-down { animation: fadeIn 150ms ease-out; }
+  .tooltip-anim { animation: fadeIn 100ms ease-out; }
+  .slide-down-anim { animation: fadeIn 100ms ease-out; }
+  .fade-in-anim { animation: none; }
+  * { transition-duration: 0.01ms !important; }
+}
 `;
 
 // ─── SCENARIO DATA ─────────────────────────────────────────────────────────────
@@ -550,17 +585,8 @@ function TunnelHeader({ onHome }) {
   return (
     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 16px', borderBottom:'1px solid #e2e8ed', position:'sticky', top:0, background:'#fff', zIndex:50 }}>
       <div onClick={onHome} style={{ cursor:onHome?'pointer':'default', display:'flex', alignItems:'center', gap:8 }}>
-        {/* Logo Butagaz inline */}
-        <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-          <div style={{ position:'relative', width:26, height:30, flexShrink:0 }}>
-            <div style={{ position:'absolute', bottom:0, left:0, width:17, height:17, borderRadius:'50%', background:'linear-gradient(135deg,#98c8e8,#439fdb)' }} />
-            <div style={{ position:'absolute', top:0, right:0, width:11, height:11, borderRadius:'50%', background:'linear-gradient(135deg,#c8e8f8,#8fc8e8)' }} />
-          </div>
-          <div style={{ lineHeight:1.05 }}>
-            <div style={{ fontWeight:800, fontSize:16, color:'#ec3431', letterSpacing:'-0.3px', fontFamily:'Nunito,system-ui,sans-serif' }}>Butagaz</div>
-            <div style={{ fontSize:8, color:'#0079c0', fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase', fontFamily:'Nunito,system-ui,sans-serif' }}>Gaz & Electricite</div>
-          </div>
-        </div>
+        {/* Logo Butagaz — PNG officiel */}
+        <img src="/logo-butagaz.png" alt="Butagaz" style={{ height:32, width:'auto', display:'block', flexShrink:0 }} />
         <span style={{ height:14, width:1, background:'#e2e8ed', flexShrink:0 }} />
         <span style={{ fontSize:11, color:'#8b9aa4', fontWeight:500 }}>Souscription gaz en citerne</span>
       </div>
@@ -909,30 +935,35 @@ function ScreenPAGE0({ offerMode, navigate, showRecall }) {
   return (
     <div style={{ background: '#F4F4F4', minHeight: 1400 }}>
 
-      {/* Header grisé */}
-      <div style={grayStyle}>
-        <div style={{ background: '#FFF', padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E0E0E0' }}>
-          <span style={{ fontWeight: 800, fontSize: 20, letterSpacing: '-0.5px' }}>Butagaz</span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {[0,1,2].map(i => <div key={i} style={{ width: 22, height: 2, background: '#1A1A1A', borderRadius: 1 }} />)}
-          </div>
+      {/* Header branded — logo + nav simulés sur fond blanc */}
+      <div style={{ background:'#fff', borderBottom:'1px solid #e8edf2', padding:'10px 16px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <img src="/logo-butagaz.png" alt="Butagaz" style={{ height:28, width:'auto' }} />
+        <div style={{ display:'flex', gap:14 }}>
+          {['Offres','Particuliers','Pro'].map(l => (
+            <span key={l} style={{ fontSize:13, color:'#1a1b20', fontWeight:500, opacity:0.5 }}>{l}</span>
+          ))}
         </div>
+      </div>
 
-        {/* Breadcrumb */}
-        <div style={{ padding: '8px 16px', background: '#FFF', borderBottom: '1px solid #F0F0F0' }}>
-          <span style={{ fontSize: 12, color: '#999' }}>Offres</span>
-          <span style={{ fontSize: 12, color: '#CCC', margin: '0 4px' }}>›</span>
-          <span style={{ fontSize: 12, color: '#666' }}>Gaz en citerne</span>
+      {/* Hero photo pleine largeur */}
+      <div style={{ position:'relative', height:200, overflow:'hidden' }}>
+        <img
+          src="/cover-citerne.webp"
+          alt="Citerne de gaz Butagaz"
+          style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center 60%' }}
+        />
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg,rgba(0,121,192,0.35) 0%,rgba(0,0,0,0.5) 100%)' }} />
+        <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:'16px' }}>
+          <div style={{ fontSize:22, fontWeight:800, color:'#fff', lineHeight:1.2, marginBottom:4, textShadow:'0 1px 4px rgba(0,0,0,0.4)' }}>Gaz en citerne</div>
+          <div style={{ fontSize:13, color:'rgba(255,255,255,0.85)', fontWeight:500 }}>Chauffez votre maison avec le gaz propane en citerne</div>
         </div>
+      </div>
 
-        {/* Contenu page intro */}
-        <div style={{ padding: '20px 16px', background: '#FFF', marginBottom: 8 }}>
-          <div style={{ fontSize: 24, fontWeight: 700, marginBottom: 10 }}>Gaz en citerne</div>
-          <div style={{ height: 10, background: '#E0E0E0', borderRadius: 4, marginBottom: 8, width: '90%' }} />
-          <div style={{ height: 10, background: '#E0E0E0', borderRadius: 4, marginBottom: 8, width: '80%' }} />
-          <div style={{ height: 10, background: '#E0E0E0', borderRadius: 4, marginBottom: 14, width: '65%' }} />
-          <span style={{ fontSize: 13, color: '#1A1A1A', textDecoration: 'underline' }}>En savoir plus ›</span>
-        </div>
+      {/* Breadcrumb */}
+      <div style={{ padding:'8px 16px', background:'#fff', borderBottom:'1px solid #f0f0f0' }}>
+        <span style={{ fontSize:12, color:'#999' }}>Offres</span>
+        <span style={{ fontSize:12, color:'#ccc', margin:'0 4px' }}>›</span>
+        <span style={{ fontSize:12, color:'#666' }}>Gaz en citerne</span>
       </div>
 
       {/* ─── ENCART SOUSCRIPTION — ZONE ACTIVE ─── */}
@@ -1414,20 +1445,24 @@ function ScreenWF3({ formData, setFormData, navigate, showRecall, returnTo, setR
           <div style={{ display:'flex', gap:12, marginTop:4 }}>
             <div
               className={`choice-block${citerneType==='apparente'?' selected':''}`}
-              style={{ flex:1, textAlign:'center', marginBottom:0 }}
+              style={{ flex:1, textAlign:'center', marginBottom:0, padding:'12px 8px' }}
               onClick={() => { setCiterneType('apparente'); setErrors({...errors,citerne:null}); }}
             >
-              <div style={{ fontSize:28, marginBottom:4 }}>🪨</div>
-              <div style={{ fontWeight:600, fontSize:14 }}>Apparente</div>
+              <div style={{ borderRadius:10, overflow:'hidden', marginBottom:8, height:80, background:'#f0f4f8' }}>
+                <img src="/citerne-apparente.png" alt="Citerne apparente" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+              </div>
+              <div style={{ fontWeight:700, fontSize:14 }}>Apparente</div>
               <div style={{ fontSize:12, color:'#666' }}>Visible dans le jardin</div>
             </div>
             <div
               className={`choice-block${citerneType==='enfouie'?' selected':''}`}
-              style={{ flex:1, textAlign:'center', marginBottom:0 }}
+              style={{ flex:1, textAlign:'center', marginBottom:0, padding:'12px 8px' }}
               onClick={() => { setCiterneType('enfouie'); setErrors({...errors,citerne:null}); }}
             >
-              <div style={{ fontSize:28, marginBottom:4 }}>⬇</div>
-              <div style={{ fontWeight:600, fontSize:14 }}>Enfouie</div>
+              <div style={{ borderRadius:10, overflow:'hidden', marginBottom:8, height:80, background:'#f0f4f8' }}>
+                <img src="/citerne-enfouie.png" alt="Citerne enfouie" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+              </div>
+              <div style={{ fontWeight:700, fontSize:14 }}>Enfouie</div>
               <div style={{ fontSize:12, color:'#666' }}>Enterrée sous terre</div>
             </div>
           </div>
