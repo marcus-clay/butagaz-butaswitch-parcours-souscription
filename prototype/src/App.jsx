@@ -55,12 +55,12 @@ button { cursor: pointer; }
 
 /* Upload progress bar */
 .upbar-track { height: 4px; background: #E0E0E0; border-radius: 2px; margin-top: 10px; overflow: hidden; }
-.upbar-fill { height:100%; background:linear-gradient(90deg,#88e7a3,#2aba5b); border-radius:2px; transition:width 0.08s linear; }
+.upbar-fill { height:100%; background:linear-gradient(90deg,#88e7a3,#2aba5b); border-radius:2px; transition:width 0.5s cubic-bezier(0.23,1,0.32,1); }
 
 /* Choice blocks */
 .choice-block { border: 1.5px solid #dde6ed; border-radius: 14px; padding: 16px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s, background 0.1s; }
 .choice-block:hover { border-color: #439fdb; background: #f5f9fd; }
-.choice-block.selected { border: 2px solid #439fdb !important; background: #ecf5fb; }
+.choice-block.selected { border: 2px solid #439fdb !important; background: #ecf5fb; box-shadow: 0 0 0 3px rgba(67,159,219,0.14); transition: border-color 0.12s ease-out, background 0.12s ease-out, box-shadow 0.18s ease-out; }
 
 /* Upload zone */
 .upload-empty { border: 2px dashed #439fdb; border-radius: 14px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.1s, background 0.1s; background: #f9fcff; }
@@ -74,11 +74,11 @@ textarea.field-input { padding: 12px 18px; resize: vertical; min-height: 90px; b
 
 /* Buttons */
 .btn-primary { display: block; width: 100%; padding: 14px 24px; background: linear-gradient(143deg,#88e7a3,#2aba5b); color: #0d4a23; border: none; border-radius: 999px; font-size: 15px; font-weight: 700; cursor: pointer; text-align: center; transition: filter 0.15s ease-out, transform 0.12s ease-out; font-family: var(--font-main); }
-.btn-primary:hover { filter: brightness(1.05); }
-.btn-primary:active { transform: scale(0.98); filter: brightness(0.96); }
+.btn-primary:active { transform: scale(0.97); filter: brightness(0.96); }
+@media (hover: hover) and (pointer: fine) { .btn-primary:hover { filter: brightness(1.06); } }
 .btn-secondary { display: block; width: 100%; padding: 12px 24px; background: transparent; color: #439fdb; border: 1.5px solid #439fdb; border-radius: 999px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; transition: background 0.15s ease-out, transform 0.12s ease-out; font-family: var(--font-main); }
-.btn-secondary:hover { background: #ecf5fb; }
-.btn-secondary:active { transform: scale(0.98); }
+.btn-secondary:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .btn-secondary:hover { background: #ecf5fb; } }
 .btn-sm { display: inline-flex; align-items: center; padding: 8px 16px; background: #fff; color: #439fdb; border: 1.5px solid #439fdb; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; gap: 5px; min-height: 36px; transition: background 0.15s ease-out, transform 0.1s ease-out; }
 .btn-sm:hover { background: #ecf5fb; }
 .btn-sm:active { transform: scale(0.97); }
@@ -374,8 +374,10 @@ input[type="file"] { display: none; }
 .btn-aide:active { transform:scale(0.98); }
 
 /* Sélecteur créneau */
-.btn-creneau { flex:1; padding:10px 16px; border-radius:999px; border:1.5px solid #dde6ed; background:white; color:#666f7c; font-size:14px; cursor:pointer; transition:border-color 0.15s, background 0.1s, color 0.1s; font-family:var(--font-main); font-weight:500; }
+.btn-creneau { flex:1; padding:10px 16px; border-radius:999px; border:1.5px solid #dde6ed; background:white; color:#666f7c; font-size:14px; cursor:pointer; transition:border-color 0.15s, background 0.1s, color 0.1s, transform 0.1s ease-out; font-family:var(--font-main); font-weight:500; }
 .btn-creneau.active { border-color:#439fdb; background:#ecf5fb; color:#439fdb; font-weight:700; }
+.btn-creneau:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .btn-creneau:not(.active):hover { border-color:#439fdb; background:#f5f9fd; color:#439fdb; } }
 
 /* Popover aide */
 .help-popover { position:absolute; top:calc(100% + 8px); right:0; background:white; border:1px solid #e2e8ed; border-radius:14px; padding:14px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.12); z-index:200; font-size:14px; white-space:nowrap; min-width:220px; }
@@ -386,6 +388,45 @@ input[type="file"] { display: none; }
 @keyframes popIn { from { opacity:0; transform:scale(0.93) translateY(-6px); } to { opacity:1; transform:scale(1) translateY(0); } }
 .slide-down-anim { animation:slideDown 180ms var(--ease-out-strong); }
 .fade-in-anim { animation:fadeIn 160ms ease-out; }
+
+/* Caméra — force le plein écran dans le frame */
+.camera-fullscreen { position:absolute; inset:0; width:100%; height:100%; overflow:hidden; }
+
+/* ── ANIMATIONS UI POLISH ──────────────────────────────────────────────────── */
+/* Overlay backdrop */
+@keyframes overlayFadeIn { from { opacity:0; } to { opacity:1; } }
+.overlay-anim { animation: overlayFadeIn 200ms ease-out; }
+
+/* Modal slide-up */
+@keyframes modalSlideUp { from { opacity:0; transform:translateY(20px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+.modal-anim { animation: modalSlideUp 260ms var(--ease-out-strong); transform-origin: bottom center; }
+
+/* Dropdown suggestions */
+@keyframes dropdownIn { from { opacity:0; transform:translateY(-6px) scaleY(0.95); transform-origin:top; } to { opacity:1; transform:translateY(0) scaleY(1); } }
+.dropdown-anim { animation: dropdownIn 160ms var(--ease-out-strong); transform-origin: top center; }
+
+/* Upload success */
+@keyframes uploadSuccess { 0% { opacity:0; transform:scale(0.96); } 60% { transform:scale(1.02); } 100% { opacity:1; transform:scale(1); } }
+.upload-success-anim { animation: uploadSuccess 280ms var(--ease-out-strong); }
+
+/* Error shake */
+@keyframes errorShake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-5px); } 60% { transform:translateX(4px); } 80% { transform:translateX(-3px); } }
+.error-anim { animation: errorShake 280ms ease-out; }
+
+/* UploadItem entry stagger */
+@keyframes uploadItemIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.upload-item-anim { animation: uploadItemIn 240ms var(--ease-out-strong) both; }
+
+/* Checkbox check bounce */
+@keyframes checkBounce { 0% { transform:scale(0.8); } 60% { transform:scale(1.15); } 100% { transform:scale(1); } }
+
+/* Loading pulse */
+@keyframes loadingPulse { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+.loading-pulse { animation: loadingPulse 1.4s ease-in-out infinite; }
+
+/* Success check */
+@keyframes successIn { 0% { opacity:0; transform:scale(0.5); } 70% { transform:scale(1.2); } 100% { opacity:1; transform:scale(1); } }
+.success-icon-anim { animation: successIn 350ms var(--ease-out-strong); display:inline-block; }
 
 /* Popover aide — scale depuis le coin supérieur droit */
 .help-popover { transform-origin: top right; animation: popIn 180ms var(--ease-out-strong); }
@@ -722,7 +763,7 @@ function FormField({ id, label, tooltipText, openTip, onToggleTip, error, childr
         </div>
       )}
       {children}
-      {error && <div style={{ fontSize:12, color:'#ec3431', marginTop:4 }}>{error}</div>}
+      {error && <div key={error} className="error-anim" style={{ fontSize:12, color:'#ec3431', marginTop:4, fontWeight:500 }}>{error}</div>}
     </div>
   );
 }
@@ -816,7 +857,7 @@ function AddressInput({ value, onChange, onBlur, hasError, placeholder }) {
         <div style={{ fontSize:12, color:'#999', marginTop:4, paddingLeft:4 }}>Recherche…</div>
       )}
       {open && suggestions.length > 0 && (
-        <div style={{ position:'absolute', left:0, right:0, zIndex:100, background:'#FFF', border:'1px solid #D0D0D0', borderRadius:8, boxShadow:'0 4px 16px rgba(0,0,0,0.12)', overflow:'hidden', marginTop:4 }}>
+        <div className="dropdown-anim" style={{ position:'absolute', left:0, right:0, zIndex:100, background:'#FFF', border:'1px solid #D0D0D0', borderRadius:8, boxShadow:'0 4px 16px rgba(0,0,0,0.12)', overflow:'hidden', marginTop:4 }}>
           {suggestions.map((addr, i) => (
             <div
               key={i}
@@ -842,7 +883,7 @@ function AddressInput({ value, onChange, onBlur, hasError, placeholder }) {
 function UploadItem({ index, file, progress, phase, onZoneClick, onDelete }) {
   const label = ['Facture 1/3', 'Facture 2/3', 'Facture 3/3'][index];
   return (
-    <div style={{ marginBottom:14 }}>
+    <div className="upload-item-anim" style={{ marginBottom:14, animationDelay: `${index * 80}ms` }}>
       <div style={{ fontSize:12, fontWeight:600, color:'#999', marginBottom:6 }}>{label}</div>
       {phase === 'empty' && (
         <div className="upload-empty" onClick={() => onZoneClick(index)}>
@@ -859,7 +900,7 @@ function UploadItem({ index, file, progress, phase, onZoneClick, onDelete }) {
         </div>
       )}
       {phase === 'success' && (
-        <div style={{ background:'rgba(74,199,124,0.08)', border:'1px solid #4ac77c', borderRadius:10, padding:14 }}>
+        <div className="upload-success-anim" style={{ background:'rgba(74,199,124,0.08)', border:'1px solid #4ac77c', borderRadius:10, padding:14 }}>
           <div style={{ fontSize:14, fontWeight:600, color:'#1c7a46', marginBottom:2 }}>✓ {file?.name}</div>
           <div style={{ fontSize:12, color:'#666', marginBottom:8 }}>{file?.size}</div>
           <div style={{ display:'flex', gap:8 }}>
@@ -886,8 +927,8 @@ function RecallModal({ formData, onClose }) {
   }
 
   return (
-    <div className="overlay" onClick={onClose}>
-      <div style={{ background:'#FFF', borderRadius:16, padding:24, width:'100%', maxWidth:340, position:'relative' }} onClick={e => e.stopPropagation()}>
+    <div className="overlay overlay-anim" onClick={onClose}>
+      <div className="modal-anim" style={{ background:'#FFF', borderRadius:16, padding:24, width:'100%', maxWidth:340, position:'relative' }} onClick={e => e.stopPropagation()}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
           <div style={{ fontWeight:600, fontSize:16 }}>Être rappelé</div>
           <span style={{ fontSize:20, cursor:'pointer', color:'#666', lineHeight:1 }} onClick={onClose}>×</span>
@@ -1645,19 +1686,99 @@ function WF4ModeB_Frame({ factureNum, onCapture, onFileClick, onNoFacture, onBac
 
 // ─── WF4 MODE B — ÉTAPE B2 ───────────────────────────────────────────────────
 function WF4ModeB_Camera({ factureNum, onCapture, onBack }) {
+  const [scanPos, setScanPos] = useState(0);
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    let pos = 0;
+    let dir = 1;
+    function tick() {
+      pos += dir * 1.5;
+      if (pos >= 98) dir = -1;
+      if (pos <= 2) dir = 1;
+      setScanPos(pos);
+      rafRef.current = requestAnimationFrame(tick);
+    }
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
   return (
-    <div style={{ height:'100%', display:'flex', flexDirection:'column' }}>
-      <WF4ModeBHeader factureNum={factureNum} handleBack={onBack} />
-      <div style={{ flex:1, background:'#1A1A1A', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', position:'relative', minHeight:500 }}>
-        <div style={{ position:'absolute', top:16, left:16, right:16, background:'rgba(255,255,255,0.92)', borderRadius:8, padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:13, zIndex:10 }}>
-          <span>Autorisation d'utiliser l'appareil photo</span>
-          <button onClick={onCapture} style={{ background:'#1A1A1A', color:'white', border:'none', borderRadius:6, padding:'6px 12px', fontSize:12, cursor:'pointer', flexShrink:0, marginLeft:8 }}>
-            Accepter
-          </button>
+    <div style={{ position:'relative', width:'100%', height:'100%', minHeight:'600px', background:'#0a0a0a', overflow:'hidden', display:'flex', flexDirection:'column' }}>
+      {/* Fausse texture photo : table + document */}
+      <div style={{ position:'absolute', inset:0, background:'#1c1c1c' }}>
+        <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%, -52%) rotate(-3deg)', width:'64%', maxWidth:230, background:'#f0ece4', borderRadius:3, padding:'14px 12px', boxShadow:'0 8px 32px rgba(0,0,0,0.6)' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8, alignItems:'flex-start' }}>
+            <div>
+              <div style={{ height:7, background:'#1a6fa3', borderRadius:2, marginBottom:4, width:80 }} />
+              <div style={{ height:4, background:'#ccc', borderRadius:1, width:55 }} />
+            </div>
+            <div style={{ height:18, width:40, background:'#e8e8e0', borderRadius:2 }} />
+          </div>
+          <div style={{ height:1, background:'#ddd', margin:'6px 0 8px' }} />
+          {[90,70,85,60,78,65].map((w,i) => <div key={i} style={{ height:3, background:'#ccc', borderRadius:1, marginBottom:4, width:w+'%' }} />)}
+          <div style={{ height:1, background:'#ddd', margin:'8px 0 6px' }} />
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+            <div style={{ height:4, background:'#bbb', borderRadius:1, width:'35%' }} />
+            <div style={{ height:7, background:'#1a1b20', borderRadius:2, width:'28%', opacity:0.75 }} />
+          </div>
         </div>
-        <IllustrationViseurPleinEcran />
-        <div style={{ color:'rgba(255,255,255,0.4)', fontSize:12, marginTop:12 }}>Appareil photo natif — S'ouvre en plein écran</div>
-        <button onClick={onCapture} style={{ position:'absolute', bottom:24, width:56, height:56, borderRadius:'50%', background:'white', border:'3px solid rgba(255,255,255,0.5)', cursor:'pointer' }} />
+      </div>
+
+      {/* Vignette */}
+      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 60% 55% at 50% 48%, transparent 0%, rgba(0,0,0,0.65) 100%)' }} />
+
+      {/* Top bar caméra iOS */}
+      <div style={{ position:'relative', zIndex:20, padding:'14px 20px 8px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <button onClick={onBack} style={{ background:'none', border:'none', color:'#fff', fontSize:15, fontWeight:400, cursor:'pointer', padding:'4px 0', textShadow:'0 1px 4px rgba(0,0,0,0.7)', letterSpacing:'-0.2px' }}>Annuler</button>
+        <span style={{ color:'rgba(255,255,255,0.45)', fontSize:12, fontWeight:500 }}>Facture {factureNum}/3</span>
+        <div style={{ display:'flex', gap:18 }}>
+          <span style={{ color:'rgba(255,255,255,0.85)', fontSize:16 }}>⚡</span>
+          <span style={{ color:'rgba(255,255,255,0.85)', fontSize:16 }}>⋯</span>
+        </div>
+      </div>
+
+      {/* Zone viseur */}
+      <div style={{ flex:1, position:'relative', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ position:'relative', width:'70%', maxWidth:240, aspectRatio:'3/4' }}>
+          {/* Coins du viseur */}
+          {[
+            { top:0, left:0, borderTop:'3px solid #fff', borderLeft:'3px solid #fff', borderRadius:'4px 0 0 0' },
+            { top:0, right:0, borderTop:'3px solid #fff', borderRight:'3px solid #fff', borderRadius:'0 4px 0 0' },
+            { bottom:0, left:0, borderBottom:'3px solid #fff', borderLeft:'3px solid #fff', borderRadius:'0 0 0 4px' },
+            { bottom:0, right:0, borderBottom:'3px solid #fff', borderRight:'3px solid #fff', borderRadius:'0 0 4px 0' },
+          ].map((s, i) => <div key={i} style={{ position:'absolute', width:22, height:22, ...s }} />)}
+          {/* Cadre pointillé */}
+          <div style={{ position:'absolute', inset:0, border:'1px dashed rgba(255,255,255,0.25)', borderRadius:2 }} />
+          {/* Ligne de scan */}
+          <div style={{ position:'absolute', left:0, right:0, top:scanPos+'%', height:2, background:'linear-gradient(90deg, transparent, rgba(67,159,219,0.9), transparent)', boxShadow:'0 0 10px rgba(67,159,219,0.7)', pointerEvents:'none' }} />
+        </div>
+        {/* Point focus doré */}
+        <div style={{ position:'absolute', width:52, height:52, border:'1.5px solid rgba(255,196,43,0.9)', borderRadius:4 }} />
+      </div>
+
+      {/* Conseil */}
+      <div style={{ position:'relative', zIndex:10, color:'rgba(255,255,255,0.45)', fontSize:11, textAlign:'center', padding:'4px 16px 8px', letterSpacing:'0.01em' }}>
+        Cadrez votre facture dans le viseur
+      </div>
+
+      {/* Barre inférieure caméra iOS */}
+      <div style={{ position:'relative', zIndex:20, padding:'12px 32px 28px', display:'flex', alignItems:'center', justifyContent:'space-between', background:'rgba(0,0,0,0.25)' }}>
+        {/* Vignette dernière photo */}
+        <div style={{ width:44, height:44, borderRadius:8, background:'linear-gradient(135deg,#e8e8e0,#d0cfc7)', border:'1.5px solid rgba(255,255,255,0.3)', overflow:'hidden', flexShrink:0 }}>
+          <div style={{ width:'100%', height:'100%', background:'rgba(255,255,255,0.05)' }} />
+        </div>
+        {/* Déclencheur */}
+        <button
+          onClick={onCapture}
+          style={{ width:68, height:68, borderRadius:'50%', background:'rgba(255,255,255,0.95)', border:'3px solid rgba(255,255,255,0.5)', cursor:'pointer', boxShadow:'0 0 0 5px rgba(255,255,255,0.18), 0 2px 12px rgba(0,0,0,0.5)', transition:'transform 120ms ease-out', flexShrink:0 }}
+          onMouseDown={e => e.currentTarget.style.transform='scale(0.92)'}
+          onMouseUp={e => e.currentTarget.style.transform='scale(1)'}
+        />
+        {/* Retournement caméra */}
+        <div style={{ width:44, height:44, borderRadius:'50%', background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:20, flexShrink:0 }}>
+          ↻
+        </div>
       </div>
     </div>
   );
@@ -1669,7 +1790,7 @@ function WF4ModeB_Loading({ factureNum, fileName, progress }) {
     <div style={{ minHeight:'100%' }}>
       <WF4ModeBHeader factureNum={factureNum} handleBack={() => {}} />
       <div style={{ padding:'60px 24px', textAlign:'center' }}>
-        <div style={{ fontSize:18, fontWeight:600, marginBottom:8 }}>Envoi en cours…</div>
+        <div className="loading-pulse" style={{ fontSize:18, fontWeight:600, marginBottom:8 }}>Envoi en cours…</div>
         <div style={{ fontSize:13, color:'#999', marginBottom:24 }}>{fileName}</div>
         <div className="upbar-track" style={{ maxWidth:280, margin:'0 auto' }}>
           <div className="upbar-fill" style={{ width: progress + '%' }} />
@@ -1689,7 +1810,10 @@ function WF4ModeB_Success({ factureNum, file, factures, onAddNext, onReturn, onF
     <div style={{ minHeight:'100%' }}>
       <WF4ModeBHeader factureNum={factureNum} handleBack={onReturn} />
       <div style={{ padding:'20px 16px 80px 16px' }}>
-        <div style={{ fontSize:22, fontWeight:700, marginBottom:4 }}>Bien reçu !</div>
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
+          <span className="success-icon-anim" style={{ fontSize:28, lineHeight:1 }}>✓</span>
+          <div style={{ fontSize:22, fontWeight:700 }}>Bien reçu !</div>
+        </div>
         <div style={{ fontSize:14, color:'#666', marginBottom:20 }}>
           {uploadedCount}/3 facture{uploadedCount > 1 ? 's' : ''} ajoutée{uploadedCount > 1 ? 's' : ''}
         </div>
@@ -2370,13 +2494,22 @@ function ScreenWelcome({ onStart }) {
   const sectionLabelStyle = { fontSize:11, color:'#439fdb', textTransform:'uppercase', letterSpacing:'1.5px', fontWeight:600 };
 
   return (
-    <div style={{ minHeight:'100dvh', background:'linear-gradient(180deg,#ecf5fb,#f5f9fd)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent: isMobileVP ? 'flex-start' : 'center', padding: isMobileVP ? '40px 20px 48px' : '48px 20px' }}>
-      <div style={{ maxWidth:520, width:'100%' }}>
+    <div style={{ minHeight:'100dvh', position:'relative', display:'flex', flexDirection:'column', alignItems:'center', justifyContent: isMobileVP ? 'flex-start' : 'center', padding: isMobileVP ? '40px 20px 48px' : '48px 20px', overflow:'hidden' }}>
+      {/* Photo de fond */}
+      <div style={{ position:'fixed', inset:0, zIndex:0 }}>
+        <img src="/cover-citerne.webp" alt="" style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center 55%' }} />
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(245,249,253,0.96) 60%, rgba(235,242,249,1) 100%)' }} />
+      </div>
+      <div style={{ maxWidth:520, width:'100%', position:'relative', zIndex:1 }}>
 
-        {/* Brand header */}
-        <div style={{ marginBottom:6, fontSize:11, color:'#439fdb', background:'#ecf5fb', border:'1px solid #c2dcf0', display:'inline-block', padding:'3px 10px', borderRadius:6, textTransform:'uppercase', letterSpacing:'2px' }}>Prototype interactif v2.1</div>
-        <h1 style={{ fontSize: isMobileVP ? 34 : 44, fontWeight:800, color:'#0079c0', letterSpacing:'-2px', lineHeight:1, marginBottom:6 }}>Butaswitch</h1>
-        <div style={{ fontSize:13, color:'#666f7c', marginBottom:32, fontWeight:500 }}>Butagaz — Parcours de souscription GPL en ligne</div>
+        {/* Logo Butagaz + badge prototype */}
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
+          <img src="/logo-butagaz.png" alt="Butagaz" style={{ height:36, width:'auto' }} />
+          <div style={{ height:20, width:1, background:'rgba(0,0,0,0.12)' }} />
+          <div style={{ fontSize:10, color:'#439fdb', background:'#ecf5fb', border:'1px solid #c2dcf0', display:'inline-block', padding:'3px 10px', borderRadius:6, textTransform:'uppercase', letterSpacing:'2px', fontWeight:600 }}>Prototype interactif v2.1</div>
+        </div>
+        <h1 style={{ fontSize: isMobileVP ? 42 : 56, fontWeight:800, color:'#1a1b20', letterSpacing:'-2.5px', lineHeight:1, marginBottom:8 }}>Butaswitch</h1>
+        <div style={{ fontSize:15, color:'#666f7c', marginBottom:36, fontWeight:500 }}>Butagaz — Parcours de souscription GPL en ligne</div>
 
         {/* Mode cards — action principale */}
         <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
@@ -2629,6 +2762,7 @@ function NavigationView({
   immersiveMode, setImmersiveMode,
 }) {
   const [showRecallModal, setShowRecallModal] = useState(false);
+  const [showBrowserChrome, setShowBrowserChrome] = useState(false);
   const [screenKey, setScreenKey] = useState(0);
   const [simulateError, setSimulateError] = useState(false);
   const mobileFrameRef = useRef(null);
@@ -2736,6 +2870,13 @@ function NavigationView({
         >
           Tous les écrans
         </button>
+        <button
+          className="btn-sm"
+          style={{ background: showBrowserChrome ? '#439fdb' : '#fff', color: showBrowserChrome ? '#fff' : '#666f7c', borderColor: showBrowserChrome ? '#439fdb' : '#dde6ed' }}
+          onClick={() => setShowBrowserChrome(v => !v)}
+        >
+          {showBrowserChrome ? '🖥 Desktop' : '🖥 Desktop'}
+        </button>
       </div>
 
       {/* Main */}
@@ -2750,9 +2891,43 @@ function NavigationView({
 
         {/* Frame */}
         <div className="nav-frame-wrap-desktop" style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
-          <div key={screenKey} ref={mobileFrameRef} className="nav-frame-desktop mobile-scroll">
-            {screenRouterEl}
-          </div>
+          {showBrowserChrome ? (
+            <div style={{ width:520, background:'#e8eaed', borderRadius:12, overflow:'hidden', boxShadow:'0 8px 40px rgba(0,0,0,0.15)' }}>
+              {/* Chrome navigateur mockup */}
+              <div style={{ background:'#dee1e6', padding:'8px 10px 0', display:'flex', flexDirection:'column', gap:0 }}>
+                {/* Barre de tabs */}
+                <div style={{ display:'flex', alignItems:'flex-end', gap:0, paddingLeft:4 }}>
+                  <div style={{ background:'#fff', padding:'6px 16px 0', borderRadius:'6px 6px 0 0', fontSize:11, color:'#1a1b20', fontWeight:500, display:'flex', alignItems:'center', gap:6, minWidth:160, maxWidth:220 }}>
+                    <img src="/logo-butagaz.png" alt="" style={{ height:12, width:'auto' }} />
+                    <span style={{ flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>Butagaz — Souscription gaz citerne</span>
+                    <span style={{ fontSize:10, color:'#999', cursor:'pointer', marginLeft:4 }}>×</span>
+                  </div>
+                  <div style={{ width:28, height:28, borderRadius:'4px 4px 0 0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, color:'#666', cursor:'pointer' }}>+</div>
+                </div>
+                {/* Barre d'adresse */}
+                <div style={{ background:'#fff', padding:'6px 10px', display:'flex', alignItems:'center', gap:8 }}>
+                  <div style={{ display:'flex', gap:6, flexShrink:0 }}>
+                    {['←','→','↻'].map((c,i) => <span key={i} style={{ fontSize:14, color: i < 2 ? '#bbb' : '#555', cursor:'pointer', padding:'0 2px' }}>{c}</span>)}
+                  </div>
+                  <div style={{ flex:1, background:'#f0f2f5', borderRadius:16, padding:'5px 12px', display:'flex', alignItems:'center', gap:6 }}>
+                    <span style={{ fontSize:11, color:'#2a9d5c' }}>🔒</span>
+                    <span style={{ fontSize:12, color:'#555', flex:1 }}>butagaz.fr/souscrire-gaz-citerne</span>
+                  </div>
+                  <div style={{ display:'flex', gap:6, flexShrink:0 }}>
+                    {['☆','⋮'].map((c,i) => <span key={i} style={{ fontSize:16, color:'#666', cursor:'pointer', padding:'0 2px' }}>{c}</span>)}
+                  </div>
+                </div>
+              </div>
+              {/* Contenu du site */}
+              <div key={screenKey} ref={mobileFrameRef} className="mobile-scroll" style={{ height:700, overflowY:'auto', overflowX:'hidden', background:'#fff' }}>
+                {screenRouterEl}
+              </div>
+            </div>
+          ) : (
+            <div key={screenKey} ref={mobileFrameRef} className="nav-frame-desktop mobile-scroll">
+              {screenRouterEl}
+            </div>
+          )}
           {isLibre && (
             <button className="nav-panels"
               onClick={() => setSimulateError(v => !v)}
