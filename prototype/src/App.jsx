@@ -757,7 +757,7 @@ function FooterBanner({ onRecall }) {
       <span>Besoin d'aide ? </span>
       <a href="tel:01XXXXXXXX" style={{ color:'#ec3431', fontWeight:700, textDecoration:'none' }}>01 XX XX XX XX</a>
       <span> ou </span>
-      <span style={{ textDecoration:'underline', cursor:'pointer', color:'#439fdb', fontWeight:600 }} onClick={onRecall}>etre rappele</span>
+      <span style={{ textDecoration:'underline', cursor:'pointer', color:'#439fdb', fontWeight:600 }} onClick={onRecall}>être rappelé</span>
     </div>
   );
 }
@@ -1110,7 +1110,7 @@ function ScreenPAGE0({ offerMode, navigate, showRecall }) {
               <span style={{ fontSize:12, fontWeight:400, opacity:0.8 }}>01 XX XX XX XX, Lun-ven 9h-18h</span>
             </a>
             <button className="btn-secondary" onClick={() => navigate('WF0-step2')}>
-              <div style={{ fontWeight: 500 }}>Etre rappele</div>
+              <div style={{ fontWeight: 500 }}>Être rappelé</div>
               <div style={{ fontSize: 12, color: '#8b9aa4', marginTop: 2 }}>Un conseiller vous contacte sous 24h ouvres</div>
             </button>
             {offerMode && (
@@ -1348,7 +1348,7 @@ function ScreenWF1Sortie({ navigate, showRecall, returnToSite, onHome }) {
         <div style={{ fontSize:14, color:'#666f7c', lineHeight:1.7, marginBottom:28, maxWidth:320, margin:'0 auto 28px' }}>
           Pour votre situation, nos conseillers vous accompagnent directement. Aucun justificatif de fournisseur actuel n'est necessaire.
         </div>
-        <button className="btn-primary" style={{ marginBottom:12 }} onClick={() => showRecall && showRecall()}>Etre rappele →</button>
+        <button className="btn-primary" style={{ marginBottom:12 }} onClick={() => showRecall && showRecall()}>Être rappelé →</button>
         <button className="btn-secondary" onClick={() => navigate('PAGE0')}>← Retour au site butagaz.fr</button>
         <div style={{ marginTop:20 }}>
           <a href="tel:01XXXXXXXX" style={{ fontSize:13, color:'#439fdb', fontWeight:600, textDecoration:'none' }}>01 XX XX XX XX, Lun-ven 9h-17h</a>
@@ -2942,7 +2942,7 @@ function NavigationView({
       <div className="nav-main-layout" style={{ flex:1, display:'flex', gap:16, padding:'16px', justifyContent:'center', alignItems:'flex-start', minHeight:0, overflow:'auto' }}>
 
         {/* Panneau gauche — Annotations UX */}
-        {!isLibre && showAnnotations && (
+        {showAnnotations && (
           <div className="ann-panel">
             <div className="ann-panel-title">Annotations UX</div>
             <div>{annText || 'Aucune annotation pour cet écran.'}</div>
@@ -3004,10 +3004,10 @@ function NavigationView({
         </div>
 
         {/* Panneau droit — Contexte scénario */}
-        {!isLibre && showAnnotations && (
+        {showAnnotations && (
           <div className="ann-panel">
             <div className="ann-panel-title">Contexte scénario</div>
-            <div style={{ whiteSpace:'pre-wrap' }}>{ctxText || '—'}</div>
+            <div style={{ whiteSpace:'pre-wrap' }}>{ctxText || (isLibre ? 'Mode parcours libre — aucun profil présélectionné.' : '—')}</div>
           </div>
         )}
 
