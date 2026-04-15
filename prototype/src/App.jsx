@@ -42,9 +42,20 @@ button { cursor: pointer; }
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-/* Screen animation */
-.screen-anim { animation: screenIn 220ms var(--ease-out-strong); }
-@keyframes screenIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+/* Screen animation — direction-aware */
+.screen-anim { animation: screenIn 200ms var(--ease-out-strong); }
+@keyframes screenIn { from { opacity: 0; transform: translateX(var(--screen-dir, 16px)); } to { opacity: 1; transform: translateX(0); } }
+.screen-anim-back { animation: screenInBack 200ms var(--ease-out-strong); }
+@keyframes screenInBack { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+
+/* Choice block stagger */
+.choice-block { animation: cbIn 220ms var(--ease-out-strong) both; }
+.choice-block:nth-child(1) { animation-delay: 0ms; }
+.choice-block:nth-child(2) { animation-delay: 40ms; }
+.choice-block:nth-child(3) { animation-delay: 80ms; }
+.choice-block:nth-child(4) { animation-delay: 120ms; }
+.choice-block:nth-child(5) { animation-delay: 160ms; }
+@keyframes cbIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Tooltip */
 .tooltip-anim { animation: ttIn 140ms var(--ease-out-strong); }
@@ -59,9 +70,10 @@ button { cursor: pointer; }
 .upbar-fill { height:100%; background:linear-gradient(90deg,#88e7a3,#2aba5b); border-radius:2px; transition:width 0.5s cubic-bezier(0.23,1,0.32,1); }
 
 /* Choice blocks */
-.choice-block { border: 1.5px solid #dde6ed; border-radius: 14px; padding: 16px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s, background 0.1s; }
-.choice-block:hover { border-color: #439fdb; background: #f5f9fd; }
-.choice-block.selected { border: 2px solid #439fdb !important; background: #ecf5fb; box-shadow: 0 0 0 3px rgba(67,159,219,0.14); transition: border-color 0.12s ease-out, background 0.12s ease-out, box-shadow 0.18s ease-out; }
+.choice-block { border: 1.5px solid #dde6ed; border-radius: 14px; padding: 16px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s ease-out, background 0.12s ease-out, transform 0.12s var(--ease-out-strong), box-shadow 0.18s ease-out; }
+@media (hover: hover) and (pointer: fine) { .choice-block:hover { border-color: #439fdb; background: #f5f9fd; } }
+.choice-block:active { transform: scale(0.99); }
+.choice-block.selected { border: 2px solid #439fdb !important; background: #ecf5fb; box-shadow: 0 0 0 3px rgba(67,159,219,0.14); }
 
 /* Upload zone */
 .upload-empty { border: 2px dashed #439fdb; border-radius: 14px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.1s, background 0.1s; background: #f9fcff; }
@@ -226,20 +238,46 @@ input[type="file"] { display: none; }
 @media (max-width: 640px) {
   .shell-offer-chip { min-width: 80px; }
 }
-@media (max-width: 640px) {
+/* Switch toggle annotations */
+.ann-switch {
+  display: inline-flex; align-items: center; gap: 8px;
+  cursor: pointer; flex-shrink: 0; user-select: none;
+}
+.ann-switch-label { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; }
+.ann-switch-track {
+  width: 36px; height: 20px; border-radius: 10px; border: none;
+  cursor: pointer; position: relative; flex-shrink: 0; padding: 0;
+  transition: background 0.2s ease;
+}
+.ann-switch-track[data-on="true"]  { background: #fff; }
+.ann-switch-track[data-on="false"] { background: rgba(255,255,255,0.25); }
+.ann-switch-track:active { transform: scale(0.93); transition: transform 0.1s ease-out, background 0.2s ease; }
+.ann-switch-thumb {
+  position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%;
+  transition: transform 0.18s cubic-bezier(0.23,1,0.32,1), background 0.18s ease;
+}
+.ann-switch-track[data-on="true"]  .ann-switch-thumb { transform: translateX(16px); background: #0079c0; }
+.ann-switch-track[data-on="false"] .ann-switch-thumb { transform: translateX(0);    background: rgba(255,255,255,0.55); }
+
+@media (max-width: 768px) {
   .shell-topbar {
-    position: relative; /* plus de sticky — flex item dans app-shell */
+    position: relative;
     padding: 0 12px; height: 52px; gap: 6px; flex-shrink: 0;
+    flex-wrap: nowrap; overflow: hidden;
   }
   .shell-logo { font-size: 15px; }
   .shell-version { display: none; }
   .shell-modes { gap: 2px; padding: 2px; }
-  .shell-mode-btn { padding: 6px 10px; font-size: 12px; min-height: 34px; }
-  .shell-offer-chip { padding: 5px 10px; font-size: 11px; min-height: 28px; }
+  .shell-mode-btn { padding: 5px 8px; font-size: 11px; min-height: 30px; }
+  .shell-offer-chip { padding: 4px 8px; font-size: 11px; min-height: 26px; min-width: unset; }
   .shell-label-long { display: none; }
   .shell-label-short { display: inline !important; }
+  /* Masquer view-toggles et annotations sur mobile — pas pertinent sur petit écran */
+  .shell-view-toggles { display: none !important; }
+  .shell-ann-toggle { display: none !important; }
+  .shell-separator { display: none !important; }
 }
-@media (min-width: 641px) {
+@media (min-width: 769px) {
   .shell-label-short { display: none !important; }
 }
 
@@ -2801,6 +2839,7 @@ function NavigationView({
 }) {
   const [showRecallModal, setShowRecallModal] = useState(false);
   const [screenKey, setScreenKey] = useState(0);
+  const [navDir, setNavDir] = useState(1); // 1 = forward, -1 = back
   const [simulateError, setSimulateError] = useState(false);
   const mobileFrameRef = useRef(null);
 
@@ -2808,13 +2847,13 @@ function NavigationView({
   const screenList = isLibre ? null : sc?.screens;
   const currentIdx = screenList ? screenList.indexOf(currentScreen) : -1;
 
-  function navigate(screen) {
+  function navigate(screen, dir = 1) {
     if (!isLibre && screen !== currentScreen) {
       setStepHistory(prev => prev.includes(screen) ? prev : [...prev, screen]);
     }
+    setNavDir(dir);
     setCurrentScreen(screen);
     setScreenKey(k => k + 1);
-    // Scroll back to top of mobile frame on navigation
     setTimeout(() => {
       if (mobileFrameRef.current) mobileFrameRef.current.scrollTop = 0;
     }, 50);
@@ -2829,10 +2868,10 @@ function NavigationView({
   }
 
   function handlePrev() {
-    if (currentIdx > 0) navigate(screenList[currentIdx - 1]);
+    if (currentIdx > 0) navigate(screenList[currentIdx - 1], -1);
   }
   function handleNext() {
-    if (currentIdx < screenList.length - 1) navigate(screenList[currentIdx + 1]);
+    if (currentIdx < screenList.length - 1) navigate(screenList[currentIdx + 1], 1);
   }
 
   const annText = ANNOTATIONS[currentScreen];
@@ -2913,7 +2952,7 @@ function NavigationView({
         {/* Centre — Frame téléphone ou Browser chrome (720px) */}
         <div className="nav-frame-wrap-desktop" style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
           {showBrowserChrome ? (
-            <div style={{ width:720, background:'#e8eaed', borderRadius:12, overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.1)' }}>
+            <div style={{ width:800, background:'#e8eaed', borderRadius:12, overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.1)' }}>
               {/* Barre de titre macOS */}
               <div style={{ background:'#d4d7db', padding:'10px 14px 0', display:'flex', flexDirection:'column' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:8 }}>
@@ -2943,14 +2982,14 @@ function NavigationView({
                 </div>
               </div>
               {/* Contenu — centré à 640px */}
-              <div key={screenKey} ref={mobileFrameRef} className="mobile-scroll" style={{ height:'calc(100dvh - 240px)', overflowY:'auto', overflowX:'hidden', background:'#f4f6f8' }}>
+              <div key={screenKey} ref={mobileFrameRef} className="mobile-scroll" style={{ height:'calc(100dvh - 240px)', overflowY:'auto', overflowX:'hidden', background:'#f4f6f8', '--screen-dir': `${navDir * 16}px` }}>
                 <div className="browser-inner-content">
                   {screenRouterEl}
                 </div>
               </div>
             </div>
           ) : (
-            <div key={screenKey} ref={mobileFrameRef} className="nav-frame-desktop mobile-scroll">
+            <div key={screenKey} ref={mobileFrameRef} className="nav-frame-desktop mobile-scroll" style={{ '--screen-dir': `${navDir * 16}px` }}>
               {screenRouterEl}
             </div>
           )}
@@ -3104,16 +3143,15 @@ export default function App() {
           ))}
         </div>
         {(mode === 'navigation' || mode === 'libre') && (<>
-          <div style={{ width:1, height:22, background:'rgba(255,255,255,0.2)', flexShrink:0 }} />
+          <div className="shell-separator" style={{ width:1, height:22, background:'rgba(255,255,255,0.2)', flexShrink:0 }} />
           {/* View toggles */}
-          <div style={{ display:'flex', gap:2, background:'rgba(0,0,0,0.18)', borderRadius:9, padding:2, flexShrink:0 }}>
+          <div className="shell-view-toggles" style={{ display:'flex', gap:2, background:'rgba(0,0,0,0.18)', borderRadius:9, padding:2, flexShrink:0 }}>
             <button
               className="shell-mode-btn"
               style={{ background: !immersiveMode && !showBrowserChrome ? '#fff' : 'transparent', color: !immersiveMode && !showBrowserChrome ? '#0079c0' : 'rgba(255,255,255,0.7)', fontWeight: !immersiveMode && !showBrowserChrome ? 700 : 500, padding:'4px 10px', fontSize:12, minHeight:30 }}
               onClick={() => { setImmersiveMode(false); setShowBrowserChrome(false); }}
             >
-              <span className="shell-label-long">Prototype commenté</span>
-              <span className="shell-label-short">Proto</span>
+              UI Mobile
             </button>
             <button
               className="shell-mode-btn"
@@ -3121,7 +3159,7 @@ export default function App() {
               onClick={() => { setImmersiveMode(true); setShowBrowserChrome(false); }}
             >
               <Smartphone size={13} strokeWidth={2.2} />
-              <span>Mobile</span>
+              <span>Smartphone</span>
             </button>
             <button
               className="shell-mode-btn"
@@ -3129,18 +3167,22 @@ export default function App() {
               onClick={() => { setShowBrowserChrome(v => !v); setImmersiveMode(false); }}
             >
               <Monitor size={13} strokeWidth={2.2} />
-              <span>Desktop</span>
+              <span>Navigateur desktop</span>
             </button>
           </div>
-          {/* Annotations toggle */}
-          <button
-            className="shell-mobile-btn"
-            style={{ background: showAnnotations ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)', borderColor: showAnnotations ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)', fontSize:12, padding:'4px 10px', minHeight:30 }}
-            onClick={() => setShowAnnotations(v => !v)}
-          >
-            <span className="mob-label">{showAnnotations ? 'Masquer annotations' : 'Annotations'}</span>
-            <span style={{ display:'none' }} className="shell-label-short">{showAnnotations ? 'Annot.' : 'Annot.'}</span>
-          </button>
+          {/* Annotations switch */}
+          <div className="shell-ann-toggle ann-switch" onClick={() => setShowAnnotations(v => !v)}>
+            <span className="ann-switch-label">Annotations</span>
+            <button
+              className="ann-switch-track"
+              data-on={String(showAnnotations)}
+              role="switch"
+              aria-checked={showAnnotations}
+              aria-label="Afficher les annotations"
+            >
+              <span className="ann-switch-thumb" />
+            </button>
+          </div>
         </>)}
         <button
           className={`shell-offer-chip${offerMode ? ' on' : ''}`}
