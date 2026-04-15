@@ -3,6 +3,7 @@
 // Avril 2026 — Intègre les décisions FigJam (Pierre-Louis du Chazaud, Élodie Jolly, Simon White)
 
 import { useState, useEffect, useRef } from 'react';
+import { Smartphone, Monitor } from 'lucide-react';
 
 // ─── CSS GLOBAL ───────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -294,6 +295,7 @@ input[type="file"] { display: none; }
 
 /* ── PANNEAUX ANNOTATIONS ──────────────────────────────────────────────────── */
 .ann-panel {
+  display: block;
   background: #fff;
   border-radius: 12px;
   padding: 20px;
@@ -301,8 +303,13 @@ input[type="file"] { display: none; }
   line-height: 1.7;
   color: #444;
   flex-shrink: 0;
+  width: 260px;
   position: sticky;
   top: 0;
+  align-self: flex-start;
+}
+@media (max-width: 700px) {
+  .ann-panel { display: none !important; }
 }
 .ann-panel-title {
   font-weight: 700;
@@ -2790,9 +2797,9 @@ function NavigationView({
   returnTo, setReturnTo, stepHistory, setStepHistory,
   offerMode, setOfferMode, onSwitchToPanorama, isLibre, isMobileVP,
   immersiveMode, setImmersiveMode,
+  showBrowserChrome, setShowBrowserChrome,
 }) {
   const [showRecallModal, setShowRecallModal] = useState(false);
-  const [showBrowserChrome, setShowBrowserChrome] = useState(false);
   const [screenKey, setScreenKey] = useState(0);
   const [simulateError, setSimulateError] = useState(false);
   const mobileFrameRef = useRef(null);
@@ -2887,41 +2894,9 @@ function NavigationView({
         <div style={{ flex:1, fontSize:13, color:'#666', minWidth:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
           {currentScreen && <span><strong>{SCREEN_LABELS[currentScreen]}</strong>{currentIdx >= 0 && screenList ? ` · ${currentIdx+1}/${screenList.length}` : ''}</span>}
         </div>
-        {!isLibre && (
-          <button className="nav-panel-toggle nav-panels btn-sm"
-            style={{ background: showAnnotations ? '#439fdb' : '#fff', color: showAnnotations ? '#fff' : '#666f7c', borderColor: showAnnotations ? '#439fdb' : '#dde6ed' }}
-            onClick={() => setShowAnnotations(!showAnnotations)}
-          >
-            {showAnnotations ? 'Masquer' : 'Annotations'}
-          </button>
-        )}
         <button className="nav-panels btn-sm" onClick={onSwitchToPanorama}>
           Tous les écrans
         </button>
-        {/* Groupe de visualisation — Prototype | Mobile | Desktop */}
-        <div style={{ display:'flex', gap:2, background:'#e8edf2', borderRadius:9, padding:2, flexShrink:0 }}>
-          <button
-            className="btn-sm"
-            style={{ background: !immersiveMode && !showBrowserChrome ? '#fff' : 'transparent', color: !immersiveMode && !showBrowserChrome ? '#439fdb' : '#8b9aa4', border:'none', borderRadius:7, padding:'5px 10px', fontSize:12, fontWeight: !immersiveMode && !showBrowserChrome ? 700 : 500, boxShadow: !immersiveMode && !showBrowserChrome ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}
-            onClick={() => { setImmersiveMode(false); setShowBrowserChrome(false); }}
-          >
-            ⬜ Proto
-          </button>
-          <button
-            className="btn-sm"
-            style={{ background: immersiveMode ? '#fff' : 'transparent', color: immersiveMode ? '#439fdb' : '#8b9aa4', border:'none', borderRadius:7, padding:'5px 10px', fontSize:12, fontWeight: immersiveMode ? 700 : 500, boxShadow: immersiveMode ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}
-            onClick={() => { if (mobileFrameRef.current) mobileFrameRef.current.scrollTop = 0; setImmersiveMode(true); setShowBrowserChrome(false); }}
-          >
-            📱 Mobile
-          </button>
-          <button
-            className="btn-sm"
-            style={{ background: showBrowserChrome ? '#fff' : 'transparent', color: showBrowserChrome ? '#439fdb' : '#8b9aa4', border:'none', borderRadius:7, padding:'5px 10px', fontSize:12, fontWeight: showBrowserChrome ? 700 : 500, boxShadow: showBrowserChrome ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}
-            onClick={() => { setShowBrowserChrome(v => !v); setImmersiveMode(false); }}
-          >
-            🖥 Desktop
-          </button>
-        </div>
       </div>
 
       {/* Main — toujours 3 colonnes : gauche | centre | droite */}
@@ -2929,7 +2904,7 @@ function NavigationView({
 
         {/* Panneau gauche — Annotations UX */}
         {!isLibre && showAnnotations && (
-          <div className="nav-panels ann-panel" style={{ width:260 }}>
+          <div className="ann-panel">
             <div className="ann-panel-title">Annotations UX</div>
             <div>{annText || 'Aucune annotation pour cet écran.'}</div>
           </div>
@@ -2968,7 +2943,7 @@ function NavigationView({
                 </div>
               </div>
               {/* Contenu — centré à 640px */}
-              <div key={screenKey} ref={mobileFrameRef} className="mobile-scroll" style={{ maxHeight:'calc(100vh - 220px)', overflowY:'auto', overflowX:'hidden', background:'#f4f6f8' }}>
+              <div key={screenKey} ref={mobileFrameRef} className="mobile-scroll" style={{ height:'calc(100dvh - 240px)', overflowY:'auto', overflowX:'hidden', background:'#f4f6f8' }}>
                 <div className="browser-inner-content">
                   {screenRouterEl}
                 </div>
@@ -2980,7 +2955,7 @@ function NavigationView({
             </div>
           )}
           {isLibre && (
-            <button className="nav-panels"
+            <button
               onClick={() => setSimulateError(v => !v)}
               style={{ padding:'5px 12px', fontSize:12, cursor:'pointer', borderRadius:6, background: simulateError ? '#FFF0F0' : '#FFF', border: simulateError ? '1px solid #ec3431' : '1px solid #D0D0D0', color: simulateError ? '#ec3431' : '#999' }}
             >
@@ -2991,7 +2966,7 @@ function NavigationView({
 
         {/* Panneau droit — Contexte scénario */}
         {!isLibre && showAnnotations && (
-          <div className="nav-panels ann-panel" style={{ width:260 }}>
+          <div className="ann-panel">
             <div className="ann-panel-title">Contexte scénario</div>
             <div style={{ whiteSpace:'pre-wrap' }}>{ctxText || '—'}</div>
           </div>
@@ -3040,6 +3015,7 @@ export default function App() {
   const [stepHistory, setStepHistory] = useState(['PAGE0']);
   const [offerMode, setOfferMode] = useState(false);
   const [immersiveMode, setImmersiveMode] = useState(false);
+  const [showBrowserChrome, setShowBrowserChrome] = useState(false);
 
   function handleStart(startMode, scenarioId) {
     if (scenarioId && SCENARIOS[scenarioId]) {
@@ -3127,6 +3103,45 @@ export default function App() {
             </button>
           ))}
         </div>
+        {(mode === 'navigation' || mode === 'libre') && (<>
+          <div style={{ width:1, height:22, background:'rgba(255,255,255,0.2)', flexShrink:0 }} />
+          {/* View toggles */}
+          <div style={{ display:'flex', gap:2, background:'rgba(0,0,0,0.18)', borderRadius:9, padding:2, flexShrink:0 }}>
+            <button
+              className="shell-mode-btn"
+              style={{ background: !immersiveMode && !showBrowserChrome ? '#fff' : 'transparent', color: !immersiveMode && !showBrowserChrome ? '#0079c0' : 'rgba(255,255,255,0.7)', fontWeight: !immersiveMode && !showBrowserChrome ? 700 : 500, padding:'4px 10px', fontSize:12, minHeight:30 }}
+              onClick={() => { setImmersiveMode(false); setShowBrowserChrome(false); }}
+            >
+              <span className="shell-label-long">Prototype commenté</span>
+              <span className="shell-label-short">Proto</span>
+            </button>
+            <button
+              className="shell-mode-btn"
+              style={{ background: immersiveMode ? '#fff' : 'transparent', color: immersiveMode ? '#0079c0' : 'rgba(255,255,255,0.7)', fontWeight: immersiveMode ? 700 : 500, padding:'4px 10px', fontSize:12, minHeight:30, display:'flex', alignItems:'center', gap:5 }}
+              onClick={() => { setImmersiveMode(true); setShowBrowserChrome(false); }}
+            >
+              <Smartphone size={13} strokeWidth={2.2} />
+              <span>Mobile</span>
+            </button>
+            <button
+              className="shell-mode-btn"
+              style={{ background: showBrowserChrome ? '#fff' : 'transparent', color: showBrowserChrome ? '#0079c0' : 'rgba(255,255,255,0.7)', fontWeight: showBrowserChrome ? 700 : 500, padding:'4px 10px', fontSize:12, minHeight:30, display:'flex', alignItems:'center', gap:5 }}
+              onClick={() => { setShowBrowserChrome(v => !v); setImmersiveMode(false); }}
+            >
+              <Monitor size={13} strokeWidth={2.2} />
+              <span>Desktop</span>
+            </button>
+          </div>
+          {/* Annotations toggle */}
+          <button
+            className="shell-mobile-btn"
+            style={{ background: showAnnotations ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)', borderColor: showAnnotations ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)', fontSize:12, padding:'4px 10px', minHeight:30 }}
+            onClick={() => setShowAnnotations(v => !v)}
+          >
+            <span className="mob-label">{showAnnotations ? 'Masquer annotations' : 'Annotations'}</span>
+            <span style={{ display:'none' }} className="shell-label-short">{showAnnotations ? 'Annot.' : 'Annot.'}</span>
+          </button>
+        </>)}
         <button
           className={`shell-offer-chip${offerMode ? ' on' : ''}`}
           onClick={() => setOfferMode(v => !v)}
@@ -3182,6 +3197,8 @@ export default function App() {
           isLibre={mode === 'libre'}
           immersiveMode={immersiveMode}
           setImmersiveMode={setImmersiveMode}
+          showBrowserChrome={showBrowserChrome}
+          setShowBrowserChrome={setShowBrowserChrome}
         />
       )}
       </div>{/* /app-shell */}

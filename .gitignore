@@ -2,3 +2,5 @@
 *.code-workspace
 prototype/node_modules/
 prototype/dist/
+.vercel
+.playwright-mcp/
