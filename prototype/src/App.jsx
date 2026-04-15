@@ -714,8 +714,8 @@ function TunnelHeader({ onHome }) {
         {showHelp && (
           <div className="help-popover fade-in-anim">
             <div style={{ fontWeight:700, color:'#1a1b20', marginBottom:4 }}>09 70 81 80 65</div>
-            <div style={{ fontSize:12, color:'#8b9aa4' }}>Lun-ven, 9h-17h</div>
-            <div style={{ fontSize:12, color:'#8b9aa4', marginTop:2 }}>Rappel sous 24h ouvres</div>
+            <div style={{ fontSize:12, color:'#8b9aa4' }}>Lun-ven, 9h-18h</div>
+            <div style={{ fontSize:12, color:'#8b9aa4', marginTop:2 }}>Rappel sous 24h ouvrées — Lun-ven 9h-18h</div>
           </div>
         )}
       </div>
@@ -1009,7 +1009,7 @@ function RecallModal({ formData, onClose }) {
           <span style={{ fontSize:20, cursor:'pointer', color:'#666', lineHeight:1 }} onClick={onClose}>×</span>
         </div>
         {sent ? (
-          <InfoBlock>Demande envoyée. Un conseiller vous contactera sous 24h ouvres.</InfoBlock>
+          <InfoBlock>Demande envoyée. Un conseiller vous contactera sous 24h ouvrées.</InfoBlock>
         ) : (
           <>
             <div style={{ marginBottom:12 }}>
@@ -1103,7 +1103,7 @@ function ScreenPAGE0({ offerMode, navigate, showRecall }) {
           <>
             <button className="btn-primary" style={{ marginBottom: 10 }} onClick={() => navigate('WF1')}>
               <div>Souscrire en ligne</div>
-              <div style={{ fontSize: 12, fontWeight: 400, opacity: 0.8, marginTop: 2 }}>Devis personnalise sous 24h ouvres</div>
+              <div style={{ fontSize: 12, fontWeight: 400, opacity: 0.8, marginTop: 2 }}>Devis personnalisé sous 24h ouvrées</div>
             </button>
             <a href="tel:0970818065" className="btn-aide" style={{ display:'block', marginBottom:10, textDecoration:'none' }}>
               Appeler un conseiller<br/>
@@ -1111,7 +1111,7 @@ function ScreenPAGE0({ offerMode, navigate, showRecall }) {
             </a>
             <button className="btn-secondary" onClick={() => navigate('WF0-step2')}>
               <div style={{ fontWeight: 500 }}>Être rappelé</div>
-              <div style={{ fontSize: 12, color: '#8b9aa4', marginTop: 2 }}>Un conseiller vous contacte sous 24h ouvres</div>
+              <div style={{ fontSize: 12, color: '#8b9aa4', marginTop: 2 }}>Un conseiller vous contacte sous 24h ouvrées</div>
             </button>
             {offerMode && (
               <div style={{ fontSize: 11, color: '#999', lineHeight: 1.5, marginTop: 12 }}>
@@ -1236,7 +1236,7 @@ function ScreenWF0Step3({ navigate, returnToSite }) {
         <div style={{ width:60, height:60, borderRadius:'50%', background:'rgba(74,199,124,0.08)', border:'2px solid #4ac77c', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:26 }}>✓</div>
         <div style={{ fontSize:22, fontWeight:700, marginBottom:16 }}>Votre demande est bien reçue</div>
         <InfoBlock>
-          Un conseiller vous contactera sous 24h ouvres. Rappel entre 9h et 17h, du lundi au vendredi.
+          Un conseiller vous contactera sous 24h ouvrées. Rappel entre 9h et 18h, du lundi au vendredi.
         </InfoBlock>
         <button className="btn-secondary" onClick={returnToSite}>Retour au site butagaz.fr</button>
       </div>
@@ -1351,7 +1351,7 @@ function ScreenWF1Sortie({ navigate, showRecall, returnToSite, onHome }) {
         <button className="btn-primary" style={{ marginBottom:12 }} onClick={() => showRecall && showRecall()}>Être rappelé →</button>
         <button className="btn-secondary" onClick={() => navigate('PAGE0')}>← Retour au site butagaz.fr</button>
         <div style={{ marginTop:20 }}>
-          <a href="tel:0970818065" style={{ fontSize:13, color:'#439fdb', fontWeight:600, textDecoration:'none' }}>09 70 81 80 65, Lun-ven 9h-17h</a>
+          <a href="tel:0970818065" style={{ fontSize:13, color:'#439fdb', fontWeight:600, textDecoration:'none' }}>09 70 81 80 65, Lun-ven 9h-18h</a>
         </div>
       </div>
     </div>
@@ -1433,7 +1433,7 @@ function ScreenWF2({ formData, setFormData, navigate, showRecall, returnTo, setR
         </FormField>
 
         {/* Préférence d'appel */}
-        <FormField id="pref" label="Préférence d'appel (facultatif)" tooltipText="ℹ️ Rappel entre 9h et 17h, du lundi au vendredi." openTip={openTip} onToggleTip={toggleTip}>
+        <FormField id="pref" label="Préférence d'appel (facultatif)" tooltipText="ℹ️ Rappel entre 9h et 18h, du lundi au vendredi." openTip={openTip} onToggleTip={toggleTip}>
           <RadioGroup
             options={[{ value:'matin', label:'Matin' }, { value:'aprem', label:'Après-midi' }, { value:'indifferent', label:'Indifférent' }]}
             value={f.preferenceAppel}
@@ -2254,7 +2254,7 @@ function ScreenWF4Sortie({ formData, navigate, returnToSite, onHome }) {
               <button className="btn-primary" onClick={() => setSubmitted(true)}>Confirmer et Envoyer</button>
             </>
           ) : (
-            <InfoBlock>Votre demande est bien enregistrée. Un conseiller vous contactera sous 24h ouvres.</InfoBlock>
+            <InfoBlock>Votre demande est bien enregistrée. Un conseiller vous contactera sous 24h ouvrées.</InfoBlock>
           )}
         </div>
 
