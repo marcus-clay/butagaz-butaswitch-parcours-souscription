@@ -713,7 +713,7 @@ function TunnelHeader({ onHome }) {
         >Besoin d'aide ?</button>
         {showHelp && (
           <div className="help-popover fade-in-anim">
-            <div style={{ fontWeight:700, color:'#1a1b20', marginBottom:4 }}>01 XX XX XX XX</div>
+            <div style={{ fontWeight:700, color:'#1a1b20', marginBottom:4 }}>09 70 81 80 65</div>
             <div style={{ fontSize:12, color:'#8b9aa4' }}>Lun-ven, 9h-17h</div>
             <div style={{ fontSize:12, color:'#8b9aa4', marginTop:2 }}>Rappel sous 24h ouvres</div>
           </div>
@@ -755,7 +755,7 @@ function FooterBanner({ onRecall }) {
   return (
     <div className="footer-fixed" style={{ background:'#f7f9fa', borderTop:'0.5px solid #e2e8ed', padding:'10px 16px', fontSize:13, color:'#666f7c' }}>
       <span>Besoin d'aide ? </span>
-      <a href="tel:01XXXXXXXX" style={{ color:'#ec3431', fontWeight:700, textDecoration:'none' }}>01 XX XX XX XX</a>
+      <a href="tel:0970818065" style={{ color:'#ec3431', fontWeight:700, textDecoration:'none' }}>09 70 81 80 65</a>
       <span> ou </span>
       <span style={{ textDecoration:'underline', cursor:'pointer', color:'#439fdb', fontWeight:600 }} onClick={onRecall}>être rappelé</span>
     </div>
@@ -1105,9 +1105,9 @@ function ScreenPAGE0({ offerMode, navigate, showRecall }) {
               <div>Souscrire en ligne</div>
               <div style={{ fontSize: 12, fontWeight: 400, opacity: 0.8, marginTop: 2 }}>Devis personnalise sous 24h ouvres</div>
             </button>
-            <a href="tel:01XXXXXXXX" className="btn-aide" style={{ display:'block', marginBottom:10, textDecoration:'none' }}>
+            <a href="tel:0970818065" className="btn-aide" style={{ display:'block', marginBottom:10, textDecoration:'none' }}>
               Appeler un conseiller<br/>
-              <span style={{ fontSize:12, fontWeight:400, opacity:0.8 }}>01 XX XX XX XX, Lun-ven 9h-18h</span>
+              <span style={{ fontSize:12, fontWeight:400, opacity:0.8 }}>09 70 81 80 65, Lun-ven 9h-18h</span>
             </a>
             <button className="btn-secondary" onClick={() => navigate('WF0-step2')}>
               <div style={{ fontWeight: 500 }}>Être rappelé</div>
@@ -1351,7 +1351,7 @@ function ScreenWF1Sortie({ navigate, showRecall, returnToSite, onHome }) {
         <button className="btn-primary" style={{ marginBottom:12 }} onClick={() => showRecall && showRecall()}>Être rappelé →</button>
         <button className="btn-secondary" onClick={() => navigate('PAGE0')}>← Retour au site butagaz.fr</button>
         <div style={{ marginTop:20 }}>
-          <a href="tel:01XXXXXXXX" style={{ fontSize:13, color:'#439fdb', fontWeight:600, textDecoration:'none' }}>01 XX XX XX XX, Lun-ven 9h-17h</a>
+          <a href="tel:0970818065" style={{ fontSize:13, color:'#439fdb', fontWeight:600, textDecoration:'none' }}>09 70 81 80 65, Lun-ven 9h-17h</a>
         </div>
       </div>
     </div>
@@ -1428,7 +1428,7 @@ function ScreenWF2({ formData, setFormData, navigate, showRecall, returnTo, setR
         </FormField>
 
         {/* Téléphone */}
-        <FormField id="telephone" label="Téléphone *" tooltipText="ℹ️ Un conseiller vous appellera pour vous transmettre votre proposition de contrat. Vous serez contacté depuis le 01 XX XX XX XX." openTip={openTip} onToggleTip={toggleTip} error={errors.telephone}>
+        <FormField id="telephone" label="Téléphone *" tooltipText="ℹ️ Un conseiller vous appellera pour vous transmettre votre proposition de contrat. Vous serez contacté depuis le 09 70 81 80 65." openTip={openTip} onToggleTip={toggleTip} error={errors.telephone}>
           <input className={`field-input${errors.telephone?' err':''}`} value={f.telephone} onChange={e => setF({...f,telephone:e.target.value})} onBlur={() => blur('telephone')} placeholder="06 ou 07..." type="tel" inputMode="tel" />
         </FormField>
 
@@ -2354,7 +2354,7 @@ function ScreenWF5({ formData, navigate, showRecall, setReturnTo, stepHistory, o
         </button>
 
         <div style={{ textAlign:'center', marginTop:16, fontSize:13, color:'#666' }}>
-          Une question avant d'envoyer ? <strong>01 XX XX XX XX</strong>
+          Une question avant d'envoyer ? <strong>09 70 81 80 65</strong>
         </div>
       </div>
       <FooterBanner onRecall={showRecall} />
@@ -2397,7 +2397,7 @@ function ScreenWF5b({ formData, navigate, returnToSite, onHome }) {
                   <TooltipBtn id="contact" onToggle={() => setShowContactTip(v => !v)} />
                 </div>
                 <div style={{ fontSize:13, color:'#666' }}>Vos contacts locaux</div>
-                <div style={{ fontSize:13, color:'#666' }}>Appel depuis le 01 XX XX XX XX</div>
+                <div style={{ fontSize:13, color:'#666' }}>Appel depuis le 09 70 81 80 65</div>
               </div>
             </div>
             {showContactTip && (
